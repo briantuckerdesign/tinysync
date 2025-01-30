@@ -14,7 +14,7 @@ import { ui } from "../ui";
 export async function publishItem(syncConfig: Sync, itemId) {
   try {
     const collectionId = syncConfig.webflow.collection.id;
-    const apiKey = syncConfig.webflow.apiKey;
+    const apiKey = syncConfig.webflow.accessToken;
     itemId = [itemId];
     const url = `https://api.webflow.com/beta/collections/${collectionId}/items/publish`;
     const body = { itemIds: itemId };

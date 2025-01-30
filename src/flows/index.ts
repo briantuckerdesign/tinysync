@@ -12,11 +12,11 @@ import { mainMenu } from "./main-menu";
 import { viewSync } from "./view-sync";
 import { viewSyncs } from "./view-syncs";
 import { createSync } from "./create-sync/index";
-import { manageKeys } from "./manage-keys";
+import { manageTokens } from "./manage-tokens";
 import { changePassword } from "./change-password";
 
 export const flows = {
-  manageKeys,
+  manageTokens,
   login,
   mainMenu,
   viewSyncs,

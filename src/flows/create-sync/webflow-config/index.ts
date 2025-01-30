@@ -1,15 +1,15 @@
 import { ui } from "../../../ui";
 import { state } from "../../../state";
 import { utils } from "../../../utils";
-import { selectWebflowKey } from "./select-key";
-import { saveWebflowKey } from "./save-key";
+import { selectWebflowtoken } from "./select-token";
+import { saveWebflowToken } from "./save-token";
 import { flows } from "../..";
 import { Collection, Site } from "webflow-api/api";
 import { handleRequiredFields } from "./required-fields";
 
 /**
  *
- * 1. Ask user for API key and return sites from Webflow
+ * 1. Ask user for access token and return sites from Webflow
  * 2. Ask user to select a site
  * 3. Get collections for selected site from Webflow
  * 4. Ask user to select a collection
@@ -24,10 +24,11 @@ export async function createWebflowConfig(): Promise<WebflowConfig> {
       ui.prompt.log.info(ui.format.bold("Webflow"));
 
       /* ---------------------------------- 1 & 2 --------------------------------- */
-      const { apiKey, sites, createdThisSession } = await selectWebflowKey();
+      const { accessToken, sites, createdThisSession } =
+        await selectWebflowtoken();
 
       // Ask user if they want to save the API token, save it
-      if (createdThisSession) await saveWebflowKey(apiKey);
+      if (createdThisSession) await saveWebflowToken(accessToken);
 
       /* ------------------------------------ 3 ----------------------------------- */
       // Ask user to select a site
@@ -65,10 +66,14 @@ export async function createWebflowConfig(): Promise<WebflowConfig> {
 
       if (!collection) process.exit(0);
 
-      const recordIdField = await handleRequiredFields(base, table, apiKey);
+      const recordIdField = await handleRequiredFields(
+        base,
+        table,
+        accessToken
+      );
 
       return {
-        apiKey,
+        accessToken,
         site,
         collection,
         recordIdField,

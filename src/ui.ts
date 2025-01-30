@@ -1,6 +1,8 @@
 import * as p from "@clack/prompts";
 import f from "picocolors";
 
+// TODO: Move to own folder?
+
 // Update the UI interface to include the additional spinner methods
 interface UI {
   prompt: typeof p;

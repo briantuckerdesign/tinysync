@@ -19,7 +19,7 @@ export async function runSync(syncConfig: Sync) {
     ui.prompt.log.info(ui.format.bold("🌐 Syncing"));
 
     state.webflowClient = new WebflowClient({
-      accessToken: syncConfig.webflow.apiKey,
+      accessToken: syncConfig.webflow.accessToken,
     });
 
     // start timer

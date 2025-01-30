@@ -23,7 +23,7 @@ export function buildSync(
     errors: [],
     fields: fields,
     airtable: {
-      apiToken: airtableConfig.apiKey,
+      accessToken: airtableConfig.accessToken,
       base: {
         id: airtableConfig.base.id,
         name: airtableConfig.base.name,
@@ -41,7 +41,7 @@ export function buildSync(
       },
     },
     webflow: {
-      apiKey: webflowConfig.apiKey,
+      accessToken: webflowConfig.accessToken,
       site: {
         id: webflowConfig.site.id,
         name: webflowConfig.site.displayName,

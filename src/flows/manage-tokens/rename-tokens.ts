@@ -2,7 +2,7 @@ import { configTools } from "../../config-tools";
 import { state } from "../../state";
 import { ui } from "../../ui";
 import { flows } from "..";
-import { manageKey } from "./manage-key";
+import { manageKey } from "./manage-tokens";
 
 export async function renameKey(key: Key) {
   try {
@@ -21,7 +21,7 @@ export async function renameKey(key: Key) {
     await configTools.save();
     ui.prompt.log.success("✅ Key renamed!");
 
-    await flows.manageKeys();
+    await flows.manageTokens();
   } catch (error) {
     ui.prompt.log.error("Error renaming key.");
     process.exit(0);

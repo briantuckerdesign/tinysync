@@ -13,7 +13,7 @@ import { ui } from "../../../ui";
 export async function handleRequiredFields(
   base: AirtableBasesListItem,
   table: AirtableTable,
-  apiKey: string
+  accessToken: string
 ) {
   let allFields = JSON.parse(JSON.stringify(table.fields));
 
@@ -28,7 +28,7 @@ export async function handleRequiredFields(
   const stateField = await handleFieldCreation(
     base,
     table,
-    apiKey,
+    accessToken,
     allFields.filter(
       (field) =>
         field.type === "singleLineText" ||
@@ -74,7 +74,7 @@ export async function handleRequiredFields(
   const slugField = await handleFieldCreation(
     base,
     table,
-    apiKey,
+    accessToken,
     allFields.filter(
       (field) =>
         field.type === "singleLineText" || field.tsCreateField === "createForMe"
@@ -96,7 +96,7 @@ export async function handleRequiredFields(
   const webflowItemIdField = await handleFieldCreation(
     base,
     table,
-    apiKey,
+    accessToken,
     allFields.filter(
       (field) =>
         field.type === "singleLineText" || field.tsCreateField === "createForMe"
@@ -118,7 +118,7 @@ export async function handleRequiredFields(
   const lastPublishedField = await handleFieldCreation(
     base,
     table,
-    apiKey,
+    accessToken,
     allFields.filter(
       (field) =>
         field.type === "dateTime" || field.tsCreateField === "createForMe"

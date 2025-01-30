@@ -12,6 +12,9 @@
  * 6. Save updated config
  *
  */
+
+// TODO: copy over the prompr cancellation function from webflow-cli-toolbelt
+
 import { configTools } from "../../config-tools/index";
 import { flows } from "../index";
 import { createAirtableConfig } from "./airtable-config";
@@ -27,8 +30,8 @@ export async function createSync() {
     ui.prompt.log.info(ui.format.bold("🔨 Create sync"));
     ui.prompt.note(`You will need a few things to get started:
 
-        - Airtable API token
-        - Webflow API key
+        - Airtable access token
+        - Webflow access token
 
         - Airtable fields (tinySync can create these for you)
             - Name

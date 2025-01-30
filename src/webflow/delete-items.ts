@@ -15,7 +15,7 @@ export async function deleteItems(itemIdsToDelete: string[], syncConfig: Sync) {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${syncConfig.webflow.apiKey}`,
+        Authorization: `Bearer ${syncConfig.webflow.accessToken}`,
       },
       body: myData,
     };

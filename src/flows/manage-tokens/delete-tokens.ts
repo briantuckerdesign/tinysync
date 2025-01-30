@@ -2,7 +2,7 @@ import { state } from "../../state";
 import { ui } from "../../ui";
 import { flows } from "..";
 import { configTools } from "../../config-tools";
-import { manageKey } from "./manage-key";
+import { manageKey } from "./manage-tokens";
 
 export async function deleteKey(keyToDelete: Key) {
   try {
@@ -16,13 +16,13 @@ export async function deleteKey(keyToDelete: Key) {
       return;
     }
 
-    state.config.keys = state.config.keys.filter(
+    state.config.tokens = state.config.tokens.filter(
       (key) => key.id !== keyToDelete.id
     );
     await configTools.save();
     ui.prompt.log.success("✅ Key deleted!");
 
-    await flows.manageKeys();
+    await flows.manageTokens();
   } catch (error) {
     ui.prompt.log.error("Error deleting key.");
     process.exit(0);

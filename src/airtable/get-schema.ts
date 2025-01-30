@@ -2,7 +2,7 @@ import axios from "axios";
 import { ui } from "../ui";
 
 export async function getUpdatedSchema(syncConfig: Sync) {
-  const apiKey = syncConfig.airtable.apiToken;
+  const apiKey = syncConfig.airtable.accessToken;
   const baseId = syncConfig.airtable.base.id;
   const tableId = syncConfig.airtable.table.id;
   const viewId = syncConfig.airtable.table.view.id;

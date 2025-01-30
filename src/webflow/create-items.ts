@@ -5,7 +5,7 @@ export async function createItems(parsedData, syncConfig: Sync) {
   try {
     const wId = syncConfig.webflow.collection.id;
     const url = `${webflowEndpoint}/collections/${wId}/items/bulk`;
-    const apiKey = syncConfig.webflow.apiKey;
+    const apiKey = syncConfig.webflow.accessToken;
     const body = {
       isArchived: false,
       isDraft: false,

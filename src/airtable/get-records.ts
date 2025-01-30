@@ -6,7 +6,7 @@ export async function getRecords(syncConfig: Sync): Promise<AirtableRecord[]> {
     const baseId = syncConfig.airtable.base.id;
     const tableId = syncConfig.airtable.table.id;
     const viewId = syncConfig.airtable.table.view.id;
-    const apiToken = syncConfig.airtable.apiToken;
+    const apiToken = syncConfig.airtable.accessToken;
     const url = `https://api.airtable.com/v0/${baseId}/${tableId}/listRecords`;
     const options = {
       headers: {

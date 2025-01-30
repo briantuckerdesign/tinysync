@@ -6,7 +6,7 @@ export async function updateRecords(record, syncConfig: Sync) {
   try {
     const baseId = syncConfig.airtable.base.id;
     const tableId = syncConfig.airtable.table.id;
-    const apiToken = syncConfig.airtable.apiToken;
+    const apiToken = syncConfig.airtable.accessToken;
     const url = `https://api.airtable.com/v0/${baseId}/${tableId}`;
     const options = {
       headers: {

@@ -8,7 +8,7 @@ export async function getRecord(
   baseId = syncConfig.airtable.base.id
 ) {
   try {
-    const apiToken = syncConfig.airtable.apiToken;
+    const apiToken = syncConfig.airtable.accessToken;
     const url = `https://api.airtable.com/v0/${baseId}/${tableId}/${recordId}`;
     const options = {
       headers: {

@@ -1,16 +1,16 @@
 import { flows } from "../..";
 import { utils } from "../../../utils";
-import { selectAirtableKey } from "./select-key";
+import { selectAirtableToken } from "./select-token";
 import { airtable } from "../../../airtable";
-import { saveAirtableKey } from "./save-key";
+import { saveAirtableToken } from "./save-token";
 import { handleRequiredFields } from "./required-fields";
 import { ui } from "../../../ui";
 
 /**
  * This function...
  *
- * 1. Asks user to select an API token
- * 2. Uses the API token to get a list of bases
+ * 1. Asks user to select an access token
+ * 2. Uses the access token to get a list of bases
  * 3. Asks user to select a base
  * 4. Uses the base to get a list of tables/viwews
  * 5. Asks user to select a table
@@ -23,10 +23,11 @@ export async function createAirtableConfig(): Promise<AirtableConfig> {
     ui.prompt.log.info(ui.format.bold("Airtable"));
 
     /* ---------------------------------- 1 & 2 --------------------------------- */
-    const { apiKey, bases, createdThisSession } = await selectAirtableKey();
+    const { accessToken, bases, createdThisSession } =
+      await selectAirtableToken();
 
     // Ask user if they want to save the API token, save it
-    if (createdThisSession) await saveAirtableKey(apiKey);
+    if (createdThisSession) await saveAirtableToken(accessToken);
 
     /* ------------------------------------ 3 ----------------------------------- */
     // Ask user to select a base
@@ -42,7 +43,7 @@ export async function createAirtableConfig(): Promise<AirtableConfig> {
     /* ------------------------------------ 4 ----------------------------------- */
     ui.spinner.start("Getting tables...");
     // Return tables for selected base
-    const tables = await airtable.getTables(apiKey, base.id);
+    const tables = await airtable.getTables(accessToken, base.id);
     ui.spinner.stop(`✅ ${ui.format.dim("Tables retrieved.")}`);
 
     /* ------------------------------------ 5 ----------------------------------- */
@@ -69,11 +70,11 @@ export async function createAirtableConfig(): Promise<AirtableConfig> {
 
     /* ------------------------------------ 7 ----------------------------------- */
     const { stateField, slugField, webflowItemIdField, lastPublishedField } =
-      await handleRequiredFields(base, table, apiKey);
+      await handleRequiredFields(base, table, accessToken);
 
     /* ------------------------------------ 8 ----------------------------------- */
     return {
-      apiKey,
+      accessToken,
       base,
       table,
       view,

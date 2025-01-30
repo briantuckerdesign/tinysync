@@ -1,9 +1,9 @@
 import { state } from "../../state";
 import { ui } from "../../ui";
 import { flows } from "..";
-import { renameKey } from "./rename-key";
-import { deleteKey } from "./delete-key";
-import { manageKeys } from ".";
+import { renameKey } from "./rename-tokens";
+import { deleteKey } from "./delete-tokens";
+import { manageTokens } from ".";
 
 export async function manageKey(selectedKey) {
   try {
@@ -16,7 +16,7 @@ export async function manageKey(selectedKey) {
       ],
     });
     if (ui.prompt.isCancel(selectedAction)) {
-      await flows.manageKeys();
+      await flows.manageTokens();
       return;
     }
 
@@ -28,7 +28,7 @@ export async function manageKey(selectedKey) {
         await deleteKey(selectedKey);
         break;
       default:
-        await manageKeys();
+        await manageTokens();
     }
   } catch (error) {
     ui.prompt.log.error("Error managing key.");

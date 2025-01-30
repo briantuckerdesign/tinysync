@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import { ui } from "../ui";
+import { configTools } from ".";
 
 /* -------------------------------------------------------------------------- */
 /*                             Config tools / Load                            */
@@ -21,7 +22,6 @@ export async function loadConfig() {
     const filePath = "./src/data/config.json";
     const file = await fs.readFile(filePath, "utf8");
     let config = JSON.parse(file);
-    config = handleVersionChanges(config);
 
     return config;
   } catch (error) {
@@ -35,9 +35,4 @@ export async function loadConfig() {
       process.exit(0);
     }
   }
-}
-
-function handleVersionChanges(config) {
-  // todo
-  return config;
 }

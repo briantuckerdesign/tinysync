@@ -17,7 +17,7 @@ import { ui } from "../ui";
 export async function getItems(syncConfig: Sync) {
   try {
     const collectionId = syncConfig.webflow.collection.id;
-    const apiKey = syncConfig.webflow.apiKey;
+    const apiKey = syncConfig.webflow.accessToken;
     let allItems = [];
     let offset = 0;
     let total = 0;

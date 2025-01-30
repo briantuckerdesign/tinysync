@@ -1,12 +1,12 @@
 import { airtable } from "../../../airtable";
 import { ui } from "../../../ui";
 
-export async function checkAirtableKey(
-  key: any
+export async function checkAirtableToken(
+  token: any
 ): Promise<Array<AirtableBasesListItem> | undefined> {
   // Check if API token is valid by trying to get bases
   ui.spinner.start("Checking API token...");
-  let bases = await airtable.getBases(key);
+  let bases = await airtable.getBases(token);
 
   // If API token is invalid, ask user to try again
   if (!bases) {

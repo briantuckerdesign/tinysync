@@ -1,6 +1,8 @@
 import figlet from "figlet";
 import { ui } from "../ui";
 
+// TODO: Move to UI.
+
 export async function welcomeMessage(): Promise<void> {
   console.log(
     ui.format.green(

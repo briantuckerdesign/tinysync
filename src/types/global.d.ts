@@ -1,6 +1,7 @@
 import Airtable from "airtable";
 import { WebflowClient } from "webflow-api";
 import { Collection, Domain, Field, Site } from "webflow-api/api";
+import { checkCompatibility } from "../config-tools/check-compatibility";
 
 export {};
 
@@ -13,6 +14,7 @@ declare global {
     save: typeof saveConfig;
     load: typeof loadConfig;
     secure: typeof secure;
+    checkCompatibility: typeof checkCompatibility;
   }
 
   interface State {
@@ -23,7 +25,7 @@ declare global {
 
   interface Config {
     syncs: Array<Sync>;
-    keys: Array<Key>;
+    tokens: Array<Key>;
     initVersion: string;
     version: string;
     encryptedData?: any;
@@ -31,6 +33,7 @@ declare global {
 
   interface Key {
     label: string;
+    name?: string; // needed for clack occasionally
     value: string;
     platform: string;
     id: string;
@@ -45,7 +48,7 @@ declare global {
     errors: Array<any>;
     fields: Array<MatchedField>;
     airtable: {
-      apiToken: string;
+      accessToken: string;
       base: {
         id: string;
         name: string;
@@ -63,7 +66,8 @@ declare global {
       };
     };
     webflow: {
-      apiKey: string;
+      api?: WebflowClient;
+      accessToken: string;
       site: {
         id: string;
         name: string | undefined;
@@ -120,7 +124,7 @@ declare global {
   /* --------------------------------- Webflow -------------------------------- */
 
   interface WebflowConfig {
-    apiKey: string;
+    accessToken: string;
     site: Site;
     collection: Collection;
     recordIdField: Field;
@@ -128,7 +132,7 @@ declare global {
 
   /* -------------------------------- Airtable -------------------------------- */
   interface AirtableConfig {
-    apiKey: string;
+    accessToken: string;
     base: AirtableBasesListItem;
     table: AirtableTable;
     view: AirtableView;

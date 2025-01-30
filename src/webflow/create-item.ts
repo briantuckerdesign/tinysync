@@ -4,7 +4,7 @@ export async function createItem(parsedData, syncConfig: Sync) {
   try {
     const collectionId = syncConfig.webflow.collection.id;
     const url = `https://api.webflow.com/beta/collections/${collectionId}/items`;
-    const apiKey = syncConfig.webflow.apiKey;
+    const apiKey = syncConfig.webflow.accessToken;
     const body = {
       isArchived: false,
       isDraft: false,

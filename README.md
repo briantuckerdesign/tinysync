@@ -1,15 +1,15 @@
 # tinySync
 
 **Airtable → Webflow sync via CLI**
-***Alpha release: use at your own risk***
+**_Alpha release: use at your own risk_**
 
 - One-directional manual sync
 - Command-line interface
 - Free & open source
 - Granular sync control
 - All field types supported
-- No record limits*
-  - <sub>*We are all beholden to the limits of Airtable/Webflow/APIs 🧘</sub>
+- No record limits\*
+  - <sub>\*We are all beholden to the limits of Airtable/Webflow/APIs 🧘</sub>
 
 ## Quick start
 
@@ -35,9 +35,9 @@ There are a few things you'll need to get started:
 - Airtable account
 - Base with a table that matches a Webflow collection
 - API token with access to your base with read/write permissions
-- Four required fields These can be created for you, or select an existing field. 
+- Four required fields These can be created for you, or select an existing field.
   - `State` (single select): `Not synced`,`Queued for sync`,`Always sync`, `Staging`
-*Note that the options for "State" must be exact.*
+    _Note that the options for "State" must be exact._
   - `Last Published` (date/time)
   - `Webflow Item ID` (single line text)
   - `Slug` (single line text)
@@ -46,7 +46,7 @@ There are a few things you'll need to get started:
 
 - Webflow account
 - Site with a collection that matches an Airtable table
-- API key with access to your site with read/write permissions
+- Access token with access to your site with read/write permissions in CMS and Sites
 
 ---
 
@@ -72,9 +72,9 @@ Navigate to the tinySync folder in your terminal window using `cd` and run:
 **Start tinySync**
 Run `npm start` to start tinySync.
 
-It will ask you to make a password. Don't forget it, as there is no way to recover it nor your data. 
+It will ask you to make a password. Don't forget it, as there is no way to recover it nor your data.
 
-Your passwords and API keys are stored, encrypted, on your computer and can only be decrypted with this password. *There is no way to recover your config or password if you lose it.*
+Your passwords and access tokens are stored, encrypted, on your computer and can only be decrypted with this password. _There is no way to recover your config or password if you lose it._
 
 ---
 

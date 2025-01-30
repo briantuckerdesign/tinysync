@@ -10,7 +10,7 @@ export async function checkIfSchemaIsCurrent(syncConfig: Sync) {
   try {
     const updatedAirtableSchema = await airtable.getSchema(syncConfig);
     state.webflowClient = new WebflowClient({
-      accessToken: syncConfig.webflow.apiKey,
+      accessToken: syncConfig.webflow.accessToken,
     });
     const updatedWebflowSchema = await state.webflowClient?.collections.get(
       syncConfig.webflow.collection.id

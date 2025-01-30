@@ -12,7 +12,7 @@ export async function mainMenu() {
       message: "What would you like to do?",
       options: [
         { value: "viewSyncs", label: "View syncs" },
-        { value: "manageKeys", label: "Manage keys" },
+        { value: "manageTokens", label: "Manage access tokens" },
         { value: "changePassword", label: "Change password" },
         { value: "exit", label: "Exit", hint: "Bye!" },
       ],
@@ -22,8 +22,8 @@ export async function mainMenu() {
       case "viewSyncs":
         await flows.viewSyncs();
         break;
-      case "manageKeys":
-        await flows.manageKeys();
+      case "manageTokens":
+        await flows.manageTokens();
         break;
       case "changePassword":
         await flows.changePassword();

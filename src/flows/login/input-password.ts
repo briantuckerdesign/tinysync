@@ -32,9 +32,9 @@ export async function inputPassword(
   try {
     // decrypt using password
     state.config = configTools.secure.decrypt(loadedConfig, password);
-    state.password = password;
+    state.config = await configTools.checkCompatibility(state.config);
 
-    // writeToJSONFile("./src/dev/state.json", state);// TODO: remove
+    state.password = password;
   } catch (error) {
     // if password incorrect, prompt user again
     await inputPassword(loadedConfig, true);
