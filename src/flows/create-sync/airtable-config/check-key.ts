@@ -1,0 +1,24 @@
+import { airtable } from "../../../airtable";
+import { ui } from "../../../ui";
+
+export async function checkAirtableKey(
+  key: any
+): Promise<Array<AirtableBasesListItem> | undefined> {
+  // Check if API token is valid by trying to get bases
+  ui.spinner.start("Checking API token...");
+  let bases = await airtable.getBases(key);
+
+  // If API token is invalid, ask user to try again
+  if (!bases) {
+    ui.prompt.log.error("Something went wrong.");
+    ui.prompt.log.message(
+      "Either your token is invalid, or it doesn't have 'create' permissions on any bases."
+    );
+    ui.prompt.log.message("Please try again.");
+    ui.spinner.stop();
+    return undefined;
+  } else {
+    ui.spinner.stop(`✅ ${ui.format.dim("Airtable token validated.")}`);
+    return bases;
+  }
+}

@@ -16,28 +16,28 @@
 import axios from "axios";
 
 export async function getFields(webflowConfig) {
-    const collectionId = webflowConfig.collection.id;
-    const apiKey = webflowConfig.apiKey;
-    const url = `https://api.webflow.com/v2/collections/${collectionId}`;
-    const options = {
-        headers: {
-            accept: "application/json",
-            authorization: `Bearer ${apiKey}`,
-        },
-    };
-    try {
-        const response = await axios.get(url, options);
+  const collectionId = webflowConfig.collection.id;
+  const apiKey = webflowConfig.apiKey;
+  const url = `https://api.webflow.com/v2/collections/${collectionId}`;
+  const options = {
+    headers: {
+      accept: "application/json",
+      authorization: `Bearer ${apiKey}`,
+    },
+  };
+  try {
+    const response = await axios.get(url, options);
 
-        const fields = response.data.fields;
+    const fields = response.data.fields;
 
-        // Sets name to displayName for consistency
-        fields.forEach((field) => {
-            field.name = field.displayName;
-        });
+    // Sets name to displayName for consistency
+    fields.forEach((field) => {
+      field.name = field.displayName;
+    });
 
-        return fields;
-    } catch (error) {
-        console.log("Error getting fields.");
-        throw error;
-    }
+    return fields;
+  } catch (error) {
+    ui.prompt.log.error("Error getting fields.");
+    throw error;
+  }
 }

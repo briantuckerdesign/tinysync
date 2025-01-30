@@ -1,0 +1,43 @@
+import { configTools } from "../../config-tools";
+import { state } from "../../state";
+import { ui } from "../../ui";
+import { writeToJSONFile } from "../../utils/write-to-file";
+
+/**
+ * Prompts the user to input a password and decrypts the configuration using the password.
+ * If the password is incorrect, it prompts the user to try again.
+ */
+export async function inputPassword(
+  loadedConfig: any,
+  repeat = false,
+  devPassword?: string
+): Promise<void> {
+  let password;
+
+  if (!devPassword) {
+    let message = "Enter your password:";
+    if (repeat) message = "Incorrect password. Try again.";
+
+    password = await ui.prompt.password({
+      message: message,
+    });
+
+    if (ui.prompt.isCancel(password)) {
+      ui.prompt.cancel("Ok then...");
+      process.exit(0);
+    }
+  } else {
+    password = devPassword;
+  }
+  try {
+    // decrypt using password
+    state.config = configTools.secure.decrypt(loadedConfig, password);
+    state.password = password;
+
+    // writeToJSONFile("./src/dev/state.json", state);// TODO: remove
+  } catch (error) {
+    // if password incorrect, prompt user again
+    await inputPassword(loadedConfig, true);
+  }
+  return;
+}

@@ -15,23 +15,23 @@
 import axios from "axios";
 
 export async function deleteItem(itemIdToDelete, syncConfig) {
-    try {
-        const collectionId = syncConfig.webflow.collection.id;
-        const url = `https://api.webflow.com/v2/collections/${collectionId}/items/${itemIdToDelete}`;
-        const options = {
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${syncConfig.webflow.apiKey}`,
-            },
-        };
-        const response = await axios.delete(url, options);
+  try {
+    const collectionId = syncConfig.webflow.collection.id;
+    const url = `https://api.webflow.com/v2/collections/${collectionId}/items/${itemIdToDelete}`;
+    const options = {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${syncConfig.webflow.apiKey}`,
+      },
+    };
+    const response = await axios.delete(url, options);
 
-        if (response.status === 204) {
-            return;
-        }
-    } catch (error) {
-        console.log("Error deleting item.");
-        throw error;
+    if (response.status === 204) {
+      return;
     }
+  } catch (error) {
+    ui.prompt.log.error("Error deleting item.");
+    throw error;
+  }
 }
