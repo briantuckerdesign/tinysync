@@ -1,7 +1,7 @@
-import { getCompatibleAirtableFields } from "./get-compatible-airtable-fields.js";
-import { buildFieldMapping } from "./build-field-mapping.js";
-import { Field } from "webflow-api/api/index.js";
-import { matchField } from "./match-fields.js";
+import { getCompatibleAirtableFields } from "./get-compatible-airtable-fields";
+import { buildFieldMapping } from "./build-field-mapping";
+import { Field } from "webflow-api/api";
+import { matchField } from "./match-fields";
 
 export async function userMatchesFields(
   airtableFields: AirtableField[],

@@ -1,5 +1,5 @@
 import { airtable } from "../airtable/index";
-import { utils } from "./index";
+import { toolbelt } from "./index";
 
 /**
  * Parses the data of a record based on the provided configuration.
@@ -98,7 +98,7 @@ function parseRichText(field, record, recordData) {
     recordData[field.webflowSlug] = "";
     return;
   }
-  recordData[field.webflowSlug] = utils.markdownToHtml(
+  recordData[field.webflowSlug] = toolbelt.markdownToHtml(
     record.fields[field.airtableName]
   );
 }
@@ -162,7 +162,7 @@ async function parseReference(field, record, recordData, selectedSync, state) {
     referencedTableId
   );
 
-  const referencedItemIdField = utils.findSpecial(
+  const referencedItemIdField = toolbelt.findSpecial(
     "itemId",
     referencedSync
   ).airtableName;
@@ -207,7 +207,7 @@ async function parseMultiReference(
     );
     // TODO: Move the field finding/saving to config to initial setup
 
-    const referencedItemIdField = utils.findSpecial(
+    const referencedItemIdField = toolbelt.findSpecial(
       "itemId",
       referencedSync
     ).airtableName;

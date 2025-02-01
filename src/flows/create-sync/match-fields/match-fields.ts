@@ -1,7 +1,7 @@
-import { utils } from "../../../utils/index.js";
-import { flows } from "../../index.js";
-import { Field } from "webflow-api/api/index.js";
-import { ui } from "../../../ui.js";
+import { toolbelt } from "../../../toolbelt";
+import { flows } from "../..";
+import { Field } from "webflow-api/api";
+import { ui } from "../../../ui";
 
 /**
  * Prompts user to match a Webflow field with Airtable fields.
@@ -32,7 +32,7 @@ export async function matchField(
     airtableFieldsCopy.unshift(skipOption); // Ensure to unshift the skipOption, not the fieldsCopy
   }
 
-  let fieldsToSelect = utils.encapsulateObjectForSelect(airtableFieldsCopy);
+  let fieldsToSelect = toolbelt.encapsulateObjectForSelect(airtableFieldsCopy);
 
   const matchedField = (await ui.prompt.select({
     message: message,

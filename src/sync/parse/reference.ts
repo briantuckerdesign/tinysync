@@ -24,7 +24,7 @@ async function parseReference(field, record, recordData, selectedSync, state) {
     referencedTableId
   );
 
-  const referencedItemIdField = utils.findSpecial(
+  const referencedItemIdField = toolbelt.findSpecial(
     "itemId",
     referencedSync
   ).airtableName;

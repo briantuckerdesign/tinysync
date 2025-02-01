@@ -3,8 +3,8 @@
 /* -------------------------------------------------------------------------- */
 import { airtable } from "../airtable";
 import { webflow } from "../webflow";
-import { sync } from "./index.js";
-import { utils } from "../utils";
+import { sync } from ".";
+import { toolbelt } from "../toolbelt";
 import { flows } from "../flows";
 import { ui } from "../ui";
 import { state } from "../state";
@@ -12,7 +12,7 @@ import { checkIfSchemaIsCurrent } from "./schema/check-if-current";
 import { WebflowClient } from "webflow-api";
 import { handleWebflowItemPagination } from "../webflow/handle-item-pagination";
 import { sortRecords } from "./sort-records";
-import { writeToJSONFile } from "../utils/write-to-file";
+import { writeToJSONFile } from "../toolbelt/write-to-file";
 
 export async function runSync(syncConfig: Sync) {
   try {

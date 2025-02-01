@@ -6,10 +6,10 @@
  * Best of luck to anyone who has gotten this far. I'm sorry. Good luck.
  *
  */
-import { storeExcludedFields } from "./store-excluded-fields.js";
-import { Field } from "webflow-api/api/index.js";
-import { userMatchesFields } from "./user-matches-fields.js";
-import { ui } from "../../../ui.js";
+import { storeExcludedFields } from "./store-excluded-fields";
+import { Field } from "webflow-api/api";
+import { userMatchesFields } from "./user-matches-fields";
+import { ui } from "../../../ui";
 /**
  * Match Airtable fields to corresponding Webflow fields based on configuration
  * and user selection.

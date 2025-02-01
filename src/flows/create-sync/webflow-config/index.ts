@@ -1,6 +1,6 @@
 import { ui } from "../../../ui";
 import { state } from "../../../state";
-import { utils } from "../../../utils";
+import { toolbelt } from "../../../toolbelt";
 import { selectWebflowtoken } from "./select-token";
 import { saveWebflowToken } from "./save-token";
 import { flows } from "../..";
@@ -34,7 +34,7 @@ export async function createWebflowConfig(): Promise<WebflowConfig> {
       // Ask user to select a site
       const site = (await ui.prompt.select({
         message: "Webflow site:",
-        options: utils.encapsulateObjectForSelect(sites),
+        options: toolbelt.encapsulateObjectForSelect(sites),
       })) as Site;
       if (ui.prompt.isCancel(site)) {
         await flows.viewSyncs();
@@ -51,7 +51,7 @@ export async function createWebflowConfig(): Promise<WebflowConfig> {
       // Ask user to select a collection
       const collectionToGet = (await ui.prompt.select({
         message: "Webflow collection:",
-        options: utils.encapsulateObjectForSelect(collections?.collections),
+        options: toolbelt.encapsulateObjectForSelect(collections?.collections),
       })) as Collection;
       if (ui.prompt.isCancel(collectionToGet)) {
         await flows.viewSyncs();

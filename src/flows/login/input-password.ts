@@ -1,7 +1,7 @@
 import { configTools } from "../../config-tools";
 import { state } from "../../state";
 import { ui } from "../../ui";
-import { writeToJSONFile } from "../../utils/write-to-file";
+import { writeToJSONFile } from "../../toolbelt/write-to-file";
 
 /**
  * Prompts the user to input a password and decrypts the configuration using the password.

@@ -33,7 +33,7 @@ async function parseMultiReference(
     );
     // TODO: Move the field finding/saving to config to initial setup
 
-    const referencedItemIdField = utils.findSpecial(
+    const referencedItemIdField = toolbelt.findSpecial(
       "itemId",
       referencedSync
     ).airtableName;

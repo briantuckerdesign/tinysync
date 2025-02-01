@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------------- */
 /*                             Sync / Create items                            */
 /* -------------------------------------------------------------------------- */
-import { utils } from "../utils/index";
+import { toolbelt } from "../toolbelt/index";
 import { webflow } from "../webflow/index";
 import { airtable } from "../airtable/index";
 import { ui } from "../ui";
@@ -76,7 +76,7 @@ async function updateAirtableRecord(record, response, syncConfig: Sync) {
   // Get value of slug field from Webflow response
   const webflowSlug = response.fieldData.slug;
   // Find field in config where specialField = "Slug"
-  const recordSlugField = utils.findSpecial("slug", syncConfig);
+  const recordSlugField = toolbelt.findSpecial("slug", syncConfig);
   // const recordSlugField = syncConfig.fields.find((field) => field.specialField === "slug");
   // Get value of slug field from Airtable record
   const recordSlug = record.fields[recordSlugField.airtableName];
@@ -86,7 +86,7 @@ async function updateAirtableRecord(record, response, syncConfig: Sync) {
 
   // Find field in config where specialField = "itemId"
   // const recordItemIdField = syncConfig.fields.find((field) => field.specialField === "itemId");
-  const recordItemIdField = utils.findSpecial("itemId", syncConfig);
+  const recordItemIdField = toolbelt.findSpecial("itemId", syncConfig);
   // Write webflowItemId to record at top level
   record.itemId = response.id;
 

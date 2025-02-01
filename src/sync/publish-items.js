@@ -1,9 +1,9 @@
 /* -------------------------------------------------------------------------- */
 /*                            Sync / Publish items                            */
 /* -------------------------------------------------------------------------- */
-import { webflow } from "../webflow/index.js";
-import { airtable } from "../airtable/index.js";
-import { utils } from "../utils/index.js";
+import { webflow } from "../webflow";
+import { airtable } from "../airtable";
+import { toolbelt } from "../toolbelt";
 
 export async function publishItems(records, syncConfig, state) {
   try {
@@ -62,7 +62,10 @@ export async function publishItems(records, syncConfig, state) {
     ui.spinner.start("Updating records in Airtable...");
     // Update lastPublished field in Airtable
     for (let record of recordsToPublish) {
-      let lastPublishedField = utils.findSpecial("lastPublished", syncConfig);
+      let lastPublishedField = toolbelt.findSpecial(
+        "lastPublished",
+        syncConfig
+      );
 
       let recordUpdates = { [lastPublishedField.airtableName]: new Date() };
 

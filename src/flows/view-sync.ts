@@ -12,10 +12,10 @@
  *    - "Back" -> view syncs
  */
 
-import { state } from "../state.js";
-import { sync } from "../sync/index.js";
-import { ui } from "../ui.js";
-import { flows } from "./index.js";
+import { state } from "../state";
+import { sync } from "../sync";
+import { ui } from "../ui";
+import { flows } from ".";
 import { AsciiTable3 } from "ascii-table3";
 
 export async function viewSync(syncConfig: Sync, firstRun = false) {

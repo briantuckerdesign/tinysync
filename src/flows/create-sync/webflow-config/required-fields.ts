@@ -1,6 +1,6 @@
 import { flows } from "../..";
 import { airtable } from "../../../airtable";
-import { utils } from "../../../utils";
+import { toolbelt } from "../../../toolbelt";
 import { ui } from "../../../ui";
 
 /**
@@ -166,7 +166,7 @@ async function handleFieldCreation(
   // State field:
   let field = (await ui.prompt.select({
     message: `${fieldName}: ${description}`,
-    options: utils.encapsulateObjectForSelect(compatibleFields),
+    options: toolbelt.encapsulateObjectForSelect(compatibleFields),
   })) as any;
 
   if (ui.prompt.isCancel(field)) {

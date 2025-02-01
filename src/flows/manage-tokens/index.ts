@@ -1,6 +1,6 @@
 import { state } from "../../state";
 import { ui } from "../../ui";
-import { utils } from "../../utils/index";
+import { toolbelt } from "../../toolbelt/index";
 import { flows } from "../index";
 import { createToken } from "./create-tokens";
 import { manageKey } from "./manage-tokens";
@@ -22,7 +22,8 @@ export async function manageTokens() {
       }
     });
 
-    const tokensToSelect = utils.encapsulateObjectForSelect(tokensToPickFrom);
+    const tokensToSelect =
+      toolbelt.encapsulateObjectForSelect(tokensToPickFrom);
 
     const createNewToken = {
       value: "createNewToken",

@@ -1,9 +1,9 @@
 /* -------------------------------------------------------------------------- */
 /*                             Sync / Update items                            */
 /* -------------------------------------------------------------------------- */
-import { utils } from "../utils/index.js";
-import { webflow } from "../webflow/index.js";
-import { airtable } from "../airtable/index.js";
+import { toolbelt } from "../toolbelt";
+import { webflow } from "../webflow";
+import { airtable } from "../airtable";
 
 export async function updateItems(records, syncConfig, state) {
   if (records.toUpdate.length === 0) {
@@ -13,7 +13,7 @@ export async function updateItems(records, syncConfig, state) {
   ui.spinner.start("Updating items...");
   for (const record of records.toUpdate) {
     // Parse data from Airtable to Webflow format
-    let parsedData = await utils.parseRecordData(record, syncConfig, state);
+    let parsedData = await toolbelt.parseRecordData(record, syncConfig, state);
 
     // Get itemId special field value
     const itemIdField = syncConfig.fields.find(

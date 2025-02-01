@@ -1,5 +1,5 @@
 import axios from "axios";
-import { utils } from "../utils/index";
+import { toolbelt } from "../toolbelt/index";
 
 export async function getBases(
   apiKey: string
@@ -17,7 +17,7 @@ export async function getBases(
     const bases = response.data as AirtableBases;
 
     // Filter out bases without create permissions
-    const filteredBases = utils.filterByPropertyPath(
+    const filteredBases = toolbelt.filterByPropertyPath(
       bases.bases,
       "permissionLevel",
       "create"

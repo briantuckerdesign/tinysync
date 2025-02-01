@@ -12,14 +12,14 @@
 // TODO: Error handling
 
 import { flows } from "./flows/index";
-import { utils } from "./utils/index";
+import { toolbelt } from "./toolbelt";
 import pack from "../package.json";
 import { ui } from "./ui";
 import { skip } from "./dev/skip";
 
 (async () => {
   try {
-    await utils.welcomeMessage();
+    await ui.welcome();
     ui.prompt.intro(ui.format.dim(`tinySync v${pack.version}`));
     // await skip();
     await flows.login();

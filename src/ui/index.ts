@@ -1,7 +1,6 @@
 import * as p from "@clack/prompts";
 import f from "picocolors";
-
-// TODO: Move to own folder?
+import { welcomeMessage } from "./welcome-message";
 
 // Update the UI interface to include the additional spinner methods
 interface UI {
@@ -12,8 +11,10 @@ interface UI {
     stop: (msg?: string) => void;
     message: (msg: string) => void;
   };
+  welcome: () => Promise<void>;
 }
-export const ui = {
+
+export const ui: UI = {
   prompt: p,
   format: f,
   spinner: (() => {
@@ -24,4 +25,5 @@ export const ui = {
       message: (msg: string) => spinnerInstance.message(msg),
     };
   })(),
+  welcome: welcomeMessage,
 };

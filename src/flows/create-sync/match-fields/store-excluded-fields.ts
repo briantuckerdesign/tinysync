@@ -2,7 +2,7 @@
 /*                    Match fields / Store excluded fields                    */
 /* -------------------------------------------------------------------------- */
 
-import { buildFieldMapping } from "./build-field-mapping.js";
+import { buildFieldMapping } from "./build-field-mapping";
 
 /**
  * Stores the excluded fields based on the provided Airtable and Webflow settings.

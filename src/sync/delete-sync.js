@@ -1,8 +1,8 @@
 /* -------------------------------------------------------------------------- */
 /*                             Sync / Delete sync                             */
 /* -------------------------------------------------------------------------- */
-import { flows } from "../flows/index.js";
-import { configTools } from "../config-tools/index.js";
+import { flows } from "../flows";
+import { configTools } from "../config-tools";
 
 export async function deleteSync(state, syncConfig) {
   const confirmDelete = await ui.prompt.confirm({

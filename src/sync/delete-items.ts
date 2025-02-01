@@ -1,10 +1,10 @@
 /* -------------------------------------------------------------------------- */
 /*                             Sync / Delete items                            */
 /* -------------------------------------------------------------------------- */
-import { airtable } from "../airtable/index.js";
-import { ui } from "../ui.js";
-import { utils } from "../utils/index.js";
-import { webflow } from "../webflow/index.js";
+import { airtable } from "../airtable";
+import { ui } from "../ui";
+import { toolbelt } from "../toolbelt";
+import { webflow } from "../webflow";
 
 // Delete items in Webflow that no longer exist in Airtable
 export async function deleteItems(records: SyncRecords, syncConfig: Sync) {
@@ -15,8 +15,8 @@ export async function deleteItems(records: SyncRecords, syncConfig: Sync) {
     let itemsToDelete = records.toDelete;
 
     // let itemIds = itemsToDelete.map((item) => item["id"]);
-    let itemIdField = utils.findSpecial("itemId", syncConfig);
-    let lastPublishedField = utils.findSpecial("lastPublished", syncConfig);
+    let itemIdField = toolbelt.findSpecial("itemId", syncConfig);
+    let lastPublishedField = toolbelt.findSpecial("lastPublished", syncConfig);
 
     ui.spinner.start("Deleting items...");
     const deleteData = [];

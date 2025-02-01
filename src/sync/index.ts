@@ -1,13 +1,13 @@
 /* -------------------------------------------------------------------------- */
 /*                                    Sync                                    */
 /* -------------------------------------------------------------------------- */
-import { createItems } from "./create-items.js";
-import { updateItems } from "./update-items.js";
-import { publishItems } from "./publish-items.js";
-import { deleteItems } from "./delete-items.js";
-import { runSync } from "./run-sync.js";
-import { deleteSync } from "./delete-sync.js";
-import { publishWebflowSite } from "./publish-site.js";
+import { createItems } from "./create-items";
+import { updateItems } from "./update-items";
+import { publishItems } from "./publish-items";
+import { deleteItems } from "./delete-items";
+import { runSync } from "./run-sync";
+import { deleteSync } from "./delete-sync";
+import { publishWebflowSite } from "./publish-site";
 
 export const sync = {
   createItems,

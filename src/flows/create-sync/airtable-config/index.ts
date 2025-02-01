@@ -1,5 +1,5 @@
 import { flows } from "../..";
-import { utils } from "../../../utils";
+import { toolbelt } from "../../../toolbelt";
 import { selectAirtableToken } from "./select-token";
 import { airtable } from "../../../airtable";
 import { saveAirtableToken } from "./save-token";
@@ -33,7 +33,7 @@ export async function createAirtableConfig(): Promise<AirtableConfig> {
     // Ask user to select a base
     const base = (await ui.prompt.select({
       message: "Airtable base:",
-      options: utils.encapsulateObjectForSelect(bases),
+      options: toolbelt.encapsulateObjectForSelect(bases),
     })) as AirtableBasesListItem;
     if (ui.prompt.isCancel(base)) {
       await flows.viewSyncs();
@@ -50,7 +50,7 @@ export async function createAirtableConfig(): Promise<AirtableConfig> {
     // Ask user to select a table
     const table = (await ui.prompt.select({
       message: "Airtable table:",
-      options: utils.encapsulateObjectForSelect(tables),
+      options: toolbelt.encapsulateObjectForSelect(tables),
     })) as AirtableTable;
     if (ui.prompt.isCancel(table)) {
       await flows.viewSyncs();
@@ -61,7 +61,7 @@ export async function createAirtableConfig(): Promise<AirtableConfig> {
     // Ask user to select a view
     const view = (await ui.prompt.select({
       message: "Airtable view:",
-      options: utils.encapsulateObjectForSelect(table.views),
+      options: toolbelt.encapsulateObjectForSelect(table.views),
     })) as AirtableView;
     if (ui.prompt.isCancel(view)) {
       await flows.viewSyncs();
