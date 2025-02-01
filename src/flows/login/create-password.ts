@@ -8,8 +8,7 @@ import { ui } from "../../ui";
 export async function createPassword(repeat = false): Promise<void> {
   let message = "Create a password:";
   if (repeat) message = "Passwords don't match. Try again.";
-
-  let password = await ui.prompt.password({ message: message });
+  const password = (await ui.prompt.password({ message: message })) as string;
 
   if (ui.prompt.isCancel(password)) {
     ui.prompt.cancel("Ok then...");
@@ -17,7 +16,7 @@ export async function createPassword(repeat = false): Promise<void> {
   }
 
   message = "Confirm password:";
-  let confirmPassword = await ui.prompt.password({ message: message });
+  const confirmPassword = await ui.prompt.password({ message: message });
 
   if (ui.prompt.isCancel(confirmPassword)) {
     ui.prompt.cancel("Ok then...");
