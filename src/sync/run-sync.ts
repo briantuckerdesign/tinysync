@@ -14,7 +14,9 @@ import { handleWebflowItemPagination } from "../webflow/handle-item-pagination";
 import { sortRecords } from "./sort-records";
 import { writeToJSONFile } from "../toolbelt/write-to-file";
 
-export async function runSync(syncConfig: Sync) {
+export async function runSync() {
+  const syncConfig = state.config.selectedSync;
+
   try {
     ui.prompt.log.info(ui.format.bold("🌐 Syncing"));
 
@@ -69,7 +71,7 @@ export async function runSync(syncConfig: Sync) {
     ui.prompt.log.success("✅ Sync complete");
     ui.prompt.log.message(`⌛  ${timeElapsed} seconds`);
 
-    if (syncConfig.errors.length === 0) await flows.viewSync(syncConfig);
+    if (syncConfig.errors.length === 0) await flows.viewSync();
   } catch (error) {
     ui.prompt.log.error("Error running sync");
     console.log(error);

@@ -41,7 +41,7 @@ export async function publishWebflowSite(state, syncConfig) {
     }
     if (response.status === 202) {
       ui.spinner.stop(`✅ ${ui.format.dim("Site published.")}`);
-      await flows.viewSync(state, syncConfig);
+      await flows.viewSync();
     }
     return;
   } catch (error) {

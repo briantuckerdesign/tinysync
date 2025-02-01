@@ -36,7 +36,7 @@ export async function viewSyncs() {
     );
 
     // Returns the selected sync
-    let selectedSync = await ui.prompt.select({
+    const selectedSync = await ui.prompt.select({
       message: ui.format.bold("🔍 View syncs"),
       options: choices,
     });
@@ -56,7 +56,8 @@ export async function viewSyncs() {
         await flows.createSync();
         break;
       default:
-        await flows.viewSync(selectedSync as Sync);
+        state.config.selectedSync = selectedSync as Sync;
+        await flows.viewSync();
         break;
     }
   } catch (error) {

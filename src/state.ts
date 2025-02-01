@@ -6,6 +6,7 @@ export const state: State = {
     tokens: [],
     initVersion: pack.version,
     version: "",
+    selectedSync: undefined,
   },
   password: null,
 };

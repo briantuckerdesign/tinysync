@@ -10,6 +10,7 @@
 
 // TODO: Implement secure logging
 // TODO: Error handling
+// TODO: Allow folks to get go back in most steps, particularly when creating a sync
 
 import { flows } from "./flows/index";
 import { toolbelt } from "./toolbelt";

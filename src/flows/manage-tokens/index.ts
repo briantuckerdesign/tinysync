@@ -55,6 +55,7 @@ export async function manageTokens() {
       await manageKey(token);
     }
   } catch (error) {
+    console.log(error);
     ui.prompt.log.error("Error managing keys.");
     await flows.mainMenu();
     return;

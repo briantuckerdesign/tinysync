@@ -18,41 +18,42 @@ import { ui } from "../ui";
 import { flows } from ".";
 import { AsciiTable3 } from "ascii-table3";
 
-export async function viewSync(syncConfig: Sync, firstRun = false) {
+export async function viewSync(firstRun = false) {
   try {
+    const syncDetails = state.config.selectedSync;
     if (firstRun) {
-      let note = `Sync:\n${ui.format.bold(syncConfig.name)}\n`;
+      let note = `Sync:\n${ui.format.bold(syncDetails.name)}\n`;
 
-      if (syncConfig.webflow.site.customDomains) {
-        for (const domain of syncConfig.webflow.site.customDomains) {
+      if (syncDetails.webflow.site.customDomains) {
+        for (const domain of syncDetails.webflow.site.customDomains) {
           note += `\n${domain}`;
         }
       } else {
         note += `\nNo domains found, publishing to Webflow subdomain\n`;
       }
 
-      let syncDetails = new AsciiTable3()
+      const syncTable = new AsciiTable3()
         .setHeading("", "Airtable", "Webflow")
         .addRowMatrix([
           [
             "Site/Base",
-            syncConfig.airtable.base.name,
-            syncConfig.webflow.site.name,
+            syncDetails.airtable.base.name,
+            syncDetails.webflow.site.name,
           ],
           [
             "Table/Collection",
-            syncConfig.airtable.table.name,
-            syncConfig.webflow.collection.name,
+            syncDetails.airtable.table.name,
+            syncDetails.webflow.collection.name,
           ],
         ]);
 
-      note += `\n${syncDetails.toString()}`;
+      note += `\n${syncTable.toString()}`;
 
-      let settings = new AsciiTable3()
+      const settings = new AsciiTable3()
         .setHeading("Setting", "Value")
         .addRowMatrix([
-          ["Publish on error", syncConfig.autoPublish],
-          ["Airtable SSOT", syncConfig.deleteRecords],
+          ["Publish on error", syncDetails.autoPublish],
+          ["Airtable SSOT", syncDetails.deleteRecords],
         ]);
 
       note += `\n${settings.toString()}`;
@@ -60,12 +61,16 @@ export async function viewSync(syncConfig: Sync, firstRun = false) {
       ui.prompt.note(note);
     }
 
-    ui.prompt.log.info(`💎 ${ui.format.bold(syncConfig.name)}`);
+    ui.prompt.log.info(`💎 ${ui.format.bold(syncDetails.name)}`);
     const syncMessage = "What would you like to do?";
     const syncChoices = [
       {
         label: "Sync",
         value: "runSync",
+      },
+      {
+        label: "View details",
+        value: "viewDetails",
       },
       { label: "Publish site", value: "publishSite" },
       { label: "Delete sync", value: "deleteSync" },
@@ -81,13 +86,16 @@ export async function viewSync(syncConfig: Sync, firstRun = false) {
 
     switch (userChoice) {
       case "runSync":
-        await sync.run(syncConfig);
+        await sync.run();
+        break;
+      case "viewDetails":
+        await sync.viewDetails();
         break;
       case "publishSite":
-        await sync.publish(state, syncConfig);
+        await sync.publish(); // remove state
         break;
       case "deleteSync":
-        await sync.delete(state, syncConfig);
+        await sync.delete(); // remove state
 
       case "back":
         await flows.viewSyncs();

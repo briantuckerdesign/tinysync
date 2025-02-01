@@ -29,6 +29,7 @@ declare global {
     initVersion: string;
     version: string;
     encryptedData?: any;
+    selectedSync: Sync | undefined;
   }
 
   interface Key {
@@ -107,19 +108,6 @@ declare global {
     deleteRecords: boolean;
     publishToSubdomain?: boolean;
   }
-
-  interface FieldOld {
-    webflowSlug: string;
-    airtableName: string;
-    webflowName: string;
-    airtableId: string;
-    webflowId: string;
-    airtableType: string;
-    webflowType: string;
-    validations: any;
-    options: any;
-    specialField: string | null;
-  } // TODO: remove
 
   /* --------------------------------- Webflow -------------------------------- */
 

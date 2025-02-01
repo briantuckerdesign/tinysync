@@ -18,7 +18,9 @@ import { handleRequiredFields } from "./required-fields";
  *
  */
 
-export async function createWebflowConfig(): Promise<WebflowConfig> {
+export async function createWebflowConfig(
+  airtableConfig: AirtableConfig
+): Promise<WebflowConfig> {
   try {
     {
       ui.prompt.log.info(ui.format.bold("Webflow"));
@@ -65,12 +67,13 @@ export async function createWebflowConfig(): Promise<WebflowConfig> {
       );
 
       if (!collection) process.exit(0);
-
       const recordIdField = await handleRequiredFields(
-        base,
-        table,
+        airtableConfig.base,
+        airtableConfig.table,
         accessToken
       );
+      // i think the problem is it's returning all the required fields but it's only expecting
+      // the recordIdField
 
       return {
         accessToken,
@@ -80,6 +83,7 @@ export async function createWebflowConfig(): Promise<WebflowConfig> {
       };
     }
   } catch (error) {
+    console.log(error);
     ui.prompt.log.error("There was an error configuring Webflow.");
     process.exit(0);
   }

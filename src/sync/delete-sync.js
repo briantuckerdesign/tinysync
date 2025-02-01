@@ -10,7 +10,7 @@ export async function deleteSync(state, syncConfig) {
   });
 
   if (ui.prompt.isCancel(confirmDelete) || confirmDelete === false) {
-    await flows.viewSync(state, syncConfig);
+    await flows.viewSync();
     return;
   }
 
@@ -26,6 +26,6 @@ export async function deleteSync(state, syncConfig) {
     ui.prompt.log.message(`✅ ${ui.format.bold(syncConfig.name)} deleted.`);
     await flows.viewSyncs(state);
   } else {
-    await flows.viewSync(state, syncConfig);
+    await flows.viewSync();
   }
 }

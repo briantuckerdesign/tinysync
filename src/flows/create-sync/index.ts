@@ -13,7 +13,7 @@
  *
  */
 
-// TODO: copy over the prompr cancellation function from webflow-cli-toolbelt
+// TODO: copy over the prompt cancellation function from webflow-cli-toolbelt
 
 import { configTools } from "../../config-tools/index";
 import { flows } from "../index";
@@ -51,7 +51,7 @@ export async function createSync() {
 
     /* --------------------------- Configure endpoints -------------------------- */
     const airtableConfig = await createAirtableConfig();
-    const webflowConfig = await createWebflowConfig();
+    const webflowConfig = await createWebflowConfig(airtableConfig);
 
     /* ------------------------------ Match fields ------------------------------ */
     ui.prompt.log.info(ui.format.bold("Field matching"));
@@ -76,7 +76,7 @@ export async function createSync() {
     ui.prompt.log.success("✅ Sync added successfully!");
     ui.prompt.log.message("");
 
-    await flows.viewSync(sync, true);
+    await flows.viewSync(true);
   } catch (error) {
     ui.prompt.log.error("There was an error creating the sync.");
     process.exit(0);
