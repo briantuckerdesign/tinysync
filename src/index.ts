@@ -12,19 +12,19 @@
 // TODO: Error handling
 // TODO: Allow folks to get go back in most steps, particularly when creating a sync
 
-import { flows } from "./flows/index";
-import { toolbelt } from "./toolbelt";
 import pack from "../package.json";
 import { ui } from "./ui";
 import { skip } from "./dev/skip";
+import { login } from "./flows/login";
+import { mainMenu } from "./flows/main-menu";
 
 (async () => {
   try {
     await ui.welcome();
     ui.prompt.intro(ui.format.dim(`tinySync v${pack.version}`));
     // await skip();
-    await flows.login();
-    await flows.mainMenu();
+    await login();
+    await mainMenu();
     ui.prompt.outro(`See ya later! 👋`);
   } catch (error) {
     ui.prompt.log.error("There was an error running tinySync.");

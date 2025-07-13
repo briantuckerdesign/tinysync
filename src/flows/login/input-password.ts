@@ -21,11 +21,7 @@ export async function inputPassword(
     password = await ui.prompt.password({
       message: message,
     });
-
-    if (ui.prompt.isCancel(password)) {
-      ui.prompt.cancel("Ok then...");
-      process.exit(0);
-    }
+    await ui.handleCancel(password);
   } else {
     password = devPassword;
   }

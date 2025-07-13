@@ -10,6 +10,7 @@ declare global {
     validations?: any;
     type: FieldType | "VideoLink";
   }
+
   interface ConfigTools {
     save: typeof saveConfig;
     load: typeof loadConfig;
@@ -20,19 +21,26 @@ declare global {
   interface State {
     config: Config;
     password: string | null;
+    history: Array<MenuHistory>;
     webflowClient?: WebflowClient;
+  }
+
+  interface MenuHistory {
+    function: any;
+    args?: any;
+    safeReturn?: boolean;
   }
 
   interface Config {
     syncs: Array<Sync>;
-    tokens: Array<Key>;
+    tokens: Array<Token>;
     initVersion: string;
     version: string;
     encryptedData?: any;
     selectedSync: Sync | undefined;
   }
 
-  interface Key {
+  interface Token {
     label: string;
     name?: string; // needed for clack occasionally
     value: string;

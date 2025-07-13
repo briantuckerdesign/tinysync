@@ -1,6 +1,7 @@
 import * as p from "@clack/prompts";
 import f from "picocolors";
 import { welcomeMessage } from "./welcome-message";
+import { handleCancel } from "./handle-cancel";
 
 // Update the UI interface to include the additional spinner methods
 interface UI {
@@ -12,6 +13,7 @@ interface UI {
     message: (msg: string) => void;
   };
   welcome: () => Promise<void>;
+  handleCancel: (sourcePrompt: any) => Promise<void>;
 }
 
 export const ui: UI = {
@@ -26,4 +28,5 @@ export const ui: UI = {
     };
   })(),
   welcome: welcomeMessage,
+  handleCancel,
 };

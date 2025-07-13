@@ -1,7 +1,6 @@
 /* -------------------------------------------------------------------------- */
 /*                             Sync / Delete sync                             */
 /* -------------------------------------------------------------------------- */
-import { flows } from "../flows";
 import { configTools } from "../config-tools";
 
 export async function deleteSync(state, syncConfig) {
@@ -10,7 +9,7 @@ export async function deleteSync(state, syncConfig) {
   });
 
   if (ui.prompt.isCancel(confirmDelete) || confirmDelete === false) {
-    await flows.viewSync();
+    await viewSync();
     return;
   }
 
@@ -24,8 +23,8 @@ export async function deleteSync(state, syncConfig) {
     await configTools.save(state);
 
     ui.prompt.log.message(`✅ ${ui.format.bold(syncConfig.name)} deleted.`);
-    await flows.viewSyncs(state);
+    await viewSyncs(state);
   } else {
-    await flows.viewSync();
+    await viewSync();
   }
 }

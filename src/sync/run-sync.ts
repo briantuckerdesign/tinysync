@@ -2,17 +2,14 @@
 /*                                 Sync / Run                                 */
 /* -------------------------------------------------------------------------- */
 import { airtable } from "../airtable";
-import { webflow } from "../webflow";
 import { sync } from ".";
-import { toolbelt } from "../toolbelt";
-import { flows } from "../flows";
 import { ui } from "../ui";
 import { state } from "../state";
-import { checkIfSchemaIsCurrent } from "./schema/check-if-current";
 import { WebflowClient } from "webflow-api";
 import { handleWebflowItemPagination } from "../webflow/handle-item-pagination";
 import { sortRecords } from "./sort-records";
 import { writeToJSONFile } from "../toolbelt/write-to-file";
+import { viewSync } from "../flows/main-menu/view-syncs/view-sync";
 
 export async function runSync() {
   const syncConfig = state.config.selectedSync;
@@ -71,7 +68,7 @@ export async function runSync() {
     ui.prompt.log.success("✅ Sync complete");
     ui.prompt.log.message(`⌛  ${timeElapsed} seconds`);
 
-    if (syncConfig.errors.length === 0) await flows.viewSync();
+    if (syncConfig.errors.length === 0) await viewSync();
   } catch (error) {
     ui.prompt.log.error("Error running sync");
     console.log(error);

@@ -8,5 +8,6 @@ export const state: State = {
     version: "",
     selectedSync: undefined,
   },
+  history: [],
   password: null,
 };

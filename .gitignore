@@ -1,4 +1,4 @@
 /node_modules
-/src/data/config.json
+/src/data/*.json
 **/.DS_Store
 /src/dev

@@ -8,7 +8,7 @@ import { deleteItems } from "./delete-items";
 import { runSync } from "./run-sync";
 import { deleteSync } from "./delete-sync";
 import { publishWebflowSite } from "./publish-site";
-import { viewSyncDetails } from "../flows/view-sync-details";
+import { viewSyncDetails } from "../flows/main-menu/view-syncs/view-sync/view-sync-details";
 
 export const sync = {
   createItems,

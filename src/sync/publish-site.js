@@ -2,7 +2,6 @@
 /*                             Sync / Publish site                            */
 /* -------------------------------------------------------------------------- */
 import axios from "axios";
-import { flows } from "../flows";
 
 export async function publishWebflowSite(state, syncConfig) {
   try {
@@ -41,7 +40,7 @@ export async function publishWebflowSite(state, syncConfig) {
     }
     if (response.status === 202) {
       ui.spinner.stop(`✅ ${ui.format.dim("Site published.")}`);
-      await flows.viewSync();
+      await viewSync();
     }
     return;
   } catch (error) {
