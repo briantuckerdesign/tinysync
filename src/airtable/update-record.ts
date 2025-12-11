@@ -1,25 +1,47 @@
-import axios from "axios";
-import { ui } from "../ui";
+import type { AirtableRecord, AirtableRecordResponse } from '../types/airtable'
+import { ui } from '../ui'
 
-// TODO: Type record
-export async function updateRecord(record, recordId: string, syncConfig: Sync) {
-  try {
-    const baseId = syncConfig.airtable.base.id;
-    const tableId = syncConfig.airtable.table.id;
-    const apiToken = syncConfig.airtable.accessToken;
-    const url = `https://api.airtable.com/v0/${baseId}/${tableId}/${recordId}`;
-    const options = {
-      headers: {
-        Authorization: `Bearer ${apiToken}`,
-      },
-    };
+export async function updateRecord(
+    token: string,
+    baseId: string,
+    tableId: string,
+    recordId: string,
+    record: AirtableRecord
+): Promise<AirtableRecordResponse> {
+    const url = new URL(
+        `https://api.airtable.com/v0/${baseId}/${tableId}/${recordId}`
+    )
+    url.searchParams.append('returnFieldsByFieldId', 'true')
+    url.searchParams.append('cellFormat', 'json')
+    try {
+        const response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(record),
+        })
 
-    // Docs: https://airtable.com/developers/web/api/update-record
-    const response = await axios.patch(url, record, options);
+        if (!response.ok) {
+            const errorText = await response.text()
+            throw new Error(
+                `HTTP error! status: ${response.status}, message: ${errorText}`
+            )
+        }
 
-    return response.data;
-  } catch (error) {
-    ui.prompt.log.error("Error updating record in Airtable");
-    process.exit(0);
-  }
+        const recordResponse: any = await response.json()
+        if (!recordResponse.id)
+            throw new Error('Error updating record in Airtable')
+        if (recordResponse.details && recordResponse.details.reasons)
+            throw new Error(
+                `Error updating record: ${recordResponse.details.message} - ${recordResponse.details.reasons}`
+            )
+
+        return recordResponse as AirtableRecordResponse
+    } catch (error) {
+        ui.prompt.log.error('Error updating record in Airtable')
+        ui.prompt.log.error(error as string)
+        process.exit(0)
+    }
 }
