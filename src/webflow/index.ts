@@ -9,7 +9,7 @@ import { publishItem } from './publish-item'
 import { publishItems } from './publish-items'
 import { createItem } from './create-item'
 import { createItems } from './create-items'
-import { updateItem } from './update-item'
+import { updateItems } from './update-items'
 import { deleteItems } from './delete-items'
 
 export const webflow = {
@@ -27,7 +27,7 @@ export const webflow = {
         items: publishItems,
     },
     update: {
-        item: updateItem,
+        items: updateItems,
     },
     get: {
         collection: getCollection,
