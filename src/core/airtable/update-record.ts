@@ -1,5 +1,8 @@
-import type { AirtableRecord, AirtableRecordResponse } from '../types/airtable'
-import { ui } from '../ui'
+import type {
+    AirtableRecord,
+    AirtableRecordResponse,
+} from '../../types/airtable'
+import { ui } from '../../ui'
 
 export async function updateRecord(
     token: string,

@@ -1,5 +1,5 @@
-import type { AirtableField } from '../types/airtable'
-import { ui } from '../ui'
+import type { AirtableField } from '../../types/airtable'
+import { ui } from '../../ui'
 
 export async function createField(
     token: string,

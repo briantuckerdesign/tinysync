@@ -1,4 +1,4 @@
-import { ui } from '../ui'
+import { ui } from '../../ui'
 import { getTables } from './get-tables'
 
 export async function getSchema(
