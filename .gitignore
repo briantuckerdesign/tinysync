@@ -2,3 +2,6 @@
 /src/data/*.json
 **/.DS_Store
 /src/dev
+/data/*.json
+*.lock
+.env
