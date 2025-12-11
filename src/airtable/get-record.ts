@@ -1,30 +1,41 @@
-import axios from "axios";
-import { ui } from "../ui";
+import { AirtableRecord } from '../types/airtable'
+import { ui } from '../ui'
 
 export async function getRecord(
-  syncConfig: Sync,
-  recordId: string,
-  tableId = syncConfig.airtable.table.id,
-  baseId = syncConfig.airtable.base.id
-) {
-  try {
-    const apiToken = syncConfig.airtable.accessToken;
-    const url = `https://api.airtable.com/v0/${baseId}/${tableId}/${recordId}`;
-    const options = {
-      headers: {
-        Authorization: `Bearer ${apiToken}`,
-      },
-      params: {
-        returnFieldsByFieldId: true,
-      },
-    };
+    token: string,
+    recordId: string,
+    tableId: string,
+    baseId: string
+): Promise<AirtableRecord> {
+    try {
+        const url = new URL(
+            `https://api.airtable.com/v0/${baseId}/${tableId}/${recordId}`
+        )
+        url.searchParams.append('returnFieldsByFieldId', 'true')
+        url.searchParams.append('cellFormat', 'json')
 
-    // Docs: https://airtable.com/developers/web/api/get-record
-    const response = await axios.get(url, options);
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
 
-    return response.data;
-  } catch (error) {
-    ui.prompt.log.error("Error getting record from Airtable");
-    process.exit(0);
-  }
+        if (!response.ok) {
+            const errorText = await response.text()
+            throw new Error(
+                `HTTP error! status: ${response.status}, message: ${errorText}`
+            )
+        }
+
+        const record = await response.json()
+        if (!record.id) throw new Error('Invalid response from Airtable')
+
+        return record as AirtableRecord
+    } catch (error) {
+        ui.prompt.log.error('Error getting record from Airtable')
+        ui.prompt.log.error(error as string)
+        process.exit(0)
+    }
 }
