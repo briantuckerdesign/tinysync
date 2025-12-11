@@ -34,3 +34,8 @@ export interface FailedWebflowItemCreate {
     fieldData: PayloadFieldData
     error: any
 }
+
+export interface PublishedWebflowItems {
+    publishedItemIds: string[]
+    errors: string[]
+}
