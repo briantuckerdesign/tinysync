@@ -1,44 +1,59 @@
-import axios from "axios";
-import { ui } from "../ui";
+import { ui } from '../ui'
+import type { AirtableRecord } from '../types/airtable'
 
-export async function getRecords(syncConfig: Sync): Promise<AirtableRecord[]> {
-  try {
-    const baseId = syncConfig.airtable.base.id;
-    const tableId = syncConfig.airtable.table.id;
-    const viewId = syncConfig.airtable.table.view.id;
-    const apiToken = syncConfig.airtable.accessToken;
-    const url = `https://api.airtable.com/v0/${baseId}/${tableId}/listRecords`;
-    const options = {
-      headers: {
-        Authorization: `Bearer ${apiToken}`,
-      },
-    };
-    let allRecords = [];
-    let offset;
+export async function getRecords(
+    token: string,
+    viewId: string,
+    tableId: string,
+    baseId: string
+): Promise<AirtableRecord[]> {
+    try {
+        const url = `https://api.airtable.com/v0/${baseId}/${tableId}/listRecords`
+        const records: AirtableRecord[] = []
+        let offset: string | undefined = undefined
 
-    do {
-      // Can only retrieve 100 records at a time, so this retrieves in batches.
-      const postData = offset
-        ? {
-            view: viewId,
-            offset: offset,
-            returnFieldsByFieldId: true,
-          }
-        : { view: viewId, returnFieldsByFieldId: true };
+        do {
+            // Can only retrieve 100 records at a time, so this retrieves in batches.
+            const postData = offset
+                ? {
+                      view: viewId,
+                      offset: offset,
+                      returnFieldsByFieldId: true,
+                  }
+                : { view: viewId, returnFieldsByFieldId: true }
 
-      // Docs: https://airtable.com/developers/web/api/list-records
-      const response = await axios.post(url, postData, options);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(postData),
+            })
 
-      const { records, offset: newOffset } = response.data;
+            if (!response.ok) {
+                const errorText = await response.text()
+                throw new Error(
+                    `HTTP error! status: ${response.status}, message: ${errorText}`
+                )
+            }
 
-      allRecords = allRecords.concat(records);
+            const data: any = await response.json()
 
-      offset = newOffset;
-    } while (offset);
+            if (!data.records || !Array.isArray(data.records))
+                throw new Error('Invalid response from Airtable')
 
-    return allRecords;
-  } catch (error) {
-    ui.prompt.log.error("Error getting records from Airtable");
-    process.exit(0);
-  }
+            const someRecords: AirtableRecord[] = data.records
+
+            records.push(...someRecords)
+
+            offset = data.offset
+        } while (offset)
+
+        return records
+    } catch (error) {
+        ui.prompt.log.error('Error getting records from Airtable')
+        ui.prompt.log.error(error as string)
+        process.exit(0)
+    }
 }
