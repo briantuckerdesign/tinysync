@@ -25,7 +25,7 @@ export async function getBases(
             )
         }
 
-        const data = await response.json()
+        const data: any = await response.json()
 
         if (!Array.isArray(data.bases))
             throw new Error('Invalid response: bases is not an array')
