@@ -1,32 +1,44 @@
-import { ui } from "../ui";
+import type { PayloadFieldData } from 'webflow-api/api'
+import type { WebflowCreateItemResponse } from '../types/webflow'
+import { ui } from '../ui'
 
-export async function createItem(parsedData, syncConfig: Sync) {
-  try {
-    const collectionId = syncConfig.webflow.collection.id;
-    const url = `https://api.webflow.com/beta/collections/${collectionId}/items`;
-    const apiKey = syncConfig.webflow.accessToken;
-    const body = {
-      isArchived: false,
-      isDraft: false,
-      fieldData: { ...parsedData },
-    };
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(body),
-    };
+export async function createItem(
+    token: string,
+    collectionId: string,
+    fieldData: PayloadFieldData
+): Promise<WebflowCreateItemResponse> {
+    try {
+        const url = `https://api.webflow.com/v2/collections/${collectionId}/items/bulk`
 
-    const response = await fetch(url, options);
+        const body = {
+            isArchived: false,
+            isDraft: false,
+            fieldData: { ...fieldData },
+        }
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(body),
+        }
 
-    if (response && response.status === 202) {
-      return response;
+        const response = await fetch(url, options)
+
+        if (!response.ok || response.status != 202) {
+            const errorText = await response.text()
+
+            throw new Error(
+                `HTTP error! status: ${response.status}, message: ${errorText}`
+            )
+        }
+        const item = await response.json()
+
+        return item as WebflowCreateItemResponse
+    } catch (error) {
+        ui.prompt.log.error('Error creating item.')
+        throw error
     }
-  } catch (error) {
-    ui.prompt.log.error("Error creating item.");
-    throw error;
-  }
 }
