@@ -30,7 +30,7 @@ export async function getBases(token: string): Promise<AirtableBasesListItem[]> 
         return filteredBases;
     } catch (error) {
         ui.prompt.log.error("Error getting bases.");
-        ui.prompt.log.error(error);
+        ui.prompt.log.error(error as string);
         process.exit(0);
     }
 }
