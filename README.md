@@ -9,7 +9,7 @@
 - Granular sync control
 - All field types supported
 - No record limits\*
-  - <sub>\*We are all beholden to the limits of Airtable/Webflow/APIs 🧘</sub>
+    - <sub>\*We are all beholden to the limits of Airtable/Webflow/APIs 🧘</sub>
 
 ## Quick start
 
@@ -36,11 +36,11 @@ There are a few things you'll need to get started:
 - Base with a table that matches a Webflow collection
 - API token with access to your base with read/write permissions
 - Four required fields These can be created for you, or select an existing field.
-  - `State` (single select): `Not synced`,`Queued for sync`,`Always sync`, `Staging`
-    _Note that the options for "State" must be exact._
-  - `Last Published` (date/time)
-  - `Webflow Item ID` (single line text)
-  - `Slug` (single line text)
+    - `State` (single select): `Not synced`,`Queued for sync`,`Always sync`, `Staging`
+      _Note that the options for "State" must be exact._
+    - `Last Published` (date/time)
+    - `Webflow Item ID` (single line text)
+    - `Slug` (single line text)
 
 ### Webflow
 

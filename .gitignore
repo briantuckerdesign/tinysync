@@ -1,9 +1,7 @@
 /node_modules
-/src/data/*.json
 **/.DS_Store
-/src/dev
-/data/*.json
 *.lock
 .env
 .vscode
 .cursor
+/src/cli/data/*.json
