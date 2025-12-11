@@ -4,7 +4,7 @@ export async function deleteItems(
     token: string,
     collectionId: string,
     itemIds: string[]
-): Promise<Boolean> {
+): Promise<boolean> {
     const url = `https://api.webflow.com/beta/collections/${collectionId}/items`
     try {
         const options = {
