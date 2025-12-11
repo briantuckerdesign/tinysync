@@ -37,7 +37,6 @@ export async function getTables(
         return tables as AirtableTable[]
     } catch (error) {
         ui.prompt.log.error('Error getting tables.')
-        ui.prompt.log.error(error as string)
-        process.exit(0)
+        throw error
     }
 }

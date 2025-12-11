@@ -35,7 +35,6 @@ export async function createField(
         return createdField as AirtableField
     } catch (error) {
         ui.prompt.log.error('Error creating field.')
-        ui.prompt.log.error(error as string)
-        process.exit(0)
+        throw error
     }
 }

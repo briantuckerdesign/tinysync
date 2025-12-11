@@ -53,7 +53,6 @@ export async function getRecords(
         return records
     } catch (error) {
         ui.prompt.log.error('Error getting records from Airtable')
-        ui.prompt.log.error(error as string)
-        process.exit(0)
+        throw error
     }
 }

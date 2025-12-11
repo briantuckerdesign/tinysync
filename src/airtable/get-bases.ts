@@ -42,7 +42,6 @@ export async function getBases(
         return filteredBases
     } catch (error) {
         ui.prompt.log.error('Error getting bases.')
-        ui.prompt.log.error(error as string)
-        process.exit(0)
+        throw error
     }
 }

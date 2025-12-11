@@ -41,7 +41,6 @@ export async function updateRecord(
         return recordResponse as AirtableRecordResponse
     } catch (error) {
         ui.prompt.log.error('Error updating record in Airtable')
-        ui.prompt.log.error(error as string)
-        process.exit(0)
+        throw error
     }
 }

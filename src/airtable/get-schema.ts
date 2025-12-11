@@ -26,7 +26,6 @@ export async function getSchema(
         return table
     } catch (error) {
         ui.prompt.log.error('Error getting Airtable schema:')
-        ui.prompt.log.error(error as string)
-        process.exit(0)
+        throw error
     }
 }
