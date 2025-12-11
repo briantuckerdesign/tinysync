@@ -5,8 +5,6 @@
     "main": "src/index.ts",
     "scripts": {
         "start": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && bun src/index.ts",
-        "clear-items": "bun src/dev/run/delete-all.ts",
-        "list-items": "bun src/dev/run/list-all.ts",
         "build": "bun build ./src/index.ts --compile --compile-autoload-tsconfig --compile-autoload-package-json --minify --sourcemap --bytecode --outfile tinySync"
     },
     "keywords": [],
