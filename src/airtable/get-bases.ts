@@ -1,5 +1,8 @@
 import { toolbelt } from '../toolbelt/index'
-import { AirtableBasesResponse, AirtableBasesListItem } from '../types/airtable'
+import {
+    type AirtableBasesResponse,
+    type AirtableBasesListItem,
+} from '../types/airtable'
 import { ui } from '../ui'
 
 export async function getBases(
