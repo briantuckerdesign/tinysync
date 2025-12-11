@@ -1,34 +1,36 @@
-/* -------------------------------------------------------------------------- */
-/*                           Webflow / Publish item                           */
-/* -------------------------------------------------------------------------- */
-/**
- * Publishes an item to a Webflow collection.
- * @param {Object} syncConfig - The sync configuration object.
- * @param {Object} record - The item record to be published.
- * @returns {Promise<Object>} - A promise that resolves with the response data from the Webflow API.
- */
+import type { PublishedWebflowItems } from '../types/webflow'
+import { ui } from '../ui'
 
-import axios from "axios";
-import { ui } from "../ui";
+export async function publishItem(
+    token: string,
+    collectionId: string,
+    itemId: string
+): Promise<PublishedWebflowItems> {
+    const url = `https://api.webflow.com/beta/collections/${collectionId}/items/publish`
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                accept: 'application/json',
+                authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ itemIds: [itemId] }),
+        })
 
-export async function publishItem(syncConfig: Sync, itemId) {
-  try {
-    const collectionId = syncConfig.webflow.collection.id;
-    const apiKey = syncConfig.webflow.accessToken;
-    itemId = [itemId];
-    const url = `https://api.webflow.com/beta/collections/${collectionId}/items/publish`;
-    const body = { itemIds: itemId };
-    const options = {
-      headers: {
-        accept: "application/json",
-        authorization: `Bearer ${apiKey}`,
-      },
-    };
-    const response = await axios.post(url, body, options);
+        if (!response.ok || response.status != 202) {
+            const errorText = await response.text()
+            throw new Error(
+                `HTTP error! status: ${response.status}, message: ${errorText}`
+            )
+        }
 
-    return response.data;
-  } catch (error) {
-    ui.prompt.log.error("Error publishing item.");
-    throw error;
-  }
+        const data: any = await response.json()
+        const publishedItems: PublishedWebflowItems = data
+
+        return publishedItems
+    } catch (error) {
+        ui.prompt.log.error('Error publishing item.')
+        throw error
+    }
 }
