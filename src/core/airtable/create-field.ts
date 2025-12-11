@@ -1,4 +1,4 @@
-import type { AirtableField } from '../../types/airtable'
+import type { AirtableField } from './types'
 import { ui } from '../../ui'
 
 export async function createField(

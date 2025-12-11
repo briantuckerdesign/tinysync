@@ -1,5 +1,5 @@
 import type { Field } from 'webflow-api/api'
-import { ui } from '../ui'
+import { ui } from '../../ui'
 
 export async function getFields(
     token: string,

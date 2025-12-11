@@ -1,4 +1,4 @@
-import type { AirtableTable } from '../../types/airtable'
+import type { AirtableTable } from './types'
 import { ui } from '../../ui'
 
 export async function getTables(

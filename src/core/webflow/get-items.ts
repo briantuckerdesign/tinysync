@@ -1,5 +1,5 @@
 import type { CollectionItem, CollectionItemList } from 'webflow-api/api'
-import { ui } from '../ui'
+import { ui } from '../../ui'
 
 export async function getItems(
     token: string,

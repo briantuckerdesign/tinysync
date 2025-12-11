@@ -1,5 +1,5 @@
-import type { PublishedWebflowItems } from '../types/webflow'
-import { ui } from '../ui'
+import type { PublishedWebflowItems } from './types'
+import { ui } from '../../ui'
 
 export async function publishItems(
     token: string,

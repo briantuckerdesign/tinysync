@@ -1,5 +1,5 @@
 import type { CollectionItem, PayloadFieldData } from 'webflow-api/api'
-import { ui } from '../ui'
+import { ui } from '../../ui'
 
 interface UpdateItemPayload {
     id: string

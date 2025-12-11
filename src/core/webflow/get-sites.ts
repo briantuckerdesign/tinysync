@@ -1,5 +1,5 @@
 import type { Site } from 'webflow-api/api'
-import { ui } from '../ui'
+import { ui } from '../../ui'
 
 export async function getSites(token: string): Promise<Site[]> {
     const url = `https://api.webflow.com/v2/sites`

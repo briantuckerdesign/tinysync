@@ -1,6 +1,6 @@
 import type { PayloadFieldData } from 'webflow-api/api'
-import type { WebflowCreateItemResponse } from '../types/webflow'
-import { ui } from '../ui'
+import type { WebflowCreateItemResponse } from './types'
+import { ui } from '../../ui'
 
 export async function createItem(
     token: string,

@@ -1,12 +1,12 @@
-import type { PublishedWebflowItems } from './types'
-import { ui } from '../../ui'
+import type { PublishedWebflowItems } from '../core/webflow/types'
+import { ui } from '../ui'
 
-export async function publishItem(
+export async function publishItems(
     token: string,
     collectionId: string,
-    itemId: string
-): Promise<PublishedWebflowItems> {
-    const url = `https://api.webflow.com/beta/collections/${collectionId}/items/publish`
+    itemIds: string[]
+) {
+    const url = `https://api.webflow.com/v2/collections/${collectionId}/items/publish`
     try {
         const response = await fetch(url, {
             method: 'POST',
@@ -15,8 +15,15 @@ export async function publishItem(
                 authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ itemIds: [itemId] }),
+            body: JSON.stringify({ itemIds: itemIds }),
         })
+
+        if (!response.ok) {
+            const errorText = await response.text()
+            throw new Error(
+                `HTTP error! status: ${response.status}, message: ${errorText}`
+            )
+        }
 
         if (!response.ok || response.status != 202) {
             const errorText = await response.text()
@@ -30,7 +37,7 @@ export async function publishItem(
 
         return publishedItems
     } catch (error) {
-        ui.prompt.log.error('Error publishing item.')
+        ui.prompt.log.error('Error publishing items.')
         throw error
     }
 }

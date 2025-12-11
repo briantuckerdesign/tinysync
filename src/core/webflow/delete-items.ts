@@ -1,5 +1,4 @@
-import { ui } from '../ui'
-
+import { ui } from '../../ui'
 export async function deleteItems(
     token: string,
     collectionId: string,

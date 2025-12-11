@@ -1,4 +1,4 @@
-import type { AirtableRecord } from '../../types/airtable'
+import type { AirtableRecord } from './types'
 import { ui } from '../../ui'
 
 export async function getRecord(

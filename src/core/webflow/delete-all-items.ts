@@ -1,4 +1,4 @@
-import { ui } from '../ui'
+import { ui } from '../../ui'
 import { deleteItems } from './delete-items'
 import { getItems } from './get-items'
 
