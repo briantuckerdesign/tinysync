@@ -1,4 +1,4 @@
-import { AirtableRecord } from '../types/airtable'
+import { type AirtableRecord } from '../types/airtable'
 import { ui } from '../ui'
 
 export async function getRecord(
@@ -29,7 +29,8 @@ export async function getRecord(
             )
         }
 
-        const record = await response.json()
+        const record: any = await response.json()
+
         if (!record.id) throw new Error('Invalid response from Airtable')
 
         return record as AirtableRecord
