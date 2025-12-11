@@ -1,3 +1,4 @@
+import { AirtableTable } from "../types/airtable";
 import { ui } from "../ui";
 
 export async function getTables(token: string, baseId: string): Promise<AirtableTable[]> {
