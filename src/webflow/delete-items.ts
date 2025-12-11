@@ -1,31 +1,36 @@
-import { ui } from "../ui";
+import { ui } from '../ui'
 
-/**
- * itemIdsToDelete expects: [{ id: "itemId" }]
- */
-export async function deleteItems(itemIdsToDelete: string[], syncConfig: Sync) {
-  try {
-    const collectionId = syncConfig.webflow.collection.id;
-    const url = `https://api.webflow.com/beta/collections/${collectionId}/items`;
-    const myData = JSON.stringify({
-      items: itemIdsToDelete,
-    });
-    const options = {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${syncConfig.webflow.accessToken}`,
-      },
-      body: myData,
-    };
-    const response = await fetch(url, options);
+export async function deleteItems(
+    token: string,
+    collectionId: string,
+    itemIds: string[]
+): Promise<Boolean> {
+    const url = `https://api.webflow.com/beta/collections/${collectionId}/items`
+    try {
+        const options = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                items: itemIds,
+            }),
+        }
+        const response = await fetch(url, options)
 
-    if (response.status === 204) {
-      return;
+        if (!response.ok && response.status !== 204) {
+            const errorText = await response.text()
+            throw new Error(
+                `HTTP error! status: ${response.status}, message: ${errorText}`
+            )
+        }
+
+        if (response.status === 204) return true
+        return false
+    } catch (error) {
+        ui.prompt.log.error('Error deleting item.')
+        throw error
     }
-  } catch (error) {
-    ui.prompt.log.error("Error deleting item.");
-    throw error;
-  }
 }
