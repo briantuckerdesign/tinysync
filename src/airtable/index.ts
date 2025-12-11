@@ -5,7 +5,6 @@ import { updateRecord } from './update-record'
 import { createField } from './create-field'
 import { getRecord } from './get-record'
 import { getSchema } from './get-schema'
-import { updateRecords } from './update-records'
 
 export const airtable = {
     getBases,
@@ -14,6 +13,5 @@ export const airtable = {
     getRecords,
     getSchema,
     updateRecord,
-    updateRecords,
     createField,
 }
