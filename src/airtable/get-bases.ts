@@ -1,31 +1,36 @@
-import axios from "axios";
 import { toolbelt } from "../toolbelt/index";
+import { AirtableBasesResponse, AirtableBasesListItem } from "../types/airtable";
+import { ui } from "../ui";
 
-export async function getBases(
-  apiKey: string
-): Promise<Array<AirtableBasesListItem>> {
-  try {
-    // Docs: https://airtable.com/developers/web/api/list-bases
+export async function getBases(token: string): Promise<AirtableBasesListItem[]> {
     const url = "https://api.airtable.com/v0/meta/bases";
-    const options = {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    };
-    // Gets all bases
-    const response = await axios.get(url, options);
-    const bases = response.data as AirtableBases;
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
 
-    // Filter out bases without create permissions
-    const filteredBases = toolbelt.filterByPropertyPath(
-      bases.bases,
-      "permissionLevel",
-      "create"
-    );
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
 
-    return filteredBases;
-  } catch (error) {
-    ui.prompt.log.error("Error getting bases.");
-    process.exit(0);
-  }
+        const data = await response.json();
+
+        if (!Array.isArray(data.bases)) throw new Error("Invalid response: bases is not an array");
+
+        const bases = data as AirtableBasesResponse;
+
+        // Filter out bases without create permissions
+        const filteredBases = toolbelt.filterByPropertyPath(bases.bases, "permissionLevel", "create");
+
+        return filteredBases;
+    } catch (error) {
+        ui.prompt.log.error("Error getting bases.");
+        ui.prompt.log.error(error);
+        process.exit(0);
+    }
 }
