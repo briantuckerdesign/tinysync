@@ -1,28 +1,31 @@
-import axios from "axios";
+import { AirtableField } from "../types/airtable";
+import { ui } from "../ui";
 
-export async function createField(
-  baseId: string,
-  tableId: string,
-  apiToken: string,
-  field: AirtableField
-) {
-  try {
+export async function createField(token: string, baseId: string, tableId: string, field: AirtableField): Promise<AirtableField> {
     const url = `https://api.airtable.com/v0/meta/bases/${baseId}/tables/${tableId}/fields`;
-    const options = {
-      headers: {
-        Authorization: `Bearer ${apiToken}`,
-        "Content-Type": "application/json",
-      },
-    };
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(field),
+        });
 
-    // Docs: https://airtable.com/developers/web/api/create-field
-    const response = await axios.post(url, field, options);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
 
-    const responseData = response.data;
+        const createdField = await response.json();
 
-    return responseData;
-  } catch (error) {
-    ui.prompt.log.error("Error creating field.");
-    process.exit(0);
-  }
+        if (!createdField.id) throw new Error("Invalid response: created field is missing id property");
+
+        return createdField as AirtableField;
+    } catch (error) {
+        ui.prompt.log.error("Error creating field.");
+        ui.prompt.log.error(error as string);
+        process.exit(0);
+    }
 }
