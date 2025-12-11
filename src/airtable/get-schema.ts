@@ -3,9 +3,9 @@ import { getTables } from './get-tables'
 
 export async function getSchema(
     token: string,
-    viewId: string,
+    baseId: string,
     tableId: string,
-    baseId: string
+    viewId: string
 ) {
     try {
         const tables = await getTables(token, baseId)
