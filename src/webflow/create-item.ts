@@ -7,9 +7,8 @@ export async function createItem(
     collectionId: string,
     fieldData: PayloadFieldData
 ): Promise<WebflowCreateItemResponse> {
+    const url = `https://api.webflow.com/v2/collections/${collectionId}/items/bulk`
     try {
-        const url = `https://api.webflow.com/v2/collections/${collectionId}/items/bulk`
-
         const body = {
             isArchived: false,
             isDraft: false,
