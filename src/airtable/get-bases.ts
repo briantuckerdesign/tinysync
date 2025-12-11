@@ -1,7 +1,7 @@
 import { toolbelt } from '../toolbelt/index'
-import {
-    type AirtableBasesResponse,
-    type AirtableBasesListItem,
+import type {
+    AirtableBasesResponse,
+    AirtableBasesListItem,
 } from '../types/airtable'
 import { ui } from '../ui'
 
