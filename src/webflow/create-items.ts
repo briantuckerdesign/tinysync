@@ -1,29 +1,31 @@
-import { ui } from "../ui";
-import { webflowEndpoint } from "./endpoint";
+import type { PayloadFieldData } from 'webflow-api/api'
+import { ui } from '../ui'
+import { createItem } from './create-item'
+import type {
+    FailedWebflowItemCreate,
+    WebflowCreateItemResponse,
+} from '../types/webflow'
 
-export async function createItems(parsedData, syncConfig: Sync) {
-  try {
-    const wId = syncConfig.webflow.collection.id;
-    const url = `${webflowEndpoint}/collections/${wId}/items/bulk`;
-    const apiKey = syncConfig.webflow.accessToken;
-    const body = {
-      isArchived: false,
-      isDraft: false,
-      fieldData: parsedData,
-    };
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(body),
-    };
+/** TODO: Attempt to refactor this to work with the bulk endpoint, which I've previously failed at. */
+export async function createItems(
+    token: string,
+    collectionId: string,
+    fieldDataArray: PayloadFieldData[]
+) {
+    try {
+        const createdItems: WebflowCreateItemResponse[] = []
+        const failedItems: FailedWebflowItemCreate[] = []
 
-    const response = await fetch(url, options);
-    if (response && response.status === 202) return response.json();
-  } catch (error) {
-    ui.prompt.log.error("Error creating items.");
-  }
+        for (const fieldData of fieldDataArray) {
+            try {
+                const item = await createItem(token, collectionId, fieldData)
+                createdItems.push(item)
+            } catch (error) {
+                failedItems.push({ fieldData, error })
+            }
+        }
+    } catch (error) {
+        ui.prompt.log.error('Error creating items.')
+        throw error
+    }
 }
