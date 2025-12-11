@@ -5,9 +5,8 @@ export async function deleteItem(
     collectionId: string,
     itemId: string
 ): Promise<boolean> {
+    const url = `https://api.webflow.com/v2/collections/${collectionId}/items/${itemId}`
     try {
-        const url = `https://api.webflow.com/v2/collections/${collectionId}/items/${itemId}`
-
         const response = await fetch(url, {
             method: 'DELETE',
             headers: {
