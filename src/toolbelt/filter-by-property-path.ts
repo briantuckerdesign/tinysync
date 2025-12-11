@@ -1,23 +1,23 @@
-// TODO: KEEP
 /**
  * Filters an array of objects by a property path and value.
  *
- * @param {Array} data - The array of objects to filter.
+ * @template T - The type of objects in the array
+ * @param {T[]} data - The array of objects to filter.
  * @param {string} propertyPath - The property path to filter by.
- * @param {*} value - The value to filter by.
- * @returns {Array} - The filtered array of objects.
+ * @param {unknown} value - The value to filter by.
+ * @returns {T[]} - The filtered array of objects with the same type as input.
  */
-export function filterByPropertyPath(data, propertyPath, value) {
+export function filterByPropertyPath<T>(data: T[], propertyPath: string, value: unknown): T[] {
     if (!data || !Array.isArray(data)) {
         return [];
     }
 
     return data.filter((item) => {
         const pathParts = propertyPath.split(".");
-        let currentPropertyValue = item;
+        let currentPropertyValue: unknown = item;
         for (let part of pathParts) {
-            if (currentPropertyValue && part in currentPropertyValue) {
-                currentPropertyValue = currentPropertyValue[part];
+            if (currentPropertyValue && typeof currentPropertyValue === "object" && part in currentPropertyValue) {
+                currentPropertyValue = (currentPropertyValue as Record<string, unknown>)[part];
             } else {
                 return false;
             }
