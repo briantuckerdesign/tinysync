@@ -7,11 +7,17 @@ import { getRecord } from './get-record'
 import { getSchema } from './get-schema'
 
 export const airtable = {
-    getBases,
-    getTables,
-    getRecord,
-    getRecords,
-    getSchema,
-    updateRecord,
-    createField,
+    get: {
+        bases: getBases,
+        tables: getTables,
+        records: getRecords,
+        schema: getSchema,
+        record: getRecord,
+    },
+    update: {
+        record: updateRecord,
+    },
+    create: {
+        field: createField,
+    },
 }
