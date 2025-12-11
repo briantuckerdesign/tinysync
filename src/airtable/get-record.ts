@@ -3,14 +3,14 @@ import { ui } from '../ui'
 
 export async function getRecord(
     token: string,
-    recordId: string,
+    baseId: string,
     tableId: string,
-    baseId: string
+    recordId: string
 ): Promise<AirtableRecord> {
+    const url = new URL(
+        `https://api.airtable.com/v0/${baseId}/${tableId}/${recordId}`
+    )
     try {
-        const url = new URL(
-            `https://api.airtable.com/v0/${baseId}/${tableId}/${recordId}`
-        )
         url.searchParams.append('returnFieldsByFieldId', 'true')
         url.searchParams.append('cellFormat', 'json')
 
