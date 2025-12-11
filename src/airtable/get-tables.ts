@@ -29,9 +29,8 @@ export async function getTables(token: string, baseId: string): Promise<Airtable
 
         return tables as AirtableTable[];
     } catch (error) {
-        const errorMessage = "Error getting tables.";
-        ui.prompt.log.error(errorMessage);
-        ui.prompt.log.error(error);
+        ui.prompt.log.error("Error getting tables.");
+        ui.prompt.log.error(error as string);
         process.exit(0);
     }
 }
