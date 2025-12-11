@@ -1,5 +1,5 @@
-import type { AirtableTable } from '../types/airtable'
 import { ui } from '../ui'
+import { getTables } from './get-tables'
 
 export async function getSchema(
     token: string,
@@ -7,29 +7,8 @@ export async function getSchema(
     tableId: string,
     baseId: string
 ) {
-    const url = `https://api.airtable.com/v0/meta/bases/${baseId}/tables`
     try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        })
-
-        if (!response.ok) {
-            const errorText = await response.text()
-            throw new Error(
-                `HTTP error! status: ${response.status}, message: ${errorText}`
-            )
-        }
-
-        const data: any = await response.json()
-
-        if (!data.tables || !Array.isArray(data.tables))
-            throw new Error('Invalid response from Airtable API')
-
-        const tables: AirtableTable[] = data.tables
+        const tables = await getTables(token, baseId)
         const table = tables.find((table) => {
             return table.id === tableId
         })
