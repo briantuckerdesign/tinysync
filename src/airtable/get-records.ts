@@ -3,12 +3,12 @@ import type { AirtableRecord } from '../types/airtable'
 
 export async function getRecords(
     token: string,
-    viewId: string,
+    baseId: string,
     tableId: string,
-    baseId: string
+    viewId: string
 ): Promise<AirtableRecord[]> {
+    const url = `https://api.airtable.com/v0/${baseId}/${tableId}/listRecords`
     try {
-        const url = `https://api.airtable.com/v0/${baseId}/${tableId}/listRecords`
         const records: AirtableRecord[] = []
         let offset: string | undefined = undefined
 
