@@ -1,5 +1,5 @@
-import { AirtableField } from '../types/airtable'
-import { ui } from '../ui'
+import { type AirtableField } from '../types/airtable.ts'
+import { ui } from '../ui/index.ts'
 
 export async function createField(
     token: string,
@@ -25,7 +25,7 @@ export async function createField(
             )
         }
 
-        const createdField = await response.json()
+        const createdField: any = await response.json()
 
         if (!createdField.id)
             throw new Error(
