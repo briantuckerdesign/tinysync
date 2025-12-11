@@ -1,12 +1,12 @@
 import { ui } from "../ui";
 
-export async function getTables(apiKey: string, baseId: string): Promise<AirtableTable[]> {
+export async function getTables(token: string, baseId: string): Promise<AirtableTable[]> {
     const url = `https://api.airtable.com/v0/meta/bases/${baseId}/tables`;
     try {
         const response = await fetch(url, {
             method: "GET",
             headers: {
-                Authorization: `Bearer ${apiKey}`,
+                Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             },
         });
