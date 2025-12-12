@@ -1,7 +1,7 @@
 import Airtable from 'airtable'
 import { WebflowClient } from 'webflow-api'
 import { Collection, Domain, Field, Site } from 'webflow-api/api'
-import { checkCompatibility } from '../config-tools/check-compatibility'
+import { checkCompatibility } from './config-tools/check-compatibility'
 
 export {}
 
