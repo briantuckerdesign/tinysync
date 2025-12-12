@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test'
-import { mockData } from '../../../dev/mock-data'
+import { mockData } from '../../dev/mock-data'
 import { getTables } from './get-tables'
 import type { AirtableTable } from './types'
 

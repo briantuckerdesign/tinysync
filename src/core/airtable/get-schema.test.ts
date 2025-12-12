@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test'
-import { mockData } from '../../../dev/mock-data'
+import { mockData } from '../../dev/mock-data'
 import { getSchema } from './get-schema'
 import { writeToJSONFile } from '../utils/write-to-json-file'
 

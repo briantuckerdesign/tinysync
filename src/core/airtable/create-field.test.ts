@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test'
-import { mockData } from '../../../dev/mock-data'
+import { mockData } from '../../dev/mock-data'
 import { createField } from './create-field'
 import type { AirtableField, AirtableFieldType } from './types'
 
