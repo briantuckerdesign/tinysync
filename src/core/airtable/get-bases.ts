@@ -1,6 +1,5 @@
-import { toolbelt } from '../../toolbelt/index'
+import { filterByPropertyPath } from '../utils/filter-by-property-path'
 import type { AirtableBasesResponse, AirtableBasesListItem } from './types'
-import { ui } from '../../ui'
 
 export async function getBases(
     token: string
@@ -25,12 +24,12 @@ export async function getBases(
         const data: any = await response.json()
 
         if (!Array.isArray(data.bases))
-            throw new Error('Invalid response: bases is not an array')
+            throw new Error('Invalid response from Airtable.')
 
         const bases = data as AirtableBasesResponse
 
         // Filter out bases without create permissions
-        const filteredBases = toolbelt.filterByPropertyPath(
+        const filteredBases = filterByPropertyPath(
             bases.bases,
             'permissionLevel',
             'create'
@@ -38,7 +37,6 @@ export async function getBases(
 
         return filteredBases
     } catch (error) {
-        ui.prompt.log.error('Error getting bases.')
         throw error
     }
 }

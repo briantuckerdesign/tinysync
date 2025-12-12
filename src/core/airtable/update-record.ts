@@ -1,5 +1,4 @@
 import type { AirtableRecord, AirtableRecordResponse } from './types'
-import { ui } from '../../ui'
 
 export async function updateRecord(
     token: string,
@@ -40,7 +39,6 @@ export async function updateRecord(
 
         return recordResponse as AirtableRecordResponse
     } catch (error) {
-        ui.prompt.log.error('Error updating record in Airtable')
         throw error
     }
 }

@@ -1,5 +1,4 @@
 import type { AirtableField } from './types'
-import { ui } from '../../ui'
 
 export async function createField(
     token: string,
@@ -27,14 +26,10 @@ export async function createField(
 
         const createdField: any = await response.json()
 
-        if (!createdField.id)
-            throw new Error(
-                'Invalid response: created field is missing id property'
-            )
+        if (!createdField.id) throw new Error('Invalid response from Airtable.')
 
         return createdField as AirtableField
     } catch (error) {
-        ui.prompt.log.error('Error creating field.')
         throw error
     }
 }

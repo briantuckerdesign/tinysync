@@ -1,4 +1,3 @@
-import { ui } from '../../ui'
 import { getTables } from './get-tables'
 
 export async function getSchema(
@@ -25,7 +24,6 @@ export async function getSchema(
 
         return table
     } catch (error) {
-        ui.prompt.log.error('Error getting Airtable schema:')
         throw error
     }
 }

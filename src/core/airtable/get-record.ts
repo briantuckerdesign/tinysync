@@ -1,5 +1,4 @@
 import type { AirtableRecord } from './types'
-import { ui } from '../../ui'
 
 export async function getRecord(
     token: string,
@@ -31,11 +30,10 @@ export async function getRecord(
 
         const record: any = await response.json()
 
-        if (!record.id) throw new Error('Invalid response from Airtable')
+        if (!record.id) throw new Error('Invalid response from Airtable.')
 
         return record as AirtableRecord
     } catch (error) {
-        ui.prompt.log.error('Error getting record from Airtable')
         throw error
     }
 }

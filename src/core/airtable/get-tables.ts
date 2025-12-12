@@ -1,5 +1,4 @@
 import type { AirtableTable } from './types'
-import { ui } from '../../ui'
 
 export async function getTables(
     token: string,
@@ -25,7 +24,7 @@ export async function getTables(
         const data: any = await response.json()
 
         if (!data.tables || !Array.isArray(data.tables))
-            throw new Error('Invalid response: tables is not an array')
+            throw new Error('Invalid response from Airtable.')
 
         const tables: any[] = data.tables
 
@@ -36,7 +35,6 @@ export async function getTables(
 
         return tables as AirtableTable[]
     } catch (error) {
-        ui.prompt.log.error('Error getting tables.')
         throw error
     }
 }

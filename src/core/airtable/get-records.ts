@@ -1,4 +1,3 @@
-import { ui } from '../../ui'
 import type { AirtableRecord } from './types'
 
 export async function getRecords(
@@ -13,7 +12,6 @@ export async function getRecords(
         let offset: string | undefined = undefined
 
         do {
-            // Can only retrieve 100 records at a time, so this retrieves in batches.
             const postData = offset
                 ? {
                       view: viewId,
@@ -41,7 +39,7 @@ export async function getRecords(
             const data: any = await response.json()
 
             if (!data.records || !Array.isArray(data.records))
-                throw new Error('Invalid response from Airtable')
+                throw new Error('Invalid response from Airtable.')
 
             const someRecords: AirtableRecord[] = data.records
 
@@ -52,7 +50,6 @@ export async function getRecords(
 
         return records
     } catch (error) {
-        ui.prompt.log.error('Error getting records from Airtable')
         throw error
     }
 }
