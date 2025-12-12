@@ -18,13 +18,6 @@ declare global {
         checkCompatibility: typeof checkCompatibility
     }
 
-    interface State {
-        config: Config
-        password: string | null
-        history: Array<MenuHistory>
-        webflowClient?: WebflowClient
-    }
-
     interface MenuHistory {
         function: any
         args?: any
@@ -38,58 +31,6 @@ declare global {
         version: string
         encryptedData?: any
         selectedSync: Sync | undefined
-    }
-
-    interface Token {
-        label: string
-        name?: string // needed for clack occasionally
-        value: string
-        platform: string
-        id: string
-    }
-
-    interface Sync {
-        initVersion?: string
-        id: string
-        name: string
-        autoPublish: boolean
-        deleteRecords: boolean
-        publishToSubdomain: boolean | undefined
-        errors: Array<any>
-        fields: Array<MatchedField>
-        airtable: {
-            accessToken: string
-            base: {
-                id: string
-                name: string
-            }
-            table: {
-                id: string
-                name: string
-                view: AirtableView
-                fields: Array<any>
-                primaryFieldId: string
-                slugFieldId: string
-                lastPublishedFieldId: string
-                stateFieldId: string
-                itemIdFieldId: string
-            }
-        }
-        webflow: {
-            api?: WebflowClient
-            accessToken: string
-            site: {
-                id: string
-                name: string | undefined
-                customDomains: Domain[] | undefined
-            }
-            collection: {
-                id: string
-                slug: string | undefined
-                name: string | undefined
-                fields: Array<WebflowField>
-            }
-        }
     }
 
     interface MatchedField {
