@@ -11,6 +11,7 @@ import { createItem } from './create-item'
 import { createItems } from './create-items'
 import { updateItems } from './update-items'
 import { deleteItems } from './delete-items'
+import { publishSite } from './publish-site'
 
 export const webflow = {
     delete: {
@@ -25,6 +26,7 @@ export const webflow = {
     publish: {
         item: publishItem,
         items: publishItems,
+        site: publishSite,
     },
     update: {
         items: updateItems,
