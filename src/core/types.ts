@@ -5,7 +5,7 @@ import type {
 import type { AirtableFieldType } from './airtable/types'
 import type { WebflowValidations } from './webflow/types'
 
-interface Sync2 {
+export interface Sync {
     /**
      * Version the sync was created in.
      * This will help us determine if the sync is compatible with the current version of the app,
@@ -17,7 +17,7 @@ interface Sync2 {
     /** User-facing name */
     name: string
     /** Auth token UUIDs corresponding to encrypted savefile */
-    tokens: {
+    tokens?: {
         /** UUID corresponding to encrypted file */
         webflow: string
         /** UUID corresponding to encrypted file */
@@ -75,7 +75,7 @@ interface Sync2 {
     fields: Field[]
 }
 
-interface Field {
+export interface Field {
     specialType?: SpecialField
     syncedToWebflow: boolean
     webflow?: {
@@ -94,12 +94,17 @@ interface Field {
     }
 }
 
-type SpecialField = 'lastPublished' | 'itemId' | 'state' | 'slug' | 'name'
+export type SpecialField =
+    | 'lastPublished'
+    | 'itemId'
+    | 'state'
+    | 'slug'
+    | 'name'
 
 /** The two relevant platforms for tinySync */
-type Platform = 'webflow' | 'airtable'
+export type Platform = 'webflow' | 'airtable'
 
-interface Token2 {
+export interface Token {
     /** UUID referenced in unencrypted sync */
     id: string
     /** User-facing key name */
@@ -110,4 +115,4 @@ interface Token2 {
     token: string
 }
 
-interface State2 {}
+export interface State {}
