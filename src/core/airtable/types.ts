@@ -6,8 +6,15 @@ export interface AirtableBasesResponse {
 export interface AirtableBasesListItem {
     id: string
     name: string
-    permissionLevel: 'none' | 'read' | 'comment' | 'edit' | 'create'
+    permissionLevel: AirtablePermissionLevel
 }
+
+export type AirtablePermissionLevel =
+    | 'none'
+    | 'read'
+    | 'comment'
+    | 'edit'
+    | 'create'
 
 export interface AirtableBase {
     tables: Array<AirtableTable>
