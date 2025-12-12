@@ -1,4 +1,3 @@
-import { history } from '../history'
 import { ui } from '../ui'
 
 /**
@@ -11,7 +10,6 @@ import { ui } from '../ui'
  */
 export async function handleCancel(sourcePrompt: any) {
     try {
-        if (ui.prompt.isCancel(sourcePrompt)) await history.back()
     } catch (error) {
         ui.prompt.log.error('Error handling cancel action.')
         process.exit(0)
