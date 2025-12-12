@@ -1,11 +1,12 @@
 import { getTables } from './get-tables'
+import type { AirtableTable } from './types'
 
 export async function getSchema(
     token: string,
     baseId: string,
     tableId: string,
     viewId: string
-) {
+): Promise<AirtableTable> {
     try {
         const tables = await getTables(token, baseId)
         const table = tables.find((table) => {
