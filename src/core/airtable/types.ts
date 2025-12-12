@@ -96,9 +96,11 @@ export interface AirtableField {
 export interface AirtableRecord {
     id: string
     createdTime: string
-    fields: Record<string, any>
+    fields: AirtableRecordPayload
     error?: string
 }
+
+export type AirtableRecordPayload = Record<string, any>
 
 export interface AirtableRecordResponse extends AirtableRecord {
     details?: {
