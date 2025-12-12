@@ -4,7 +4,6 @@ import type {
     FailedWebflowItemCreate,
     WebflowCreateItemResponse,
 } from './types'
-import { ui } from '../../ui'
 
 /** TODO: Attempt to refactor this to work with the bulk endpoint, which I've previously failed at. */
 export async function createItems(
@@ -25,7 +24,6 @@ export async function createItems(
             }
         }
     } catch (error) {
-        ui.prompt.log.error('Error creating items.')
         throw error
     }
 }

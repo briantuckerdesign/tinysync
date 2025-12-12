@@ -1,4 +1,3 @@
-import { ui } from '../../ui'
 export async function deleteItems(
     token: string,
     collectionId: string,
@@ -29,7 +28,6 @@ export async function deleteItems(
         if (response.status === 204) return true
         return false
     } catch (error) {
-        ui.prompt.log.error('Error deleting item.')
         throw error
     }
 }

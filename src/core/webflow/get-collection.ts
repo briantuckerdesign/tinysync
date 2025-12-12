@@ -1,5 +1,4 @@
 import type { Collection } from 'webflow-api/api'
-import { ui } from '../../ui'
 
 export async function getCollection(
     token: string,
@@ -27,7 +26,6 @@ export async function getCollection(
 
         return data as Collection
     } catch (error) {
-        ui.prompt.log.error('Error getting collection.')
         throw error
     }
 }

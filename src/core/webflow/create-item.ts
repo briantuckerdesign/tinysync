@@ -1,6 +1,5 @@
 import type { PayloadFieldData } from 'webflow-api/api'
 import type { WebflowCreateItemResponse } from './types'
-import { ui } from '../../ui'
 
 export async function createItem(
     token: string,
@@ -37,7 +36,6 @@ export async function createItem(
 
         return item as WebflowCreateItemResponse
     } catch (error) {
-        ui.prompt.log.error('Error creating item.')
         throw error
     }
 }

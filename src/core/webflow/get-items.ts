@@ -1,6 +1,4 @@
 import type { CollectionItem, CollectionItemList } from 'webflow-api/api'
-import { ui } from '../../ui'
-
 export async function getItems(
     token: string,
     collectionId: string
@@ -46,7 +44,6 @@ export async function getItems(
 
         return allItems
     } catch (error) {
-        ui.prompt.log.error('Error getting items.')
         throw error
     }
 }

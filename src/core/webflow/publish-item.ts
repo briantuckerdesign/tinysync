@@ -1,5 +1,4 @@
 import type { PublishedWebflowItems } from './types'
-import { ui } from '../../ui'
 
 export async function publishItem(
     token: string,
@@ -30,7 +29,6 @@ export async function publishItem(
 
         return publishedItems
     } catch (error) {
-        ui.prompt.log.error('Error publishing item.')
         throw error
     }
 }

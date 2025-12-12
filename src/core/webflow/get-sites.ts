@@ -1,5 +1,4 @@
 import type { Site } from 'webflow-api/api'
-import { ui } from '../../ui'
 
 export async function getSites(token: string): Promise<Site[]> {
     const url = `https://api.webflow.com/v2/sites`
@@ -26,7 +25,6 @@ export async function getSites(token: string): Promise<Site[]> {
 
         return sites
     } catch (error) {
-        ui.prompt.log.error('Error getting sites.')
         throw error
     }
 }

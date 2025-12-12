@@ -1,5 +1,4 @@
 import type { CollectionItem, PayloadFieldData } from 'webflow-api/api'
-import { ui } from '../../ui'
 
 interface UpdateItemPayload {
     id: string
@@ -54,7 +53,6 @@ export async function updateItems(
 
         return allUpdatedItems
     } catch (error) {
-        ui.prompt.log.error('Error updating items.')
         throw error
     }
 }

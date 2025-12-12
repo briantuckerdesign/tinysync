@@ -1,6 +1,4 @@
 import type { Field } from 'webflow-api/api'
-import { ui } from '../../ui'
-
 export async function getFields(
     token: string,
     collectionId: string
@@ -29,7 +27,6 @@ export async function getFields(
 
         return fields
     } catch (error) {
-        ui.prompt.log.error('Error getting fields.')
         throw error
     }
 }
