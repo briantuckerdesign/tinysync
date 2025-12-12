@@ -1,17 +1,15 @@
-import type { AirtableRecord, AirtableRecordResponse } from './types'
+import type { AirtableRecordPayload, AirtableRecordResponse } from './types'
 
 export async function updateRecord(
     token: string,
     baseId: string,
     tableId: string,
     recordId: string,
-    record: AirtableRecord
+    record: AirtableRecordPayload
 ): Promise<AirtableRecordResponse> {
     const url = new URL(
         `https://api.airtable.com/v0/${baseId}/${tableId}/${recordId}`
     )
-    url.searchParams.append('returnFieldsByFieldId', 'true')
-    url.searchParams.append('cellFormat', 'json')
     try {
         const response = await fetch(url, {
             method: 'PATCH',
@@ -19,7 +17,11 @@ export async function updateRecord(
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(record),
+            body: JSON.stringify({
+                returnFieldsByFieldId: true,
+                typecast: true,
+                fields: record,
+            }),
         })
 
         if (!response.ok) {
