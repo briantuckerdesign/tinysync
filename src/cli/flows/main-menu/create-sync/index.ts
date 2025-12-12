@@ -22,13 +22,9 @@ import { getSettings } from './get-settings'
 import { buildSync } from './build-sync'
 import { ui } from '../../../ui'
 import { state } from '../../../state'
-import { configTools } from '../../../config-tools'
 import { viewSync } from '../view-syncs/view-sync'
-import { history } from '../../../history'
 
 export async function createSync() {
-    history.add(createSync)
-
     try {
         ui.prompt.log.info(ui.format.bold('🔨 Create sync'))
         ui.prompt.note(`You will need a few things to get started:
@@ -50,7 +46,6 @@ export async function createSync() {
         await ui.handleCancel(shallWeContinue)
 
         if (shallWeContinue === false) {
-            await history.back()
             return
         }
 
@@ -76,15 +71,15 @@ export async function createSync() {
         )
 
         /* ------------------------ Save config and open sync ----------------------- */
-        state.config.syncs.push(sync)
-        await configTools.save()
+        // state.config.syncs.push(sync)
+        // await configTools.save()
         ui.prompt.log.success('✅ Sync added successfully!')
         ui.prompt.log.message('')
 
         await viewSync(true)
     } catch (error) {
         ui.prompt.log.error('There was an error creating the sync.')
-        await history.back()
+
         return
     }
 }

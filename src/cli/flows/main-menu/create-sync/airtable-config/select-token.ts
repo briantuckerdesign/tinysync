@@ -1,17 +1,15 @@
-import { history } from '../../../../history'
+import type { AirtableBasesListItem } from '../../../../../core/airtable/types'
 import { state } from '../../../../state'
 import { ui } from '../../../../ui'
 import { checkAirtableToken } from './check-token'
 
 export async function selectAirtableToken(): Promise<TokenAuth> {
-    history.add(selectAirtableToken)
-
     try {
         let accessToken
         let createdThisSession = false
 
         // Get Airtable tokens from config
-        let airtableTokens = state.config.tokens.filter(
+        let airtableTokens = state.tokens.filter(
             (token) => token.platform === 'airtable'
         ) as any
 
@@ -55,7 +53,6 @@ export async function selectAirtableToken(): Promise<TokenAuth> {
         }
     } catch (error) {
         ui.prompt.log.error('Error selecting Airtable token.')
-        history.back()
         return
     }
 }

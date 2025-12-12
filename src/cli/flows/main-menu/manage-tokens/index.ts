@@ -1,13 +1,10 @@
+import { encapsulateObjectForSelect } from '../../../utils/encapsulate-object-for-select'
 import { state } from '../../../state'
 import { ui } from '../../../ui'
-import { toolbelt } from '../../../toolbelt/index'
 import { createToken } from './create-tokens'
 import { manageToken } from './manage-token'
-import { history } from '../../../history'
 
 export async function manageTokens() {
-    history.add(manageTokens)
-
     try {
         ui.prompt.log.info(ui.format.bold('🔑 Manage access tokens'))
 
@@ -20,8 +17,7 @@ export async function manageTokens() {
         })
 
         // TODO: create generic add new and back function, in addition to encapsulateObjectForSelect
-        const tokensToSelect =
-            toolbelt.encapsulateObjectForSelect(tokensToPickFrom)
+        const tokensToSelect = encapsulateObjectForSelect(tokensToPickFrom)
 
         const createNewToken = {
             value: 'createNewToken',
@@ -39,7 +35,6 @@ export async function manageTokens() {
 
         await ui.handleCancel(selectedToken)
         if (selectedToken === 'back') {
-            await history.back()
             return
         }
 
@@ -54,7 +49,6 @@ export async function manageTokens() {
         }
     } catch (error) {
         ui.prompt.log.error('Error managing keys.')
-        await history.back()
         return
     }
 }

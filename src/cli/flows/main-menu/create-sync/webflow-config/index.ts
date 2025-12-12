@@ -1,11 +1,11 @@
 import { selectWebflowtoken } from './select-token'
 import { saveWebflowToken } from './save-token'
-import { Collection, Site } from 'webflow-api/api'
 import { handleRequiredFields } from './required-fields'
 import { ui } from '../../../../ui'
-import { toolbelt } from '../../../../toolbelt'
 import { viewSyncs } from '../../view-syncs'
 import { state } from '../../../../state'
+import type { Collection, Site } from 'webflow-api/api'
+import { encapsulateObjectForSelect } from '../../../../utils/encapsulate-object-for-select'
 
 /**
  *
@@ -36,7 +36,7 @@ export async function createWebflowConfig(
             // Ask user to select a site
             const site = (await ui.prompt.select({
                 message: 'Webflow site:',
-                options: toolbelt.encapsulateObjectForSelect(sites),
+                options: encapsulateObjectForSelect(sites),
             })) as Site
             if (ui.prompt.isCancel(site)) {
                 await viewSyncs()
@@ -55,9 +55,7 @@ export async function createWebflowConfig(
             // Ask user to select a collection
             const collectionToGet = (await ui.prompt.select({
                 message: 'Webflow collection:',
-                options: toolbelt.encapsulateObjectForSelect(
-                    collections?.collections
-                ),
+                options: encapsulateObjectForSelect(collections?.collections),
             })) as Collection
             if (ui.prompt.isCancel(collectionToGet)) {
                 await viewSyncs()

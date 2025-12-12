@@ -1,10 +1,11 @@
 import { state } from '../../../state'
 import { ui } from '../../../ui'
-import { airtable } from '../../../core/airtable'
-import { configTools } from '../../../config-tools'
 import { v4 as uuidv4 } from 'uuid'
 import { checkWebflowToken } from '../create-sync/webflow-config/check-token'
 import { manageTokens } from '.'
+import { airtable } from '../../../../core/airtable'
+import type { Token } from '../../../../core/types'
+import { tokens } from '../../../tokens'
 
 export async function createToken(
     verifiedToken?: any,
@@ -42,7 +43,7 @@ export async function createToken(
         // test token
         if (platform === 'airtable') {
             ui.spinner.start('Checking access token...')
-            let bases = await airtable.getBases(accessToken)
+            let bases = await airtable.get.bases(accessToken) // TODO: I dont think this works because of return type
 
             // If API token is invalid, ask user to try again
             if (!bases) {
@@ -72,15 +73,15 @@ export async function createToken(
     }
 
     const key: Token = {
-        label: tokenLabel,
-        value: accessToken,
+        name: tokenLabel,
+        token: accessToken,
         platform: platform,
         id: uuidv4(),
     }
     // Save API token to config
-    state.config.tokens.push(key)
+    state.tokens.push(key)
 
-    await configTools.save()
+    await tokens.save()
 
     ui.prompt.log.success('✅ Key created!')
 

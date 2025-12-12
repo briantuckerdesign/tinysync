@@ -1,8 +1,12 @@
-import { airtable } from '../../../../core/airtable'
-import { toolbelt } from '../../../../toolbelt'
-import { AirtableField } from '../../../../core/airtable/types'
 import { ui } from '../../../../ui'
 import { viewSyncs } from '../../view-syncs'
+import type {
+    AirtableBasesListItem,
+    AirtableField,
+    AirtableTable,
+} from '../../../../../core/airtable/types'
+import { encapsulateObjectForSelect } from '../../../../utils/encapsulate-object-for-select'
+import { airtable } from '../../../../../core/airtable'
 
 /**
  * Create or select fields to handle...
@@ -170,7 +174,7 @@ async function handleFieldCreation(
     // State field:
     let field = (await ui.prompt.select({
         message: `${fieldName}: ${description}`,
-        options: toolbelt.encapsulateObjectForSelect(compatibleFields),
+        options: encapsulateObjectForSelect(compatibleFields),
     })) as any
 
     if (ui.prompt.isCancel(field)) {
@@ -181,7 +185,7 @@ async function handleFieldCreation(
     // If user selects "Create for me" create the field
     if (field.tsCreateField) {
         ui.spinner.start(`Creating ${fieldName} field...`)
-        const response = await airtable.createField(
+        const response = await airtable.create.field(
             apiToken,
             base.id,
             table.id,

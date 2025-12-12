@@ -1,16 +1,14 @@
-import { airtable } from '../../../../core/airtable'
-import { history } from '../../../../history'
+import { airtable } from '../../../../../core/airtable'
+import type { AirtableBasesListItem } from '../../../../../core/airtable/types'
 import { ui } from '../../../../ui'
 
 export async function checkAirtableToken(
     token: any
 ): Promise<Array<AirtableBasesListItem> | undefined> {
-    history.add(checkAirtableToken, [], false)
-
     try {
         // Check if API token is valid by trying to get bases
         ui.spinner.start('Checking API token...')
-        let bases = await airtable.getBases(token)
+        let bases = await airtable.get.bases(token)
 
         // If API token is invalid, ask user to try again
         if (!bases) {
@@ -27,7 +25,7 @@ export async function checkAirtableToken(
         }
     } catch (error) {
         ui.prompt.log.error('Error checking Airtable token.')
-        history.back()
+
         return
     }
 }

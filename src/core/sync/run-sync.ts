@@ -1,78 +1,77 @@
-/* -------------------------------------------------------------------------- */
-/*                                 Sync / Run                                 */
-/* -------------------------------------------------------------------------- */
-import { airtable } from '../core/airtable'
-import { sync } from '.'
-import { ui } from '../ui'
-import { state } from '../state'
 import { WebflowClient } from 'webflow-api'
-import { handleWebflowItemPagination } from '../webflow/handle-item-pagination'
-import { sortRecords } from './sort-records'
-import { writeToJSONFile } from '../toolbelt/write-to-file'
-import { viewSync } from '../flows/main-menu/view-syncs/view-sync'
 
-export async function runSync() {
-    const syncConfig = state.config.selectedSync
+import type { Sync } from '../types'
+import { airtable } from '../airtable'
+import { writeToJSONFile } from '../utils/write-to-json-file'
 
+export async function runSync(
+    sync: Sync,
+    airtableToken: string,
+    webflowToken: string
+) {
+    // Start timer
+    const startTime = new Date().getTime()
     try {
-        ui.prompt.log.info(ui.format.bold('🌐 Syncing'))
-
-        state.webflowClient = new WebflowClient({
-            accessToken: syncConfig.webflow.accessToken,
+        // Initialize Webflow client
+        const webflowClient = new WebflowClient({
+            accessToken: webflowToken,
         })
 
-        // start timer
-        const startTime = new Date().getTime()
+        // Validate schemas on both ends // TODO:
+        // const schemasValidated = await validateSchemas();
 
-        // TODO: Rewrite schema checking.
-        // 1. Check if schema is current on both ends
-        // ui.spinner.start("Validating schemas...");
-        // syncConfig = await checkIfSchemaIsCurrent(syncConfig);
-        // ui.spinner.stop(`✅ ${ui.format.dim("Schemas validated.")}`);
-
-        // 2. Fetch records from Airtable and Webflow
-        // ui.spinner.start("Getting records/items...");
-        // TODO: arg order changed
-        const [airtableRecords, webflowRecords] = await Promise.all([
-            airtable.getRecords(syncConfig),
-            handleWebflowItemPagination(syncConfig),
+        // Fetch Airtable records and Webflow items ✅
+        const [airtableRecords, webflowItems] = await Promise.all([
+            airtable.get.records(
+                airtableToken,
+                sync.config.airtable.base.id,
+                sync.config.airtable.table.id,
+                sync.config.airtable.table.view.id
+            ),
+            webflowClient.collections.items.listItems(
+                sync.config.webflow.collection.id
+            ),
         ])
-        // ui.spinner.stop(`✅ ${ui.format.dim("Records/items retrieved.")}`);
-        // 3. Sort records into create, update, and delete arrays
-        let records = await sortRecords(
-            syncConfig,
-            airtableRecords,
-            webflowRecords
+
+        // TODO: remove dev logging
+        await writeToJSONFile(
+            `./src/dev/temp/${new Date().toISOString()}_airtable-records.json`,
+            airtableRecords
+        )
+        await writeToJSONFile(
+            `./src/dev/temp/${new Date().toISOString()}_webflow-items.json`,
+            webflowItems
         )
 
-        writeToJSONFile('./src/dev/config.json', syncConfig)
-        writeToJSONFile('./src/dev/airtable-records.json', airtableRecords)
-        writeToJSONFile('./src/dev/webflow-records.json', webflowRecords)
-        writeToJSONFile('./src/dev/records.json', records)
+        // 3. Sort records into create, update, and delete arrays
+        // let records = await sortRecords(
+        //     syncConfig,
+        //     airtableRecords,
+        //     webflowRecords
+        // )
 
-        // 5. Create new items in Webflow
-        await sync.createItems(records, syncConfig)
+        // writeToJSONFile('./src/dev/config.json', syncConfig)
+        // writeToJSONFile('./src/dev/airtable-records.json', airtableRecords)
+        // writeToJSONFile('./src/dev/webflow-records.json', webflowRecords)
+        // writeToJSONFile('./src/dev/records.json', records)
 
-        // 6. Update items in Webflow
-        // await sync.updateItems(records, syncConfig, state);
+        // Create new items in Webflow
+        // await sync.createItems(records, syncConfig)
 
-        // 7. Publish the new and updated items in Webflow
-        // await sync.publishItems(records, syncConfig, state);
+        // Update existing items in Webflow
+        // // await sync.updateItems(records, syncConfig, state);
 
-        // 8. Delete items in that no longer exist in Airtable (optional)
-        await sync.deleteItems(records, syncConfig)
+        // Publish new and updated items in Webflow
+        // // await sync.publishItems(records, syncConfig, state);
 
-        // calculate time elapsed
-        const endTime = new Date().getTime()
-        const timeElapsed = (endTime - startTime) / 1000
+        // Delete items in that no longer exist in Airtable if enabled
+        // await sync.deleteItems(records, syncConfig)
 
-        ui.prompt.log.success('✅ Sync complete')
-        ui.prompt.log.message(`⌛  ${timeElapsed} seconds`)
+        const timeElapsed = (new Date().getTime() - startTime) / 1000
+        console.log('Sync completed in ' + timeElapsed + ' seconds.')
 
-        if (syncConfig.errors.length === 0) await viewSync()
+        // if (syncConfig.errors.length === 0) await viewSync()
     } catch (error) {
-        ui.prompt.log.error('Error running sync')
-        console.log(error)
-        process.exit(0)
+        throw error
     }
 }

@@ -1,7 +1,8 @@
-import { Field } from 'webflow-api/api'
+import type { Field } from 'webflow-api/api'
+import type { AirtableField } from '../../../../../core/airtable/types'
 import { ui } from '../../../../ui'
-import { toolbelt } from '../../../../toolbelt'
 import { viewSyncs } from '../../view-syncs'
+import { encapsulateObjectForSelect } from '../../../../utils/encapsulate-object-for-select'
 
 /**
  * Prompts user to match a Webflow field with Airtable fields.
@@ -34,7 +35,7 @@ export async function matchField(
         airtableFieldsCopy.unshift(skipOption) // Ensure to unshift the skipOption, not the fieldsCopy
     }
 
-    let fieldsToSelect = toolbelt.encapsulateObjectForSelect(airtableFieldsCopy)
+    let fieldsToSelect = encapsulateObjectForSelect(airtableFieldsCopy)
 
     const matchedField = (await ui.prompt.select({
         message: message,

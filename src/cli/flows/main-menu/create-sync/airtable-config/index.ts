@@ -2,22 +2,14 @@ import { selectAirtableToken } from './select-token'
 import { saveAirtableToken } from './save-token'
 import { handleRequiredFields } from './required-fields'
 import { ui } from '../../../../ui'
-import { toolbelt } from '../../../../toolbelt'
-import { viewSyncs } from '../../view-syncs'
-import { airtable } from '../../../../core/airtable'
+import { encapsulateObjectForSelect } from '../../../../utils/encapsulate-object-for-select'
+import type {
+    AirtableBasesListItem,
+    AirtableTable,
+    AirtableView,
+} from '../../../../../core/airtable/types'
+import { airtable } from '../../../../../core/airtable'
 
-/**
- * This function...
- *
- * 1. Asks user to select an access token
- * 2. Uses the access token to get a list of bases
- * 3. Asks user to select a base
- * 4. Uses the base to get a list of tables/viwews
- * 5. Asks user to select a table
- * 6. Asks user to select a view
- * 7. Select or create required fields
- * 8. Return Airtable settings
- */
 export async function createAirtableConfig(): Promise<AirtableConfig> {
     try {
         ui.prompt.log.info(ui.format.bold('Airtable'))
@@ -33,27 +25,27 @@ export async function createAirtableConfig(): Promise<AirtableConfig> {
         // Ask user to select a base
         const base = (await ui.prompt.select({
             message: 'Airtable base:',
-            options: toolbelt.encapsulateObjectForSelect(bases),
+            options: encapsulateObjectForSelect(bases),
         })) as AirtableBasesListItem
         await ui.handleCancel(base)
         /* ------------------------------------ 4 ----------------------------------- */
         ui.spinner.start('Getting tables...')
         // Return tables for selected base
-        const tables = await airtable.getTables(accessToken, base.id)
+        const tables = await airtable.get.tables(accessToken, base.id)
         ui.spinner.stop(`✅ ${ui.format.dim('Tables retrieved.')}`)
 
         /* ------------------------------------ 5 ----------------------------------- */
         // Ask user to select a table
         const table = (await ui.prompt.select({
             message: 'Airtable table:',
-            options: toolbelt.encapsulateObjectForSelect(tables),
+            options: encapsulateObjectForSelect(tables),
         })) as AirtableTable
         await ui.handleCancel(table)
         /* ------------------------------------ 6 ----------------------------------- */
         // Ask user to select a view
         const view = (await ui.prompt.select({
             message: 'Airtable view:',
-            options: toolbelt.encapsulateObjectForSelect(table.views),
+            options: encapsulateObjectForSelect(table.views),
         })) as AirtableView
         await ui.handleCancel(view)
 

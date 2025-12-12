@@ -1,26 +1,9 @@
-/**
- * 1. Displays sync details:
- *    - Sync name
- *    - Custom domains
- *    - Site/Base
- *    - Table/Collection
- *    - Settings
- * 2. [ Ask user ] how to proceed
- *    - "Sync" -> run sync
- *    - "Publish site" -> publish site
- *    - "Delete sync" -> delete sync
- *    - "Back" -> view syncs
- */
 import { AsciiTable3 } from 'ascii-table3'
 import { state } from '../../../../state'
 import { ui } from '../../../../ui'
-import { sync } from '../../../../sync'
 import { viewSyncs } from '..'
-import { history } from '../../../../history'
 
 export async function viewSync(firstRun = false) {
-    history.add(viewSync, [firstRun])
-
     try {
         const syncDetails = state.config.selectedSync
 
@@ -90,16 +73,16 @@ export async function viewSync(firstRun = false) {
 
         switch (userChoice) {
             case 'runSync':
-                await sync.run() // TOOD:
+                //   await sync.run() // TOOD:
                 break
             case 'viewDetails':
-                await sync.viewDetails()
+                //  await sync.viewDetails()
                 break
             case 'publishSite':
-                await sync.publish() // remove state
+                //  await sync.publish() // remove state
                 break
             case 'deleteSync':
-                await sync.delete() // remove state
+                // await sync.delete() // remove state
                 break
             case 'back':
                 await viewSyncs()
@@ -112,7 +95,6 @@ export async function viewSync(firstRun = false) {
         }
     } catch (error) {
         ui.prompt.log.error('Error viewing sync.')
-        await history.back()
         return
     }
 }

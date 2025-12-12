@@ -1,5 +1,3 @@
-import { mainMenu } from '..'
-import { history } from '../../../history'
 import { state } from '../../../state'
 import { ui } from '../../../ui'
 import { createSync } from '../create-sync'
@@ -12,8 +10,6 @@ import { viewSync } from './view-sync'
  * 4. Execute selected option
  */
 export async function viewSyncs() {
-    history.add(viewSyncs)
-
     try {
         const syncs = (state.config.syncs || []) as Sync[]
 
@@ -49,7 +45,6 @@ export async function viewSyncs() {
 
         switch (selectedSync) {
             case 'back':
-                await history.back()
                 break
             case 'exit':
                 ui.prompt.outro('See ya later! 👋')
@@ -64,7 +59,6 @@ export async function viewSyncs() {
         }
     } catch (error) {
         ui.prompt.log.error('Error viewing syncs.')
-        await history.back()
         return
     }
 }

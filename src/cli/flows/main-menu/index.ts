@@ -1,5 +1,3 @@
-import { history } from '../../history'
-import { state } from '../../state'
 import { ui } from '../../ui'
 import { changePassword } from './change-password'
 import { manageTokens } from './manage-tokens'
@@ -10,8 +8,6 @@ import { viewSyncs } from './view-syncs'
  * 2. Execute selected option
  */
 export async function mainMenu() {
-    history.add(mainMenu)
-
     try {
         ui.prompt.log.info(ui.format.bold('🏠 Menu'))
 
