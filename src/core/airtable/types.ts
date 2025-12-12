@@ -29,7 +29,7 @@ export interface AirtableTable {
     views: Array<AirtableView>
 }
 
-interface AirtableView {
+export interface AirtableView {
     id: string
     name: string
     /**
