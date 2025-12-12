@@ -1,27 +1,21 @@
-import { configTools } from '../../config-tools'
+import { tokens } from '../../tokens'
 import { ui } from '../../ui'
 import { createPassword } from './create-password'
 import { inputPassword } from './input-password'
 
-/**
- * Either prompts the user to log in, or to create a password.
- */
-export async function login(devPassword?: string): Promise<void> {
+export async function login(): Promise<void> {
     ui.prompt.log.info(ui.format.bold('🔐 Login'))
 
     try {
-        const loadedConfig = await configTools.load()
+        const tokenFile = await tokens.load()
+        if (!tokenFile)
+            throw new Error('There was an issue loading your token file.')
 
-        if (loadedConfig.encryptedData) {
-            if (devPassword) {
-                await inputPassword(loadedConfig, false, devPassword)
-            } else {
-                await inputPassword(loadedConfig)
-            }
+        if (tokenFile.encryptedData) {
+            await inputPassword(tokenFile)
         } else {
-            // If there's no encrypted config, create a password and save config
             await createPassword()
-            await configTools.save()
+            await tokens.save()
         }
 
         ui.prompt.log.success(ui.format.green('Success!'))
