@@ -33,7 +33,7 @@ declare global {
         selectedSync: Sync | undefined
     }
 
-    interface MatchedField {
+    interface SyncField {
         webflow?: {
             slug?: string
             displayName: string
@@ -47,7 +47,7 @@ declare global {
             type: string
             options: any
         }
-        specialField: SpecialField
+        specialField: SpecialField | undefined
     }
 
     type SpecialField = 'lastPublished' | 'itemId' | 'state' | 'slug' | 'name'
