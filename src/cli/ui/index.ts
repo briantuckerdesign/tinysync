@@ -15,7 +15,7 @@ interface UI {
     welcome: () => Promise<void>
     handleCancel: (
         prompt: any | symbol,
-        destination: () => Promise<void>,
+        destination?: () => Promise<void>,
         message?: string
     ) => Promise<void>
 }
