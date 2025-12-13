@@ -1,4 +1,9 @@
-import type { Platform, Sync, Token } from '../../../../../core/types'
+import type {
+    Platform,
+    Sync,
+    Token,
+    TokenPair,
+} from '../../../../../core/types'
 import { state } from '../../../../state'
 import { ui } from '../../../../ui'
 import { saveSyncs } from '../../../../syncs/save'
@@ -7,9 +12,11 @@ import { manageSyncs } from '..'
 /**
  * Validates that the tokens referenced by a sync still exist in state.
  * If a token is missing, prompts the user to select a replacement token.
- * Returns true if tokens are valid or were successfully replaced, false if user cancels.
+ * Returns the TokenPair (airtable and webflow token IDs) if valid or successfully replaced, false if user cancels.
  */
-export async function validateSyncTokens(sync: Sync): Promise<boolean> {
+export async function validateSyncTokens(
+    sync: Sync
+): Promise<TokenPair | false> {
     try {
         if (!sync.tokens) {
             ui.prompt.log.warn('This sync has no tokens configured.')
@@ -47,9 +54,12 @@ export async function validateSyncTokens(sync: Sync): Promise<boolean> {
             }
         }
 
-        // If no missing tokens, return true
+        // If no missing tokens, return the token pair
         if (missingTokens.length === 0) {
-            return true
+            return {
+                airtable: sync.tokens.airtable,
+                webflow: sync.tokens.webflow,
+            }
         }
 
         // Handle missing tokens
@@ -75,7 +85,12 @@ export async function validateSyncTokens(sync: Sync): Promise<boolean> {
         }
 
         ui.prompt.log.success('✓ Sync tokens updated successfully')
-        return true
+
+        // Return the updated token pair
+        return {
+            airtable: sync.tokens.airtable,
+            webflow: sync.tokens.webflow,
+        }
     } catch (error) {
         ui.prompt.log.error('Error validating sync tokens.')
         return false
