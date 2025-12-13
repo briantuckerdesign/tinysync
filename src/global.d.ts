@@ -36,7 +36,7 @@ declare global {
     interface SyncField {
         webflow?: {
             slug?: string
-            displayName: string
+            name: string
             id: string
             type: string
             validations?: any
@@ -56,7 +56,7 @@ declare global {
         syncName: string
         autoPublish: boolean
         deleteRecords: boolean
-        publishToSubdomain?: boolean
+        publishToSubdomain: boolean
     }
 
     interface SyncRecords {
