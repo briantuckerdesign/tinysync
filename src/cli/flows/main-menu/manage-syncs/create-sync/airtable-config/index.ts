@@ -1,3 +1,4 @@
+import { manageSyncs } from '../..'
 import type { AirtableConfig } from '../../../../../types'
 import { ui } from '../../../../../ui'
 import { selectToken } from '../select-token'
@@ -36,8 +37,8 @@ export async function createAirtableConfig(
             lastPublishedField,
         }
     } catch (error) {
-        ui.prompt.log.error('Error setting up Airtable sync.')
-        console.log(error)
+        ui.prompt.log.error('Error configuring Airtable.')
+        await manageSyncs()
         process.exit(0)
     }
 }
