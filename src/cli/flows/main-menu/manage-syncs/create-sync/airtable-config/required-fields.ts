@@ -10,7 +10,8 @@ import { ui } from '../../../../../ui'
 export async function handleRequiredFields(
     token: string,
     base: AirtableBasesListItem,
-    table: AirtableTable
+    table: AirtableTable,
+    syncName: string
 ) {
     const fields = table.fields.map((field) => ({
         label: field.name,
@@ -37,7 +38,7 @@ export async function handleRequiredFields(
         'State',
         'Airtable field to store item state.',
         {
-            name: 'State [TinySync]',
+            name: `State [${syncName}]`,
             type: 'singleSelect',
             description:
                 'Tells TinySync how to proceed. Read the docs for more info.',
@@ -81,7 +82,7 @@ export async function handleRequiredFields(
         'Slug',
         'Airtable field to store Webflow item slug.',
         {
-            name: 'Slug [TinySync]',
+            name: `Slug [${syncName}]`,
             type: 'singleLineText',
             description: 'Stores the Webflow item slug.',
         }
@@ -104,7 +105,7 @@ export async function handleRequiredFields(
         'Webflow Item ID',
         'Airtable field to store Webflow item ID.',
         {
-            name: 'Webflow Item ID [TinySync]',
+            name: `Webflow Item ID [${syncName}]`,
             type: 'singleLineText',
             description: 'Stores the Webflow item ID.',
         }
@@ -126,7 +127,7 @@ export async function handleRequiredFields(
         'Last Published',
         'Airtable field to store last published date/time.',
         {
-            name: 'Last Published [TinySync]',
+            name: `Last Published [${syncName}]`,
             type: 'dateTime',
             description: 'Stores the last published date/time.',
             options: {

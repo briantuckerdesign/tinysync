@@ -6,7 +6,9 @@ import { selectBase } from './select-base'
 import { selectTable } from './select-table'
 import { selectView } from './select-view'
 
-export async function createAirtableConfig(): Promise<AirtableConfig> {
+export async function createAirtableConfig(
+    syncName: string
+): Promise<AirtableConfig> {
     try {
         ui.prompt.log.info(ui.format.bold('Airtable'))
 
@@ -21,7 +23,7 @@ export async function createAirtableConfig(): Promise<AirtableConfig> {
             slugField,
             webflowItemIdField,
             lastPublishedField,
-        } = await handleRequiredFields(token.token, base, table)
+        } = await handleRequiredFields(token.token, base, table, syncName)
 
         return {
             token,
