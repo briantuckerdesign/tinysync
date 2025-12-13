@@ -1,9 +1,8 @@
-export function encapsulateObjectForSelect(objects: any) {
-    if (!Array.isArray(objects)) {
+export function encapsulateObjectForSelect(arrayOfObjects: any[]) {
+    if (!Array.isArray(arrayOfObjects))
         throw new TypeError('Input must be an array of objects')
-    }
 
-    return objects.map((object) => {
+    return arrayOfObjects.map((object) => {
         if (typeof object !== 'object' || object === null) {
             throw new TypeError('Each item in array should be an object')
         }
