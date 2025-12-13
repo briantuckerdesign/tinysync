@@ -1,12 +1,12 @@
 import type { WebflowClient } from 'webflow-api'
-import type { Sync, Token } from '../core/types'
+import type { Collection, Site } from 'webflow-api/api'
 import type {
     AirtableBasesListItem,
     AirtableField,
     AirtableTable,
     AirtableView,
 } from '../core/airtable/types'
-import type { Collection, Field, Site } from 'webflow-api/api'
+import type { Sync, Token } from '../core/types'
 
 export interface State {
     tokens: Token[]
