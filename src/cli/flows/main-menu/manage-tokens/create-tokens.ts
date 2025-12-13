@@ -16,16 +16,8 @@ export async function createToken(verifiedToken?: Token) {
     let name: string
 
     if (verifiedToken) {
-        // Use the verified token data directly, no prompts needed
-        const key: Token = {
-            name: verifiedToken.name,
-            token: verifiedToken.token,
-            platform: verifiedToken.platform,
-            id: uuidv4(),
-        }
-
         // Save API token to config
-        state.tokens.push(key)
+        state.tokens.push(verifiedToken)
         await tokens.save()
 
         ui.prompt.log.success('✅ Key created!')
@@ -117,8 +109,8 @@ async function promptForTokenDetails(): Promise<
 /**
  * Prompts user for a label/name for the token.
  */
-async function promptForTokenName(): Promise<string | undefined> {
-    const name = await ui.prompt.text({ message: 'Key label' })
+export async function promptForTokenName(): Promise<string | undefined> {
+    const name = await ui.prompt.text({ message: 'Token name' })
 
     if (ui.prompt.isCancel(name)) return undefined
 
