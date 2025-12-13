@@ -9,7 +9,7 @@ import { fieldCompatibilityMap } from '../../flows/create-sync/match-fields/get-
  * @param {Object} existingField - The existing field object.
  * @throws {Error} Throws an error if the types are not compatible.
  */
-export function checkFieldType(newField: any, existingField: MatchedField) {
+export function checkFieldType(newField: any, existingField: SyncField) {
     if (
         fieldCompatibilityMap[newField.type].includes(
             existingField.webflow.type
