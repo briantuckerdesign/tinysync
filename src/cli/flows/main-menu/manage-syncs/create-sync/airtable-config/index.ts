@@ -10,7 +10,7 @@ export async function createAirtableConfig(
     syncName: string
 ): Promise<AirtableConfig> {
     try {
-        ui.prompt.log.info(ui.format.bold('Airtable'))
+        ui.prompt.log.info(`${ui.format.bold('Airtable')} details`)
 
         // User selects token, base, table, and view.
         const token = await selectToken('airtable')
