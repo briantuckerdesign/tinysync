@@ -3,10 +3,6 @@ import { changePassword } from './change-password'
 import { manageTokens } from './manage-tokens'
 import { viewSyncs } from './view-syncs'
 
-/**
- * 1. Ask user how to proceed
- * 2. Execute selected option
- */
 export async function mainMenu() {
     try {
         ui.prompt.log.info(ui.format.bold('🏠 Menu'))
