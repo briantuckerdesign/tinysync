@@ -1,93 +1,126 @@
-import { state } from '../../../state'
-import { ui } from '../../../ui'
 import { v4 as uuidv4 } from 'uuid'
-import { checkWebflowToken } from '../create-sync/webflow-config/check-token'
 import { manageTokens } from '.'
-import { airtable } from '../../../../core/airtable'
-import type { Token } from '../../../../core/types'
+import type { Platform, Token } from '../../../../core/types'
+import { state } from '../../../state'
 import { tokens } from '../../../tokens'
+import { ui } from '../../../ui'
+import { verifyToken } from './verify-token'
 
-export async function createToken(
-    verifiedToken?: any,
-    verifiedPlatform?: 'airtable' | 'webflow'
-) {
-    let platform, accessToken, tokenLabel
+/**
+ * Creates a new token. If verifiedToken is provided, skips all prompts
+ * and uses the provided token data directly (including name).
+ */
+export async function createToken(verifiedToken?: Token) {
+    let platform: Platform
+    let accessToken: string
+    let name: string
 
-    // If coming from test key flow, skip prompt and just save provided data
-    if (verifiedToken && verifiedPlatform) {
-        accessToken = verifiedToken
-        platform = verifiedPlatform
-    } else {
-        // Ask user for platform
-        platform = verifiedPlatform
-            ? verifiedPlatform
-            : await ui.prompt.select({
-                  message: 'Select a platform',
-                  options: [
-                      { value: 'airtable', label: 'Airtable' },
-                      { value: 'webflow', label: 'Webflow' },
-                  ],
-              })
-        if (ui.prompt.isCancel(platform)) {
-            await manageTokens()
-            return
+    if (verifiedToken) {
+        // Use the verified token data directly, no prompts needed
+        const key: Token = {
+            name: verifiedToken.name,
+            token: verifiedToken.token,
+            platform: verifiedToken.platform,
+            id: uuidv4(),
         }
 
-        // Ask user for access token
-        accessToken = await ui.prompt.password({ message: 'Access token' })
-        if (ui.prompt.isCancel(accessToken)) {
-            await manageTokens()
-            return
-        }
+        // Save API token to config
+        state.tokens.push(key)
+        await tokens.save()
 
-        // test token
-        if (platform === 'airtable') {
-            ui.spinner.start('Checking access token...')
-            let bases = await airtable.get.bases(accessToken) // TODO: I dont think this works because of return type
-
-            // If API token is invalid, ask user to try again
-            if (!bases) {
-                ui.prompt.log.error(
-                    "Either your token is invalid, or it doesn't have 'create' permissions on any bases."
-                )
-                ui.spinner.stop()
-                return await manageTokens() // Recursively call the function again
-            }
-            ui.spinner.stop(`✅ ${ui.format.dim('Airtable token validated.')}`)
-        }
-        if (platform === 'webflow') {
-            const sites = await checkWebflowToken(accessToken)
-            if (sites === undefined) {
-                await createToken(null, platform) // Recursively call the function again
-                return
-            }
-        }
+        ui.prompt.log.success('✅ Key created!')
+        return
     }
-    {
-        // Ask user for label for API token
-        tokenLabel = await ui.prompt.text({ message: 'Key label' })
-        if (ui.prompt.isCancel(tokenLabel)) {
-            await manageTokens()
-            return
-        }
+
+    // Prompt and verify token
+    const tokenDetails = await promptForTokenDetails()
+
+    if (!tokenDetails) {
+        await manageTokens()
+        return
     }
+
+    platform = tokenDetails.platform
+    accessToken = tokenDetails.accessToken
+
+    // Ask user for label for API token
+    const tokenName = await promptForTokenName()
+
+    if (!tokenName) {
+        await manageTokens()
+        return
+    }
+
+    name = tokenName
 
     const key: Token = {
-        name: tokenLabel,
+        name: name,
         token: accessToken,
         platform: platform,
         id: uuidv4(),
     }
+
     // Save API token to config
     state.tokens.push(key)
-
     await tokens.save()
 
     ui.prompt.log.success('✅ Key created!')
+    await manageTokens()
+}
 
-    if (verifiedToken && verifiedPlatform) {
-        return
-    } else {
-        await manageTokens()
+/**
+ * Prompts user for platform and access token, validates the token,
+ * and returns a partial Token object with platform and accessToken.
+ * Recursively calls itself if validation fails.
+ */
+async function promptForTokenDetails(): Promise<
+    { platform: Platform; accessToken: string } | undefined
+> {
+    // Ask user for platform
+    const platform = await ui.prompt.select({
+        message: 'Select a platform',
+        options: [
+            { value: 'airtable', label: 'Airtable' },
+            { value: 'webflow', label: 'Webflow' },
+        ],
+    })
+
+    if (ui.prompt.isCancel(platform)) {
+        return undefined
     }
+
+    // Ask user for access token
+    const accessToken = await ui.prompt.password({ message: 'Access token' })
+
+    if (ui.prompt.isCancel(accessToken)) {
+        return undefined
+    }
+
+    // Verify token based on platform
+    let isValid = false
+
+    if (platform === 'airtable') {
+        isValid = await verifyToken.airtable(accessToken)
+    } else if (platform === 'webflow') {
+        isValid = await verifyToken.webflow(accessToken)
+    }
+
+    // If token is invalid, recursively prompt again
+    if (!isValid) {
+        ui.prompt.log.message('Please try again.')
+        return await promptForTokenDetails()
+    }
+
+    return { platform, accessToken }
+}
+
+/**
+ * Prompts user for a label/name for the token.
+ */
+async function promptForTokenName(): Promise<string | undefined> {
+    const name = await ui.prompt.text({ message: 'Key label' })
+
+    if (ui.prompt.isCancel(name)) return undefined
+
+    return name
 }

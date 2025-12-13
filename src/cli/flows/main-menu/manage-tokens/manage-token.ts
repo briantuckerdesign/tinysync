@@ -2,8 +2,9 @@ import { ui } from '../../../ui'
 import { renameToken } from './rename-tokens'
 import { deleteKey } from './delete-tokens'
 import { manageTokens } from '.'
+import type { Token } from '../../../../core/types'
 
-export async function manageToken(selectedToken) {
+export async function manageToken(selectedToken: Token) {
     try {
         const selectedAction = await ui.prompt.select({
             message: 'What would you like to do?',
@@ -24,9 +25,10 @@ export async function manageToken(selectedToken) {
                 break
             case 'deleteToken':
                 await deleteKey(selectedToken)
-                break
+                return
             default:
                 await manageTokens()
+                return
         }
     } catch (error) {
         ui.prompt.log.error('Error managing token.')

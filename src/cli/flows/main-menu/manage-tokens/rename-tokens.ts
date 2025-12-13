@@ -2,6 +2,7 @@ import { manageTokens } from '.'
 import type { Token } from '../../../../core/types'
 import { tokens } from '../../../tokens'
 import { ui } from '../../../ui'
+import { sanitizeString } from '../../../utils/sanitize-string'
 import { manageToken } from './manage-token'
 
 export async function renameToken(token: Token) {
@@ -16,9 +17,10 @@ export async function renameToken(token: Token) {
             return
         }
 
-        token.name = newLabel
+        token.name = sanitizeString(newLabel)
 
         await tokens.save()
+
         ui.prompt.log.success('✅ Token renamed!')
     } catch (error) {
         ui.prompt.log.error('Error renaming token.')

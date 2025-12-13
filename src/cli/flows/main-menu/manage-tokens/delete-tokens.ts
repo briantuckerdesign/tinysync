@@ -18,7 +18,9 @@ export async function deleteKey(keyToDelete: Token) {
         }
 
         state.tokens = state.tokens.filter((key) => key.id !== keyToDelete.id)
+
         await tokens.save()
+
         ui.prompt.log.success('✅ Key deleted!')
     } catch (error) {
         ui.prompt.log.error('Error deleting key.')
