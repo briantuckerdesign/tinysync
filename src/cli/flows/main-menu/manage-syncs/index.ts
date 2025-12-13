@@ -48,11 +48,10 @@ export async function manageSyncs() {
                 ui.prompt.outro('See ya later! 👋')
                 process.exit(0)
             default:
-                state.activeSync = selectedSync as Sync
-                return await manageSync()
+                return await manageSync(selectedSync as Sync)
         }
     } catch (error) {
-        ui.prompt.log.error('Error viewing syncs.')
-        return
+        ui.prompt.log.error('Error managing syncs.')
+        return await mainMenu()
     }
 }
