@@ -6,6 +6,7 @@ import type {
     AirtableTable,
 } from '../../../../../../core/airtable/types'
 import { ui } from '../../../../../ui'
+import { sortFieldsByMatch } from '../match-fields/sort-fields-by-match'
 
 export async function handleRequiredFields(
     token: string,
@@ -13,145 +14,105 @@ export async function handleRequiredFields(
     table: AirtableTable,
     syncName: string
 ) {
+    const createForMe = {
+        label: `${ui.format.italic('[ Create for me ]')}`,
+        value: 'createForMe',
+    }
     const fields = table.fields.map((field) => ({
         label: field.name,
         value: field,
     })) as any[]
 
-    // Adds [ Create for me ] to options
-    fields.unshift({
-        label: `${ui.format.italic('[ Create for me ]')}`,
-        value: 'createForMe',
-    })
-
-    const stateField = await handleFieldCreation(
-        token,
-        base,
-        table,
-        fields.filter(
-            (field) =>
-                field.value === 'createForMe' ||
-                field.value.type === 'singleLineText' ||
-                field.value.type === 'singleSelect' ||
-                field.value.type === 'formula'
-        ),
-        'State',
-        'Airtable field to store item state.',
+    const fieldConfigs = [
         {
-            name: `State [${syncName}]`,
-            type: 'singleSelect',
-            description:
-                'Tells TinySync how to proceed. Read the docs for more info.',
-            options: {
-                choices: [
-                    {
-                        name: 'Not synced',
-                        color: 'grayLight2',
-                    },
-                    {
-                        name: 'Queued for sync',
-                        color: 'redBright',
-                    },
-                    {
-                        name: 'Always sync',
-                        color: 'purpleBright',
-                    },
-                    {
-                        name: 'Staging',
-                        color: 'greenLight2',
-                    },
-                ],
-            },
-        }
-    )
-
-    if (ui.prompt.isCancel(stateField)) {
-        await manageSyncs()
-        process.exit(0)
-    }
-
-    const slugField = await handleFieldCreation(
-        token,
-        base,
-        table,
-        fields.filter(
-            (field) =>
-                field.value === 'createForMe' ||
-                field.value.type === 'singleLineText'
-        ),
-        'Slug',
-        'Airtable field to store Webflow item slug.',
-        {
-            name: `Slug [${syncName}]`,
-            type: 'singleLineText',
-            description: 'Stores the Webflow item slug.',
-        }
-    )
-
-    if (ui.prompt.isCancel(slugField)) {
-        await manageSyncs()
-        process.exit(0)
-    }
-
-    const webflowItemIdField = await handleFieldCreation(
-        token,
-        base,
-        table,
-        fields.filter(
-            (field) =>
-                field.value === 'createForMe' ||
-                field.value.type === 'singleLineText'
-        ),
-        'Webflow Item ID',
-        'Airtable field to store Webflow item ID.',
-        {
-            name: `Webflow Item ID [${syncName}]`,
-            type: 'singleLineText',
-            description: 'Stores the Webflow item ID.',
-        }
-    )
-
-    if (ui.prompt.isCancel(webflowItemIdField)) {
-        await manageSyncs()
-        process.exit(0)
-    }
-
-    const lastPublishedField = await handleFieldCreation(
-        token,
-        base,
-        table,
-        fields.filter(
-            (field) =>
-                field.value === 'createForMe' || field.value.type === 'dateTime'
-        ),
-        'Last Published',
-        'Airtable field to store last published date/time.',
-        {
-            name: `Last Published [${syncName}]`,
-            type: 'dateTime',
-            description: 'Stores the last published date/time.',
-            options: {
-                timeZone: 'client',
-                dateFormat: {
-                    name: 'local',
-                },
-                timeFormat: {
-                    name: '12hour',
+            key: 'stateField',
+            name: 'State',
+            description: 'Airtable field to store item state.',
+            compatibleTypes: ['singleLineText', 'singleSelect', 'formula'],
+            fieldOptions: {
+                name: `State [${syncName}]`,
+                type: 'singleSelect',
+                description:
+                    'Tells TinySync how to proceed. Read the docs for more info.',
+                options: {
+                    choices: [
+                        { name: 'Not synced', color: 'grayLight2' },
+                        { name: 'Queued for sync', color: 'redBright' },
+                        { name: 'Always sync', color: 'purpleBright' },
+                        { name: 'Staging', color: 'greenLight2' },
+                    ],
                 },
             },
-        }
-    )
+        },
+        {
+            key: 'slugField',
+            name: 'Slug',
+            description: 'Airtable field to store Webflow item slug.',
+            compatibleTypes: ['singleLineText'],
+            fieldOptions: {
+                name: `Slug [${syncName}]`,
+                type: 'singleLineText',
+                description: 'Stores the Webflow item slug.',
+            },
+        },
+        {
+            key: 'webflowItemIdField',
+            name: 'Webflow Item ID',
+            description: 'Airtable field to store Webflow item ID.',
+            compatibleTypes: ['singleLineText'],
+            fieldOptions: {
+                name: `Webflow Item ID [${syncName}]`,
+                type: 'singleLineText',
+                description: 'Stores the Webflow item ID.',
+            },
+        },
+        {
+            key: 'lastPublishedField',
+            name: 'Last Published',
+            description: 'Airtable field to store last published date/time.',
+            compatibleTypes: ['dateTime'],
+            fieldOptions: {
+                name: `Last Published [${syncName}]`,
+                type: 'dateTime',
+                description: 'Stores the last published date/time.',
+                options: {
+                    timeZone: 'client',
+                    dateFormat: { name: 'local' },
+                    timeFormat: { name: '12hour' },
+                },
+            },
+        },
+    ]
 
-    if (ui.prompt.isCancel(lastPublishedField)) {
-        await manageSyncs()
-        process.exit(0)
+    const results: Record<string, AirtableField> = {}
+
+    for (const config of fieldConfigs) {
+        const compatibleFields = fields.filter(
+            (field) =>
+                field.value === 'createForMe' ||
+                config.compatibleTypes.includes(field.value.type)
+        )
+        sortFieldsByMatch(config.name, compatibleFields)
+        compatibleFields.unshift(createForMe)
+
+        const field = await handleFieldCreation(
+            token,
+            base,
+            table,
+            compatibleFields,
+            config.name,
+            config.description,
+            config.fieldOptions
+        )
+        await ui.handleCancel(field, manageSyncs)
+        results[config.key] = field
     }
 
     return {
-        stateField,
-        slugField,
-        webflowItemIdField,
-        lastPublishedField,
+        stateField: results.stateField,
+        slugField: results.slugField,
+        webflowItemIdField: results.webflowItemIdField,
+        lastPublishedField: results.lastPublishedField,
     }
 }
 
