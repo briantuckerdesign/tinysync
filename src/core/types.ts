@@ -92,3 +92,8 @@ export interface Token {
 }
 
 export interface State {}
+
+export interface TokenPair {
+    airtable: string
+    webflow: string
+}
