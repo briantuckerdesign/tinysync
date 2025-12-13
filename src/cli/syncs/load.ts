@@ -17,7 +17,7 @@ export async function loadSyncs(): Promise<boolean> {
             const sync: Sync = await file.json()
 
             if (!sync.id || !sync.initVersion || !sync.name || !sync.config) {
-                ui.prompt.log.warn('Skipping an invalid JSON file')
+                ui.prompt.log.warn(`Skipping an invalid JSON file: ${filename}`)
                 continue
             }
 
