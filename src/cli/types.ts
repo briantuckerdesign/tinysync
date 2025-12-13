@@ -36,12 +36,10 @@ export interface AirtableConfig {
     slugField: AirtableField
     webflowItemIdField: AirtableField
     lastPublishedField: AirtableField
-    fields: AirtableField[]
 }
 
 export interface WebflowConfig {
     token: Token
     site: Site
     collection: Collection
-    fields: Field[]
 }

@@ -2,7 +2,6 @@ import { manageSyncs } from '../..'
 import type { AirtableConfig } from '../../../../../types'
 import { ui } from '../../../../../ui'
 import { selectToken } from '../select-token'
-import { getFields } from './get-fields'
 import { handleRequiredFields } from './required-fields'
 import { selectBase } from './select-base'
 import { selectTable } from './select-table'
@@ -27,8 +26,6 @@ export async function createAirtableConfig(
             lastPublishedField,
         } = await handleRequiredFields(token.token, base, table, syncName)
 
-        const fields = await getFields(token.token, base.id, table.id, view.id)
-
         return {
             token,
             base,
@@ -38,7 +35,6 @@ export async function createAirtableConfig(
             slugField,
             webflowItemIdField,
             lastPublishedField,
-            fields,
         }
     } catch (error) {
         ui.prompt.log.error('Error configuring Airtable.')
