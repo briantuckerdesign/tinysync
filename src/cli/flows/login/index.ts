@@ -1,3 +1,4 @@
+import { syncs } from '../../syncs'
 import { tokens } from '../../tokens'
 import { ui } from '../../ui'
 import { createPassword } from './create-password'
@@ -17,6 +18,10 @@ export async function login(): Promise<void> {
             await createPassword()
             await tokens.save()
         }
+
+        const syncsLoaded = await syncs.load()
+        if (!syncsLoaded)
+            throw new Error('There was an issue loading your syncs.')
 
         ui.prompt.log.success(ui.format.green('Success!'))
     } catch (error) {
