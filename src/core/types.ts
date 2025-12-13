@@ -1,9 +1,4 @@
-import type {
-    Domain as WebflowDomain,
-    FieldType as WebflowFieldType,
-} from 'webflow-api/api'
-import type { AirtableFieldType } from './airtable/types'
-import type { WebflowValidations } from './webflow/types'
+import type { Domain as WebflowDomain } from 'webflow-api/api'
 
 export interface Sync {
     /**
@@ -59,7 +54,7 @@ export interface Sync {
                 /** Site name */
                 name: string
                 /** Custom domains */
-                customDomains: WebflowDomain
+                customDomains: WebflowDomain[]
             }
             collection: {
                 /** Collection ID */
@@ -72,26 +67,7 @@ export interface Sync {
         }
     }
     /** Fields used by this sync */
-    fields: Field[]
-}
-
-export interface Field {
-    specialType?: SpecialField
-    syncedToWebflow: boolean
-    webflow?: {
-        /** Note: called displayName in Webflow api */
-        name: string
-        slug?: string
-        id: string
-        type: WebflowFieldType
-        validations?: WebflowValidations
-    }
-    airtable: {
-        name: string
-        id: string
-        type: AirtableFieldType
-        options: any
-    }
+    fields: SyncField[]
 }
 
 export type SpecialField =
