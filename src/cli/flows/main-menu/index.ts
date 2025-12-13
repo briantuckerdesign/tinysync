@@ -1,7 +1,7 @@
 import { ui } from '../../ui'
 import { changePassword } from './change-password'
 import { manageTokens } from './manage-tokens'
-import { viewSyncs } from './view-syncs'
+import { manageSyncs } from './manage-syncs'
 
 export async function mainMenu() {
     try {
@@ -16,11 +16,14 @@ export async function mainMenu() {
                 { value: 'exit', label: 'Exit', hint: 'Bye!' },
             ],
         })
-        await ui.handleCancel(menu)
+        await ui.handleCancel(menu, () => {
+            ui.prompt.outro('See ya later! 👋')
+            process.exit(0)
+        })
 
         switch (menu) {
             case 'viewSyncs':
-                await viewSyncs()
+                await manageSyncs()
                 break
             case 'manageTokens':
                 await manageTokens()
