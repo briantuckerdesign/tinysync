@@ -34,7 +34,7 @@ export async function manageSyncs() {
 
         // Returns the selected sync
         const selectedSync = await ui.prompt.select({
-            message: ui.format.bold('🔍 manage syncs'),
+            message: ui.format.bold('🔍 Manage syncs'),
             options: choices,
         })
         await ui.handleCancel(selectedSync, mainMenu)
@@ -42,12 +42,11 @@ export async function manageSyncs() {
         switch (selectedSync) {
             case 'back':
                 return await mainMenu()
-            case 'exit':
-                ui.prompt.outro('See ya later! 👋')
-                process.exit()
             case 'createSync':
                 return await createSync()
-
+            case 'exit':
+                ui.prompt.outro('See ya later! 👋')
+                process.exit(0)
             default:
                 state.activeSync = selectedSync as Sync
                 return await manageSync()
