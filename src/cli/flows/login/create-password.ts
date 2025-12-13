@@ -10,12 +10,16 @@ export async function createPassword(repeat = false): Promise<boolean> {
         const password = (await ui.prompt.password({
             message: message,
         })) as string
-        await ui.handleCancel(password)
+        await ui.handleCancel(password, () => {
+            process.exit(0)
+        })
 
         message = 'Confirm password:'
 
         const confirmPassword = await ui.prompt.password({ message: message })
-        await ui.handleCancel(confirmPassword)
+        await ui.handleCancel(confirmPassword, () => {
+            process.exit(0)
+        })
 
         // If passwords don't match, prompt user again
         if (password !== confirmPassword) {

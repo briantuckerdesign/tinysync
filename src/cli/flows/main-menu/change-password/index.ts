@@ -8,25 +8,21 @@ export async function changePassword() {
         const confirmChange = await ui.prompt.confirm({
             message: 'Are you sure you want to change your password?',
         })
-
-        await ui.handleCancel(confirmChange)
+        await ui.handleCancel(confirmChange, mainMenu)
 
         if (confirmChange) {
             const success = await createPassword()
             if (!success) {
                 ui.prompt.log.error('Error changing password.')
-                await mainMenu()
-                return
+                return await mainMenu()
             } else {
                 ui.prompt.log.success('Password changed!')
                 await tokens.save()
-                await mainMenu()
-                return
+                return await mainMenu()
             }
         }
     } catch (error) {
         ui.prompt.log.error('Error changing password.')
-        await mainMenu()
-        return
+        return await mainMenu()
     }
 }
