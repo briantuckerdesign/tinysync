@@ -5,4 +5,5 @@
 .vscode
 .cursor
 /src/cli/data/*.json
+/src/cli/data/syncs/*.json
 src/dev
