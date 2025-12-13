@@ -9,7 +9,7 @@ export function buildFieldMapping(
         return {
             webflow: {
                 slug: webflowField.slug as string,
-                displayName: webflowField.displayName,
+                name: webflowField.displayName,
                 id: webflowField.id,
                 type: webflowField.type,
                 validations: webflowField.validations || {},
