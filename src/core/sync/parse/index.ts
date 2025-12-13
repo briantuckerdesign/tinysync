@@ -76,7 +76,7 @@ export async function parseAirtableRecord(
 }
 
 async function handleFieldBasedOnType(
-    syncedField: MatchedField,
+    syncedField: SyncField,
     fetchedValue: any
 ) {
     let parsedValue
