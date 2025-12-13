@@ -13,11 +13,11 @@ interface UI {
         message: (msg: string) => void
     }
     welcome: () => Promise<void>
-    handleCancel: (
+    handleCancel: <T = void>(
         prompt: any | symbol,
-        destination?: () => Promise<void>,
+        destination?: () => Promise<T>,
         message?: string
-    ) => Promise<void>
+    ) => Promise<T | undefined>
 }
 
 export const ui: UI = {
