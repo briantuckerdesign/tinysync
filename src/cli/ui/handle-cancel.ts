@@ -1,17 +1,12 @@
-import { ui } from '../ui'
+import { ui } from '.'
 
-/**
- * If user cancels a prompt, performs the appropriate action
- *
- * Can send a message, route to a destination function
- * If no destination is provided, will route to outro
- *
- * @param {any} sourcePrompt - The prompt source of the cancel action
- */
-export async function handleCancel(sourcePrompt: any) {
-    try {
-    } catch (error) {
-        ui.prompt.log.error('Error handling cancel action.')
-        process.exit(0)
+export async function handleCancel(
+    prompt: any | symbol,
+    destination: () => Promise<void>,
+    message: string = 'Operation cancelled.'
+) {
+    if (ui.prompt.isCancel(prompt)) {
+        ui.prompt.cancel(message)
+        return await destination()
     }
 }
