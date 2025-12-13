@@ -59,27 +59,6 @@ declare global {
         publishToSubdomain?: boolean
     }
 
-    /* --------------------------------- Webflow -------------------------------- */
-
-    interface WebflowConfig {
-        accessToken: string
-        site: Site
-        collection: Collection
-        recordIdField: Field
-    }
-
-    /* -------------------------------- Airtable -------------------------------- */
-    interface AirtableConfig {
-        accessToken: string
-        base: AirtableBasesListItem
-        table: AirtableTable
-        view: AirtableView
-        stateField: AirtableField
-        slugField: AirtableField
-        webflowItemIdField: AirtableField
-        lastPublishedField: AirtableField
-    }
-
     interface SyncRecords {
         toCreate: AirtableRecord[]
         toUpdate: AirtableRecord[]
