@@ -1,3 +1,4 @@
+import { mainMenu } from '..'
 import { tokens } from '../../../tokens'
 import { ui } from '../../../ui'
 import { createPassword } from '../../login/create-password'
@@ -14,15 +15,18 @@ export async function changePassword() {
             const success = await createPassword()
             if (!success) {
                 ui.prompt.log.error('Error changing password.')
+                await mainMenu()
                 return
             } else {
                 ui.prompt.log.success('Password changed!')
                 await tokens.save()
+                await mainMenu()
                 return
             }
         }
     } catch (error) {
         ui.prompt.log.error('Error changing password.')
+        await mainMenu()
         return
     }
 }
