@@ -45,7 +45,7 @@ export async function parseRecordData(
 }
 
 async function handleFieldBasedOnType(
-    field: MatchedField,
+    field: SyncField,
     record: AirtableRecord,
     recordData: any,
     selectedSync: Sync
