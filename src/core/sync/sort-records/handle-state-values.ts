@@ -1,86 +1,60 @@
-import { ui } from '../../ui'
+export type SyncState = 'Staging' | 'Not synced' | 'Queued for sync' | 'Always sync'
 
-export function handleStateValues(
-    stateFieldValue: any,
-    webflowItemIdInAirtable: any,
-    usedItemIds: any[],
-    webflowItemsToDelete: any[],
-    airtableRecord: AirtableRecord,
-    idMatchFound: boolean,
-    matchErrorMessage: string,
-    recordsWithErrors: any[],
-    recordsToCreate: any[],
-    recordsToUpdate: any[]
-) {
-    switch (stateFieldValue) {
-        /* --------------------------------- Staging -------------------------------- */
-        // - Add to Webflow item ID usedItemIds to prevent deletion
+export type RecordAction =
+    | { type: 'skip'; preserveItemId: boolean }
+    | { type: 'create'; preserveItemId: false }
+    | { type: 'update'; preserveItemId: true }
+    | { type: 'delete'; preserveItemId: true }
+    | { type: 'error'; preserveItemId: boolean; message: string }
+
+interface RecordContext {
+    state: string | undefined
+    itemId: string | undefined
+    hasValidItemId: boolean
+}
+
+export function determineRecordAction(ctx: RecordContext): RecordAction {
+    const { state, itemId, hasValidItemId } = ctx
+
+    switch (state as SyncState) {
         case 'Staging':
-            if (webflowItemIdInAirtable)
-                usedItemIds.push(webflowItemIdInAirtable)
-            break
-        /* ------------------------------- Not synced ------------------------------- */
-        // - If item ID found in Webflow, delete in Webflow
-        // - If item ID but not found in Webflow, error
-        //   (there should be no item ID in Airtable if the item doesn't exist in Webflow)
-        // - If no item ID, do nothing
-        case 'Not synced':
-            if (webflowItemIdInAirtable) {
-                usedItemIds.push(webflowItemIdInAirtable)
-                webflowItemsToDelete.push(airtableRecord)
-            } else if (webflowItemIdInAirtable && !idMatchFound) {
-                usedItemIds.push(webflowItemIdInAirtable)
-                airtableRecord.error = matchErrorMessage
-                recordsWithErrors.push(airtableRecord)
-            } else {
-                // No webflowId: do nothing
-            }
-            break
-        /* ----------------------------- Queud for sync ----------------------------- */
-        // - If no item ID, create
-        // - If item ID but no match, error
-        //   (there should be no item ID in Airtable if the item doesn't exist in Webflow)
-        // - If item ID found in Webflow, update
-        case 'Queued for sync':
-            if (!webflowItemIdInAirtable) {
-                recordsToCreate.push(airtableRecord) // create
-            } else if (!idMatchFound) {
-                usedItemIds.push(webflowItemIdInAirtable)
-                airtableRecord.error = matchErrorMessage
-                recordsWithErrors.push(airtableRecord) // error
-            } else {
-                usedItemIds.push(webflowItemIdInAirtable)
-                recordsToUpdate.push(airtableRecord) // update
-            }
-            break
-        /* ------------------------------- Always sync ------------------------------ */
-        // - If no item ID, create
-        // - If item ID but no match, error
-        //   (there should be no item ID in Airtable if the item doesn't exist in Webflow)
-        // - If item ID found in Webflow, update
-        case 'Always sync':
-            if (!webflowItemIdInAirtable) {
-                recordsToCreate.push(airtableRecord) // create
-            } else if (!idMatchFound) {
-                ui.prompt.log.error('always sync, no match')
-                usedItemIds.push(webflowItemIdInAirtable)
-                airtableRecord.error = matchErrorMessage
-                recordsWithErrors.push(airtableRecord) // error
-            } else {
-                usedItemIds.push(webflowItemIdInAirtable)
-                recordsToUpdate.push(airtableRecord) // update
-            }
-            break
-        /* ---------------------------- All other states ---------------------------- */
-        // - State field didn't match any of the expected values
-        // - So, error
-        default:
-            if (webflowItemIdInAirtable)
-                usedItemIds.push(webflowItemIdInAirtable)
+            // Preserve item ID to prevent deletion, but don't sync
+            return { type: 'skip', preserveItemId: !!itemId }
 
-            airtableRecord.error =
-                "State field didn't match any of the expected values."
-            recordsWithErrors.push(airtableRecord) // error
-            break
+        case 'Not synced':
+            // Delete from Webflow if item exists there
+            if (itemId && hasValidItemId) {
+                return { type: 'delete', preserveItemId: true }
+            }
+            // Item ID present but doesn't exist in Webflow - error
+            if (itemId && !hasValidItemId) {
+                return { type: 'error', preserveItemId: true, message: INVALID_ITEM_ID_ERROR }
+            }
+            // No item ID - nothing to do
+            return { type: 'skip', preserveItemId: false }
+
+        case 'Queued for sync':
+        case 'Always sync':
+            // No item ID - create new
+            if (!itemId) {
+                return { type: 'create', preserveItemId: false }
+            }
+            // Item ID doesn't exist in Webflow - error
+            if (!hasValidItemId) {
+                return { type: 'error', preserveItemId: true, message: INVALID_ITEM_ID_ERROR }
+            }
+            // Valid item ID - update
+            return { type: 'update', preserveItemId: true }
+
+        default:
+            // Unknown state - error
+            return {
+                type: 'error',
+                preserveItemId: !!itemId,
+                message: `State field value "${state}" didn't match any expected values.`,
+            }
     }
 }
+
+const INVALID_ITEM_ID_ERROR =
+    'Airtable record contained an Item ID that was not found in Webflow. To fix, clear the Item ID field in Airtable, or update the Item ID field in Airtable to match the ID of an existing item in Webflow.'
