@@ -3,10 +3,10 @@ import { writeToJSONFile } from '../../../../../core/utils/write-to-json-file'
 import { state } from '../../../../state'
 import { syncs } from '../../../../syncs'
 import { ui } from '../../../../ui'
-import { sanitizeString } from '../../../../utils/sanitize-string'
 import { viewSyncDetails } from '../manage-sync/view-sync-details'
 import { createAirtableConfig } from './airtable-config'
 import { buildSync } from './build-sync'
+import { getSyncName } from './get-name'
 import { getSettings } from './get-settings'
 import { matchFields } from './match-fields/index'
 import { createWebflowConfig } from './webflow-config'
@@ -34,12 +34,8 @@ export async function createSync() {
         await ui.handleCancel(shallWeContinue)
         if (shallWeContinue === false) return await manageSyncs()
 
-        // Ask for sync name
-        const syncNameUnsanitized = (await ui.prompt.text({
-            message: 'What would you like to name this sync?',
-        })) as string
-        await ui.handleCancel(syncNameUnsanitized, manageSyncs)
-        const syncName = sanitizeString(syncNameUnsanitized)
+        // Get sync name
+        const syncName = await getSyncName()
 
         // Get initial config from both platforms
         const airtableConfig = await createAirtableConfig(syncName)
