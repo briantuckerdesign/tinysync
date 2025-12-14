@@ -37,14 +37,6 @@ export function checkValidations(
             if (!valid) failedValidations.push('allow negative')
         }
 
-        //   if (validations.minImageSize) {
-        //     parsedValue = minImageSize(
-        //       parsedValue,
-        //       fetchedValue,
-        //       validations.minImageSize
-        //     );
-        //   }
-
         // TODO: minImageSize
         // TODO: maxImageSize
         // TODO: minImageWidth
