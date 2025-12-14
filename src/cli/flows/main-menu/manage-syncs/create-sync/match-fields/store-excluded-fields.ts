@@ -1,3 +1,4 @@
+import type { SyncField } from '../../../../../../core/types'
 import type { AirtableConfig, WebflowConfig } from '../../../../../types'
 import { buildFieldMapping } from './build-field-mapping'
 

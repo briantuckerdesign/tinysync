@@ -17,7 +17,7 @@ export async function viewSyncDetails(sync: Sync) {
             )
             .addRow(
                 'Delete records at destination if deleted at source',
-                sync.config.deleteNonCorrespondingItems ? '✓' : '✗'
+                sync.config.deleteOrphanedItems ? '✓' : '✗'
             )
             .addRow(
                 'Publish to webflow.io subdomain',

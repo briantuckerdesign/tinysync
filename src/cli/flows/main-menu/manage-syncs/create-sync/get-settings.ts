@@ -1,4 +1,5 @@
 import { manageSyncs } from '..'
+import type { SyncSettings } from '../../../../../core/types'
 import type { WebflowConfig } from '../../../../types'
 import { ui } from '../../../../ui'
 

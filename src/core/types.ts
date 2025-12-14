@@ -1,4 +1,5 @@
-import type { Domain as WebflowDomain } from 'webflow-api/api'
+import type { CollectionItem, Domain as WebflowDomain } from 'webflow-api/api'
+import type { AirtableRecord } from './airtable/types'
 
 export interface Sync {
     /**
@@ -22,7 +23,7 @@ export interface Sync {
         /** Automatically publish Webflow site if validation occurs */
         autoPublishOnValidationError: boolean
         /** Delete items in Webflow if no corresponding records found in Airtable */
-        deleteNonCorrespondingItems: boolean
+        deleteOrphanedItems: boolean
         /** Publish to the webflow.io staging subdomain */
         publishToStagingSubdomain: boolean
         /** Airtable config */
@@ -70,13 +71,6 @@ export interface Sync {
     fields: SyncField[]
 }
 
-export type SpecialField =
-    | 'lastPublished'
-    | 'itemId'
-    | 'state'
-    | 'slug'
-    | 'name'
-
 /** The two relevant platforms for tinySync */
 export type Platform = 'webflow' | 'airtable'
 
@@ -96,4 +90,49 @@ export interface State {}
 export interface TokenPair {
     airtable: string
     webflow: string
+}
+
+export interface SyncActions {
+    airtable: {
+        itemsToCreate: AirtableRecord[]
+        itemsToUpdate: AirtableRecord[]
+        itemsToDelete: AirtableRecord[]
+        recordsWithErrors: AirtableRecord[]
+        recordstoUpdate: AirtableRecord[]
+    }
+    webflow: {
+        itemsToPublish: CollectionItem[]
+        orphanedItems: CollectionItem[]
+    }
+}
+
+export interface SyncField {
+    webflow?: {
+        slug?: string
+        name: string
+        id: string
+        type: string
+        validations?: any
+    }
+    airtable: {
+        name: string
+        id: string
+        type: string
+        options: any
+    }
+    specialField: SpecialField | undefined
+}
+
+export type SpecialField =
+    | 'lastPublished'
+    | 'itemId'
+    | 'state'
+    | 'slug'
+    | 'name'
+
+export interface SyncSettings {
+    syncName: string
+    autoPublish: boolean
+    deleteRecords: boolean
+    publishToSubdomain: boolean
 }

@@ -109,10 +109,10 @@ export async function handleRequiredFields(
     }
 
     return {
-        stateField: results.stateField,
-        slugField: results.slugField,
-        webflowItemIdField: results.webflowItemIdField,
-        lastPublishedField: results.lastPublishedField,
+        stateField: results.stateField as AirtableField,
+        slugField: results.slugField as AirtableField,
+        webflowItemIdField: results.webflowItemIdField as AirtableField,
+        lastPublishedField: results.lastPublishedField as AirtableField,
     }
 }
 

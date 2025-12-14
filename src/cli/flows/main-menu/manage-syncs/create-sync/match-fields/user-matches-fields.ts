@@ -3,6 +3,7 @@ import type { AirtableField } from '../../../../../../core/airtable/types'
 import { buildFieldMapping } from './build-field-mapping'
 import { getCompatibleAirtableFields } from './get-compatible-airtable-fields'
 import { matchField } from './match-fields'
+import type { SyncField } from '../../../../../../core/types'
 
 export async function userMatchesFields(
     airtableFields: AirtableField[],

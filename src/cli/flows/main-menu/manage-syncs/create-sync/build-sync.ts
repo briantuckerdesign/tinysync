@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import pack from '../../../../../../package.json'
 import type { AirtableConfig, WebflowConfig } from '../../../../types'
-import type { Sync } from '../../../../../core/types'
+import type { Sync, SyncField, SyncSettings } from '../../../../../core/types'
 
 export function buildSync(
     airtableConfig: AirtableConfig,
@@ -19,7 +19,7 @@ export function buildSync(
         },
         config: {
             autoPublishOnValidationError: settings.autoPublish,
-            deleteNonCorrespondingItems: settings.deleteRecords,
+            deleteOrphanedItems: settings.deleteRecords,
             publishToStagingSubdomain: settings.publishToSubdomain,
             airtable: {
                 base: {

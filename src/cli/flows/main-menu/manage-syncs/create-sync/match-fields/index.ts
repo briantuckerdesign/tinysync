@@ -5,6 +5,7 @@ import type { AirtableConfig, WebflowConfig } from '../../../../../types'
 import { ui } from '../../../../../ui'
 import { storeExcludedFields } from './store-excluded-fields'
 import { userMatchesFields } from './user-matches-fields'
+import type { SyncField } from '../../../../../../core/types'
 
 export async function matchFields(
     airtableConfig: AirtableConfig,

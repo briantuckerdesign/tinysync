@@ -21,7 +21,7 @@
         "noUnusedParameters": true,
         "noPropertyAccessFromIndexSignature": false,
 
-        "typeRoots": ["./node_modules/@types", "./src/types"],
+        "typeRoots": ["./node_modules/@types"],
 
         "sourceMap": true,
         "declaration": true,

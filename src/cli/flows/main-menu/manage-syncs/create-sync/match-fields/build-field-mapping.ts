@@ -1,5 +1,6 @@
 import type { Field } from 'webflow-api/api'
 import type { AirtableField } from '../../../../../../core/airtable/types'
+import type { SyncField } from '../../../../../../core/types'
 
 export function buildFieldMapping(
     airtableField: AirtableField,
