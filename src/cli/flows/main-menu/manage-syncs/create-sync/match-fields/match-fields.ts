@@ -29,8 +29,8 @@ export async function matchField(
     if (!webflowField.isRequired) {
         // Can't skip required fields
         const skipOption = {
-            name: 'Skip',
-            value: 'Skip...',
+            label: 'Skip...',
+            value: 'skip',
         }
         fieldsToSelect.unshift(skipOption) // Ensure to unshift the skipOption, not the fieldsCopy
     }
@@ -38,10 +38,10 @@ export async function matchField(
     const matchedField = (await ui.prompt.select({
         message: message,
         options: fieldsToSelect,
-    })) as AirtableField
+    })) as AirtableField | string
     await ui.handleCancel(matchedField, manageSyncs)
 
-    if (matchedField.name === 'Skip') return null
+    if (matchedField === 'skip') return null
 
-    return matchedField
+    return matchedField as AirtableField
 }
