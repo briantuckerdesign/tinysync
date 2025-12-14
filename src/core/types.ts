@@ -1,5 +1,9 @@
-import type { CollectionItem, Domain as WebflowDomain } from 'webflow-api/api'
-import type { AirtableRecord } from './airtable/types'
+import type {
+    CollectionItem,
+    FieldType,
+    Domain as WebflowDomain,
+} from 'webflow-api/api'
+import type { AirtableFieldType, AirtableRecord } from './airtable/types'
 
 export interface Sync {
     /**
@@ -93,17 +97,13 @@ export interface TokenPair {
 }
 
 export interface SyncActions {
-    airtable: {
-        itemsToCreate: AirtableRecord[]
-        itemsToUpdate: AirtableRecord[]
-        itemsToDelete: AirtableRecord[]
-        recordsWithErrors: AirtableRecord[]
-        recordstoUpdate: AirtableRecord[]
-    }
-    webflow: {
-        itemsToPublish: CollectionItem[]
-        orphanedItems: CollectionItem[]
-    }
+    createWebflowItem: AirtableRecord[]
+    updateWebflowItem: AirtableRecord[]
+    deleteWebflowItem: AirtableRecord[]
+    recordsWithErrors: AirtableRecord[]
+    recordsToUpdate: AirtableRecord[]
+    itemsToPublish: string[]
+    itemsToDelete: CollectionItem[]
 }
 
 export interface SyncField {
@@ -111,13 +111,13 @@ export interface SyncField {
         slug?: string
         name: string
         id: string
-        type: string
+        type: FieldType
         validations?: any
     }
     airtable: {
         name: string
         id: string
-        type: string
+        type: AirtableFieldType
         options: any
     }
     specialField: SpecialField | undefined
