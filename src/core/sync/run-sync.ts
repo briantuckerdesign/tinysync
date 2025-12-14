@@ -1,7 +1,8 @@
 import { WebflowClient } from 'webflow-api'
-
-import type { Sync } from '../types'
 import { airtable } from '../airtable'
+import type { Sync } from '../types'
+import { parseActions } from './parse-actions'
+import { createItems } from './create-items'
 import { writeToJSONFile } from '../utils/write-to-json-file'
 
 export async function runSync(
@@ -17,46 +18,37 @@ export async function runSync(
             accessToken: webflowToken,
         })
 
-        // Validate schemas on both ends // TODO:
-        // const schemasValidated = await validateSchemas();
-
-        // Fetch Airtable records and Webflow items ✅
-        const [airtableRecords, webflowItems] = await Promise.all([
+        // Fetch Airtable records and Webflow items
+        const [airtableRecords, webflowItemList] = await Promise.all([
             airtable.get.records(
                 airtableToken,
                 sync.config.airtable.base.id,
                 sync.config.airtable.table.id,
                 sync.config.airtable.table.view.id
             ),
+            // TODO: Test pagination/calls over 100
             webflowClient.collections.items.listItems(
                 sync.config.webflow.collection.id
             ),
         ])
 
-        // TODO: remove dev logging
         await writeToJSONFile(
-            `./src/dev/temp/${new Date().toISOString()}_airtable-records.json`,
+            './src/dev/airtable-records.json',
             airtableRecords
         )
-        await writeToJSONFile(
-            `./src/dev/temp/${new Date().toISOString()}_webflow-items.json`,
-            webflowItems
+        await writeToJSONFile('./src/dev/webflow-items.json', webflowItemList)
+
+        // Sort records into create, update, and delete arrays
+        const actions = await parseActions(
+            sync,
+            airtableRecords,
+            webflowItemList
         )
 
-        // 3. Sort records into create, update, and delete arrays
-        // let records = await sortRecords(
-        //     syncConfig,
-        //     airtableRecords,
-        //     webflowRecords
-        // )
-
-        // writeToJSONFile('./src/dev/config.json', syncConfig)
-        // writeToJSONFile('./src/dev/airtable-records.json', airtableRecords)
-        // writeToJSONFile('./src/dev/webflow-records.json', webflowRecords)
-        // writeToJSONFile('./src/dev/records.json', records)
-
+        await writeToJSONFile('./src/dev/actions.json', actions)
+        return
         // Create new items in Webflow
-        // await sync.createItems(records, syncConfig)
+        await createItems(sync, actions, webflowClient)
 
         // Update existing items in Webflow
         // // await sync.updateItems(records, syncConfig, state);

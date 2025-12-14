@@ -12,16 +12,30 @@ Marked.setOptions({
     smartypants: false,
 })
 
+export interface RichTextValidations {
+    maxLength?: number
+    minLength?: number
+}
+
+// TODO: Check if the HTML counts towards character limit
 /**
  * Parses rich text field and assigns the corresponding value to the recordData object.
  * If the field is undefined in the record, the value will be set to an empty string.
  */
-export function parseRichText(value: string, validations: any): string {
-    // Check before parsing because richtext to html adds a bunch of characters that count towards the length
-    if (validations) value = checkValidations(value, validations)
-
+export function parseRichText(
+    value: string,
+    validations: RichTextValidations
+): string {
     const preppedMarkdown = prepMarkdown(value)
-    return Marked.parse(preppedMarkdown)
+    const htmlText = Marked.parse(preppedMarkdown)
+
+    // Strip tags and decode entities for validation
+    const innerText = htmlText.replace(/<[^>]*>/g, '').trim()
+
+    const valid = checkValidations(innerText, validations)
+    if (valid != true) throw new Error(`Validation failed: ${valid}`)
+
+    return htmlText
 }
 
 /**

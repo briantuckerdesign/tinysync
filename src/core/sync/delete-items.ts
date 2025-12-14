@@ -7,7 +7,7 @@ import { toolbelt } from '../toolbelt'
 import { webflow } from '../webflow'
 
 // Delete items in Webflow that no longer exist in Airtable
-export async function deleteItems(records: SyncRecords, syncConfig: Sync) {
+export async function deleteItems(records: SyncActions, syncConfig: Sync) {
     try {
         // Only delete items if config.deleteRecordsNotInAirtable is true
         if (records.toDelete.length === 0 || !syncConfig.deleteRecords) return

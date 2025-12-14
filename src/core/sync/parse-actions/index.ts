@@ -1,23 +1,28 @@
 import { determineRecordAction } from './handle-state-values'
-import type { Sync } from '../../types'
+import type { Sync, SyncActions } from '../../types'
 import type { AirtableRecord } from '../../airtable/types'
 import type { CollectionItem, CollectionItemList } from 'webflow-api/api'
 import { findSpecial } from '../../utils/find-special-field'
 
-export async function sortRecords(
+export async function parseActions(
     sync: Sync,
     airtableRecords: AirtableRecord[],
     webflowItems: CollectionItemList
-): Promise<SyncRecords> {
+): Promise<SyncActions> {
     if (!webflowItems.items) throw new Error('Webflow items not found')
 
     const { itemIdFieldId, stateFieldId } = getSpecialFieldIds(sync)
+
     const webflowItemIds = new Set(webflowItems.items.map((item) => item.id))
 
-    const toCreate: AirtableRecord[] = []
-    const toUpdate: AirtableRecord[] = []
-    const withErrors: AirtableRecord[] = []
-    const toDelete: (AirtableRecord | CollectionItem)[] = []
+    const createWebflowItem: AirtableRecord[] = []
+    const updateWebflowItem: AirtableRecord[] = []
+    const deleteWebflowItem: AirtableRecord[] = []
+
+    const recordsWithErrors: AirtableRecord[] = []
+
+    const itemsToDelete: CollectionItem[] = []
+
     const preservedItemIds = new Set<string>()
 
     for (const record of airtableRecords) {
@@ -30,43 +35,43 @@ export async function sortRecords(
             hasValidItemId: !!itemId && webflowItemIds.has(itemId),
         })
 
-        if (action.preserveItemId && itemId) {
-            preservedItemIds.add(itemId)
-        }
+        if (action.preserveItemId && itemId) preservedItemIds.add(itemId)
 
         switch (action.type) {
             case 'create':
-                toCreate.push(record)
+                createWebflowItem.push(record)
                 break
             case 'update':
-                toUpdate.push(record)
+                updateWebflowItem.push(record)
                 break
             case 'delete':
-                toDelete.push(record)
+                deleteWebflowItem.push(record)
                 break
             case 'error':
                 record.error = action.message
-                withErrors.push(record)
+                recordsWithErrors.push(record)
                 break
             case 'skip':
                 break
         }
     }
 
-    // Delete Webflow items that have no corresponding Airtable record
-    if (sync.config.deleteNonCorrespondingItems) {
+    // Delete orphaned Webflow items if enabled (has no corresponding Airtable record)
+    if (sync.config.deleteOrphanedItems) {
         const orphanedItems = webflowItems.items.filter(
             (item) => !preservedItemIds.has(item.id as string)
         )
-        toDelete.push(...orphanedItems)
+        itemsToDelete.push(...orphanedItems)
     }
 
     return {
-        toCreate,
-        toUpdate,
-        withErrors,
-        toDelete,
-        toPublish: [],
+        createWebflowItem,
+        updateWebflowItem,
+        deleteWebflowItem,
+        recordsWithErrors,
+        recordsToUpdate: [],
+        itemsToPublish: [],
+        itemsToDelete,
     }
 }
 

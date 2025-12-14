@@ -2,7 +2,8 @@ import { checkValidations } from './validations'
 
 export function parseBoolean(value: any, validations: any): boolean {
     if (validations) {
-        value = checkValidations(value, validations)
+        const valid = checkValidations(value, validations)
+        if (valid != true) throw new Error(`Validation failed: ${valid}`)
     }
 
     if (typeof value !== 'boolean') {
@@ -12,5 +13,6 @@ export function parseBoolean(value: any, validations: any): boolean {
         else if (value === 0) value = false
         else value = Boolean(value)
     }
+
     return value
 }
