@@ -95,7 +95,7 @@ export interface AirtableField {
 
 export interface AirtableRecord {
     id: string
-    createdTime: string
+    createdTime?: string
     fields: AirtableRecordPayload
     error?: string
 }
