@@ -3,6 +3,7 @@ import type { RecordWithErrors, Sync } from '../types'
 import { findAllSpecialFields } from '../utils/find-special-field'
 import type { CreatedItem } from './create-items'
 import type { DeletedItem } from './delete-items'
+import type { SyncEmit } from './emitter'
 import type { UpdatedItem } from './update-items'
 
 export async function updateRecords(
@@ -11,8 +12,14 @@ export async function updateRecords(
     updatedItems: UpdatedItem[],
     deletedItems: DeletedItem[],
     failedRecords: RecordWithErrors[],
-    airtableToken: string
+    airtableToken: string,
+    emit: SyncEmit
 ) {
+    emit.progress(
+        'updateRecords',
+        'Updating Airtable records with sync results...'
+    )
+
     const specialFields = findAllSpecialFields(sync)
     /* ------------------------------ create items ------------------------------ */
     for (const createdItem of createdItems) {

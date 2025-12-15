@@ -1,6 +1,7 @@
 // import { AsciiTable3 } from 'ascii-table3'
 import { manageSyncs } from '..'
 import { tinySync } from '../../../../../core'
+import { createSyncEmitter } from '../../../../../core/sync/emitter'
 import type { Sync } from '../../../../../core/types'
 import { ui } from '../../../../ui'
 import { deleteSync } from './delete-sync'
@@ -39,7 +40,33 @@ export async function manageSync(sync: Sync) {
 
         switch (userChoice) {
             case 'runSync':
-                await tinySync.sync(sync, tokens.airtable, tokens.webflow)
+                const emitter = createSyncEmitter()
+
+                emitter.on('progress', ({ step, message }) => {
+                    ui.prompt.log.info(`[${step}] ${message}`)
+                })
+
+                emitter.on('error', ({ step, error, fatal }) => {
+                    ui.prompt.log.error(
+                        `[${step}] ${fatal ? 'FATAL' : 'Warning'}: ${error.message}`
+                    )
+                })
+
+                emitter.on('complete', ({ timeElapsed, summary }) => {
+                    ui.prompt.log.success(
+                        `✅ Sync completed in ${timeElapsed}s`
+                    )
+                    ui.prompt.log.success(
+                        `   Created: ${summary.created}, Updated: ${summary.updated}, Deleted: ${summary.deleted}, Failed: ${summary.failed}`
+                    )
+                })
+
+                await tinySync.sync(
+                    sync,
+                    tokens.airtable,
+                    tokens.webflow,
+                    emitter
+                )
                 return await manageSync(sync)
             case 'viewDetails':
                 await viewSyncDetails(sync)

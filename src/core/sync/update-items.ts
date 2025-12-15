@@ -4,6 +4,7 @@ import type { AirtableRecord } from '../airtable/types'
 import type { RecordWithErrors, Sync } from '../types'
 import { parseAirtableRecords, type ParsedRecord } from './parse-data'
 import { findSpecialField } from '../utils/find-special-field'
+import type { SyncEmit } from './emitter'
 
 export interface UpdatedItem extends ParsedRecord {
     itemId: string
@@ -15,13 +16,19 @@ const smallBatchSize = 10
 export async function updateItems(
     sync: Sync,
     updateWebflowItems: AirtableRecord[],
-    webflowClient: WebflowClient
+    webflowClient: WebflowClient,
+    emit: SyncEmit
 ) {
     const updatedItems: UpdatedItem[] = []
     const failedUpdateRecords: RecordWithErrors[] = []
 
     const numberOfItems = updateWebflowItems.length
     if (numberOfItems === 0) return { updatedItems, failedUpdateRecords }
+
+    emit.progress(
+        'update',
+        `Updating ${updateWebflowItems.length} items in Webflow...`
+    )
 
     // Get the itemId field to extract existing Webflow item IDs
     const itemIdField = findSpecialField('itemId', sync)
@@ -113,6 +120,23 @@ export async function updateItems(
                 record: parsedRecord.record,
             })
         }
+    }
+
+    emit.progress(
+        'update',
+        `Updated ${updatedItems.length} items, ${failedUpdateRecords.length} failed`,
+        {
+            updated: updatedItems.length,
+            failed: failedUpdateRecords.length,
+        }
+    )
+
+    if (failedUpdateRecords.length > 0) {
+        emit.error(
+            'update',
+            new Error(`Failed to update ${failedUpdateRecords.length} items`),
+            false
+        )
     }
 
     return {

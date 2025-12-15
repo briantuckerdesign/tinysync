@@ -4,6 +4,7 @@ import type { RecordWithErrors, Sync } from '../types'
 import { findSpecialField } from '../utils/find-special-field'
 import type { CollectionItem } from 'webflow-api/api'
 import type { ItemsDeleteItemsLiveRequestItemsItem } from 'webflow-api/api/resources/collections'
+import type { SyncEmit } from './emitter'
 
 export interface DeletedItem {
     record: AirtableRecord
@@ -21,7 +22,8 @@ export async function deleteItems(
     sync: Sync,
     deleteWebflowItems: AirtableRecord[],
     orphanedItems: CollectionItem[],
-    webflowClient: WebflowClient
+    webflowClient: WebflowClient,
+    emit: SyncEmit
 ) {
     const deletedItems: DeletedItem[] = []
     const deletedOrphanedItems: DeletedOrphanedItem[] = []
@@ -31,6 +33,11 @@ export async function deleteItems(
     const numberOfItems = deleteWebflowItems.length
     if (numberOfItems === 0 && numberOfOrphanedItems === 0)
         return { deletedItems, deletedOrphanedItems, failedDeleteRecords }
+
+    emit.progress(
+        'delete',
+        `Deleting ${numberOfOrphanedItems + numberOfItems} items from Webflow...`
+    )
 
     // Get the itemId field to extract existing Webflow item IDs
     const itemIdField = findSpecialField('itemId', sync)
@@ -49,22 +56,37 @@ export async function deleteItems(
         const failedSmallBatchOrphans: string[] = []
 
         // Big batches for orphaned items
-        for (let offset = 0; offset < orphanedItemIds.length; offset += batchSize) {
+        for (
+            let offset = 0;
+            offset < orphanedItemIds.length;
+            offset += batchSize
+        ) {
             const batch = orphanedItemIds.slice(offset, offset + batchSize)
             try {
                 await deleteItemBatch(sync, batch, webflowClient)
-                deletedOrphanedItems.push(...batch.map((id) => ({ itemId: id })))
+                deletedOrphanedItems.push(
+                    ...batch.map((id) => ({ itemId: id }))
+                )
             } catch {
                 failedBigBatchOrphans.push(...batch)
             }
         }
 
         // Small batches for failed orphaned items
-        for (let offset = 0; offset < failedBigBatchOrphans.length; offset += smallBatchSize) {
-            const batch = failedBigBatchOrphans.slice(offset, offset + smallBatchSize)
+        for (
+            let offset = 0;
+            offset < failedBigBatchOrphans.length;
+            offset += smallBatchSize
+        ) {
+            const batch = failedBigBatchOrphans.slice(
+                offset,
+                offset + smallBatchSize
+            )
             try {
                 await deleteItemBatch(sync, batch, webflowClient)
-                deletedOrphanedItems.push(...batch.map((id) => ({ itemId: id })))
+                deletedOrphanedItems.push(
+                    ...batch.map((id) => ({ itemId: id }))
+                )
             } catch {
                 failedSmallBatchOrphans.push(...batch)
             }
@@ -98,26 +120,61 @@ export async function deleteItems(
             recordsWithIds.push({ record, itemId })
         }
 
-        const failedBigBatchItems: { record: AirtableRecord; itemId: string }[] = []
-        const failedSmallBatchItems: { record: AirtableRecord; itemId: string }[] = []
+        const failedBigBatchItems: {
+            record: AirtableRecord
+            itemId: string
+        }[] = []
+        const failedSmallBatchItems: {
+            record: AirtableRecord
+            itemId: string
+        }[] = []
 
         // Big batches
-        for (let offset = 0; offset < recordsWithIds.length; offset += batchSize) {
+        for (
+            let offset = 0;
+            offset < recordsWithIds.length;
+            offset += batchSize
+        ) {
             const batch = recordsWithIds.slice(offset, offset + batchSize)
             try {
-                await deleteItemBatch(sync, batch.map((r) => r.itemId), webflowClient)
-                deletedItems.push(...batch.map((r) => ({ record: r.record, itemId: r.itemId })))
+                await deleteItemBatch(
+                    sync,
+                    batch.map((r) => r.itemId),
+                    webflowClient
+                )
+                deletedItems.push(
+                    ...batch.map((r) => ({
+                        record: r.record,
+                        itemId: r.itemId,
+                    }))
+                )
             } catch {
                 failedBigBatchItems.push(...batch)
             }
         }
 
         // Small batches
-        for (let offset = 0; offset < failedBigBatchItems.length; offset += smallBatchSize) {
-            const batch = failedBigBatchItems.slice(offset, offset + smallBatchSize)
+        for (
+            let offset = 0;
+            offset < failedBigBatchItems.length;
+            offset += smallBatchSize
+        ) {
+            const batch = failedBigBatchItems.slice(
+                offset,
+                offset + smallBatchSize
+            )
             try {
-                await deleteItemBatch(sync, batch.map((r) => r.itemId), webflowClient)
-                deletedItems.push(...batch.map((r) => ({ record: r.record, itemId: r.itemId })))
+                await deleteItemBatch(
+                    sync,
+                    batch.map((r) => r.itemId),
+                    webflowClient
+                )
+                deletedItems.push(
+                    ...batch.map((r) => ({
+                        record: r.record,
+                        itemId: r.itemId,
+                    }))
+                )
             } catch {
                 failedSmallBatchItems.push(...batch)
             }
@@ -135,6 +192,23 @@ export async function deleteItems(
                 })
             }
         }
+    }
+
+    emit.progress(
+        'delete',
+        `Deleted ${deletedItems.length} items, ${failedDeleteRecords.length} failed`,
+        {
+            deleted: deletedItems.length,
+            failed: failedDeleteRecords.length,
+        }
+    )
+
+    if (failedDeleteRecords.length > 0) {
+        emit.error(
+            'delete',
+            new Error(`Failed to delete ${failedDeleteRecords.length} items`),
+            false
+        )
     }
 
     return { deletedItems, deletedOrphanedItems, failedDeleteRecords }

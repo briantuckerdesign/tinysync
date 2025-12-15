@@ -3,6 +3,7 @@ import type { CollectionItemList } from 'webflow-api/api'
 import type { AirtableRecord } from '../airtable/types'
 import type { RecordWithErrors, Sync } from '../types'
 import { parseAirtableRecords, type ParsedRecord } from './parse-data'
+import type { SyncEmit } from './emitter'
 
 export interface CreatedItem extends ParsedRecord {
     itemId: string
@@ -14,13 +15,19 @@ const smallBatchSize = 10
 export async function createItems(
     sync: Sync,
     createWebflowItems: AirtableRecord[],
-    webflowClient: WebflowClient
+    webflowClient: WebflowClient,
+    emit: SyncEmit
 ) {
     const createdItems: CreatedItem[] = []
     const failedCreateRecords: RecordWithErrors[] = []
 
     const numberOfItems = createWebflowItems.length
     if (numberOfItems === 0) return { createdItems, failedCreateRecords }
+
+    emit.progress(
+        'create',
+        `Creating ${createWebflowItems.length} items in Webflow...`
+    )
 
     const { recordsWithParsingErrors, parsedRecords } = parseAirtableRecords(
         createWebflowItems,
@@ -81,6 +88,23 @@ export async function createItems(
                 record: parsedRecord.record,
             })
         }
+    }
+
+    emit.progress(
+        'create',
+        `Created ${createdItems.length} items, ${failedCreateRecords.length} failed`,
+        {
+            created: createdItems.length,
+            failed: failedCreateRecords.length,
+        }
+    )
+
+    if (failedCreateRecords.length > 0) {
+        emit.error(
+            'create',
+            new Error(`Failed to create ${failedCreateRecords.length} items`),
+            false
+        )
     }
 
     return {
