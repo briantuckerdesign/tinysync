@@ -20,11 +20,15 @@ export function findAllSpecialFields(sync: Sync) {
     const nameField = findSpecialField('name', sync)
     if (!nameField) throw new Error('nameField not found')
 
+    const errorsField = findSpecialField('errors', sync)
+    if (!errorsField) throw new Error('errorsField not found')
+
     return {
         itemIdField,
         stateField,
         slugField,
         lastPublishedField,
         nameField,
+        errorsField,
     }
 }
