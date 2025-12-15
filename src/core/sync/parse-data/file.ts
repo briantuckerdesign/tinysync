@@ -1,14 +1,20 @@
-import { checkValidations } from './validations'
+interface AirtableAttachment {
+    url: string
+    filename: string
+}
+
+interface WebflowFile {
+    url: string
+    alt: string
+}
 
 /**
- * Parses the file field of a record and updates the recordData object.
- *
+ * Parses the file field of a record.
  * Passes filename as alt.
  */
-export function parseFile(value: any[], validations: any) {
-    if (validations) {
-        const valid = checkValidations(value, validations)
-        if (valid != true) throw new Error('Invalid file field')
+export function parseFile(value: AirtableAttachment[]): WebflowFile {
+    if (!value || !value[0]) {
+        throw new Error('File field is empty or invalid')
     }
 
     return {

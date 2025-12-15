@@ -46,9 +46,16 @@ export async function runSync(
         )
 
         await writeToJSONFile('./src/dev/actions.json', actions)
-        return
+
         // Create new items in Webflow
-        await createItems(sync, actions, webflowClient)
+        const { createdItems, failedCreateRecords } = await createItems(
+            sync,
+            actions.createWebflowItem,
+            webflowClient
+        )
+        console.log('🚀 ~ runSync ~ failedCreateRecords:', failedCreateRecords)
+        console.log('🚀 ~ runSync ~ createdItems:', createdItems)
+        return
 
         // Update existing items in Webflow
         // // await sync.updateItems(records, syncConfig, state);
@@ -58,6 +65,8 @@ export async function runSync(
 
         // Delete items in that no longer exist in Airtable if enabled
         // await sync.deleteItems(records, syncConfig)
+
+        // TODO: add airtable update record fx
 
         const timeElapsed = (new Date().getTime() - startTime) / 1000
         console.log('Sync completed in ' + timeElapsed + ' seconds.')

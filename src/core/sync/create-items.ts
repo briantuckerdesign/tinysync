@@ -1,151 +1,160 @@
 import type { WebflowClient } from 'webflow-api'
-import type { PayloadFieldData } from 'webflow-api/api'
-import type { ItemsCreateItemLiveRequest } from 'webflow-api/wrapper/schemas'
+import type { CollectionItemList } from 'webflow-api/api'
 import type { AirtableRecord } from '../airtable/types'
-import type { Sync, SyncActions } from '../types'
-import { findSpecial } from '../utils/find-special-field'
-import { parseAirtableRecord } from './parse-data'
+import type { RecordWithErrors, Sync } from '../types'
+import { parseAirtableRecords, type ParsedRecord } from './parse-data'
+
+interface CreatedItem extends ParsedRecord {
+    itemId: string
+}
+
+const batchSize = 100
+const smallBatchSize = 10
 
 export async function createItems(
     sync: Sync,
-    actions: SyncActions,
+    createWebflowItems: AirtableRecord[],
     webflowClient: WebflowClient
 ) {
-    const numberOfItems = actions.createWebflowItem.length
-    if (numberOfItems === 0) return
+    const createdItems: CreatedItem[] = []
+    const failedCreateRecords: RecordWithErrors[] = []
 
-    const batchSize = 100
-    for (let i = 0; i < numberOfItems; i += batchSize) {
-        const itemsToCreate: PayloadFieldData[] = []
-        const recordsToUpdate: AirtableRecord[] = []
-        const end = Math.min(i + batchSize, numberOfItems)
-        for (let j = i; j < end; j++) {
-            const record = actions.createWebflowItem[j] as AirtableRecord
+    const numberOfItems = createWebflowItems.length
+    if (numberOfItems === 0) return { createdItems, failedCreateRecords }
 
-            // Parse data from Airtable to Webflow format
-            const fieldData = await parseAirtableRecord(record, sync)
-            if (!fieldData) continue
+    const { recordsWithParsingErrors, parsedRecords } = parseAirtableRecords(
+        createWebflowItems,
+        sync
+    )
 
-            itemsToCreate.push(fieldData)
+    // Immediately push to error array, we will not re-attempt
+    failedCreateRecords.push(...recordsWithParsingErrors)
 
-            recordsToUpdate.push({
-                id: record.id,
-                fields: {},
+    // If chunks fail, we will attempt to ascertain
+    // the culprit by making chunks of 10
+    // then individual items
+    // then push the failed item(s) to recordsWithErrors
+    const failedBigBatchItems: ParsedRecord[] = []
+    const failedSmallBatchItems: ParsedRecord[] = []
+
+    // Big batches
+    for (let offset = 0; offset < parsedRecords.length; offset += batchSize) {
+        const batch = parsedRecords.slice(offset, offset + batchSize)
+
+        try {
+            createdItems.push(
+                ...(await processBatch(sync, batch, webflowClient))
+            )
+        } catch (error) {
+            failedBigBatchItems.push(...batch)
+        }
+    }
+
+    // Small batches
+    if (!failedBigBatchItems) return { createdItems, failedCreateRecords }
+    for (
+        let offset = 0;
+        offset < failedBigBatchItems.length;
+        offset += smallBatchSize
+    ) {
+        const batch = failedBigBatchItems.slice(offset, offset + smallBatchSize)
+
+        try {
+            createdItems.push(
+                ...(await processBatch(sync, batch, webflowClient))
+            )
+        } catch (error) {
+            failedSmallBatchItems.push(...batch)
+        }
+    }
+
+    // Individual failed items
+    if (!failedSmallBatchItems) return { createdItems, failedCreateRecords }
+    for (const parsedRecord of failedSmallBatchItems) {
+        try {
+            createdItems.push(
+                ...(await processBatch(sync, [parsedRecord], webflowClient))
+            )
+        } catch (error) {
+            failedCreateRecords.push({
+                errors: [extractWebflowErrorDescription(error)],
+                record: parsedRecord.record,
             })
-
-            const itemIdField = findSpecial('itemId', sync)
-            if (!itemIdField)
-                throw new Error('itemId field not found in sync config')
-
-            // Add to publishing queue
-            actions.itemsToPublish.push(record.fields[itemIdField.airtable.id])
         }
+    }
 
-        const items: ItemsCreateItemLiveRequest = {
-            items: [],
-            skipInvalidFiles: true,
-        }
-
-        const response = await webflowClient.collections.items.createItemLive(
-            sync.config.webflow.collection.id,
-            items
-        )
-        // const airtableResponse = await airtable.updateRecords();
-        console.log('📣 - createItems - response:', response)
-
-        const format = {
-            id: 'record id',
-            fields: {
-                'field id': 'field value',
-            },
-        }
+    return {
+        createdItems,
+        failedCreateRecords,
     }
 }
 
-// export async function createItems(records: SyncRecords, syncConfig: Sync) {
-//   records.toUpdateInAirtable = [];
+async function processBatch(
+    sync: Sync,
+    batch: ParsedRecord[],
+    webflowClient: WebflowClient
+) {
+    try {
+        const collectionItems = batch.map(
+            (parsedRecord) => parsedRecord.collectionItem
+        )
 
-//   if (records.toCreate.length === 0) return;
+        // Create items in webflow one chunk at a time
+        const itemList = (await webflowClient.collections.items.createItemLive(
+            sync.config.webflow.collection.id,
+            {
+                items: [...collectionItems],
+                skipInvalidFiles: true,
+            }
+        )) as CollectionItemList
 
-//   ui.spinner.start("Creating items...");
-//   // TODO: 10 item pagination
-//   let itemsToCreate = [];
+        const matchedCreatedItems = matchResponseToRecord(batch, itemList)
 
-//   for (const record of records.toCreate) {
-//     // Parse data from Airtable to Webflow format
-//     const parsedData = await parseAirtableRecord(record, syncConfig);
+        return matchedCreatedItems
+    } catch (error) {
+        // If it's the last item in the batch preserve the error
+        if (batch.length === 1) throw error
 
-//     itemsToCreate.push(parsedData);
-
-//     // Add to publishing queue
-//     records.toPublish.push(record);
-//   }
-
-//   const response = await webflow.createItems(itemsToCreate, syncConfig);
-
-//   ui.spinner.stop(`✅ ${ui.format.dim("Webflow items created.")}`);
-// }
-
-async function updateAirtableRecord(record, response, sync: Sync) {
-    // Get value of slug field from Webflow response
-    const webflowSlug = response.fieldData.slug
-    // Find field in config where specialField = "Slug"
-    const recordSlugField = findSpecial('slug', sync)
-    if (!recordSlugField) throw new Error('Slug field not found in sync config')
-    // Get value of slug field from Airtable record
-    const recordSlug = record.fields[recordSlugField.airtable.id]
-
-    // Get value of itemId field from Webflow response
-    const webflowItemId = response.id
-
-    // Find field in config where specialField = "itemId"
-    // const recordItemIdField = syncConfig.fields.find((field) => field.specialField === "itemId");
-    const recordItemIdField = findSpecial('itemId', sync)
-    if (!recordItemIdField)
-        throw new Error('itemId field not found in sync config')
-    // Write webflowItemId to record at top level
-    record.itemId = response.id
-
-    // Find field in config where specialField = "State"
-    const recordStateField = sync.fields.find(
-        (field) => field.specialField === 'state'
-    )
-    const recordState = record.fields[recordStateField?.airtable.id]
-
-    let updateId, updateSlug, updateState, removeId, updatePublishDate
-
-    switch (recordState) {
-        case 'Always sync':
-        case 'Staging':
-            updateId = true
-            updateSlug = true
-            break
-        case 'Not synced':
-            removeId = true
-            break
-        case 'Queued for sync':
-            updateId = true
-            updateSlug = true
-            updateState = true
-            break
+        // When a bulk item creation fails, it does not say
+        // which failed, it doesn't create any of them
+        // so we need to address all items not created.
+        throw new Error('Batch failed')
     }
+}
 
-    let recordUpdates = {}
+function extractWebflowErrorDescription(error: unknown): string {
+    if (!(error instanceof Error)) return 'Webflow validation failed'
 
-    if (updateId) {
-        const idUpdate = { [recordItemIdField.airtableName]: webflowItemId }
-        recordUpdates = { ...recordUpdates, ...idUpdate }
+    const bodyMatch = error.message.match(/Body: ({[\s\S]*})/)
+    const bodyString = bodyMatch?.[1]
+    if (!bodyString) return error.message
+
+    try {
+        const body = JSON.parse(bodyString)
+        if (body.details?.[0]?.description) {
+            return body.details[0].description
+        }
+        return body.message || error.message
+    } catch {
+        return error.message
     }
-    if (updateSlug && webflowSlug !== recordSlug) {
-        const slugUpdate = { [recordSlugField.airtableName]: webflowSlug }
-        recordUpdates = { ...recordUpdates, ...slugUpdate }
-    }
-    if (updateState) {
-        const stateUpdate = { [recordStateField.airtableName]: 'Staging' }
-        recordUpdates = { ...recordUpdates, ...stateUpdate }
-    }
+}
 
-    recordUpdates = { fields: recordUpdates }
+function matchResponseToRecord(
+    batch: ParsedRecord[],
+    itemList: CollectionItemList
+): CreatedItem[] {
+    if (!itemList.items) return []
 
-    await airtable.updateRecord(recordUpdates, record.id, sync)
+    // Webflow returns items in the same order they were submitted
+    return itemList.items
+        .map((item, index) => {
+            const record = batch[index]
+            if (!item.id || !record) return null
+            return {
+                ...record,
+                itemId: item.id,
+            }
+        })
+        .filter((item): item is CreatedItem => item !== null)
 }

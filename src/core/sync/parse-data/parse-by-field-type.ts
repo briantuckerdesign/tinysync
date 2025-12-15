@@ -8,62 +8,34 @@ import { parseOption } from './option'
 import { parseRichText } from './richtext'
 import { parseString } from './string'
 
-export async function parseByFieldType(field: SyncField, fetchedValue: any) {
-    let parsedValue: any
-    const validations = field.webflow?.validations || {}
+export function parseByFieldType(field: SyncField, fetchedValue: any): any {
+    const validations = field.webflow?.validations ?? {}
 
     switch (field.webflow?.type) {
         case 'RichText':
-            parsedValue = parseRichText(fetchedValue, validations)
-            break
+            return parseRichText(fetchedValue, validations)
 
         case 'Image':
-            parsedValue = parseImage(fetchedValue, validations)
-            break
+            return parseImage(fetchedValue)
 
         case 'MultiImage':
-            parsedValue = parseMultiImage(fetchedValue, validations)
-            break
+            return parseMultiImage(fetchedValue)
 
         case 'File':
-            parsedValue = parseFile(fetchedValue, validations)
-            break
+            return parseFile(fetchedValue)
 
         case 'Switch':
-            parsedValue = parseBoolean(fetchedValue, validations)
-            break
+            return parseBoolean(fetchedValue)
 
         case 'Number':
-            parsedValue = parseNumber(fetchedValue, validations)
-            break
-        case 'Option':
-            parsedValue = parseOption(fetchedValue, validations)
-            break
+            return parseNumber(fetchedValue, validations)
 
-        // TODO: Reference support
-        // case "Reference": {
-        //   parsedValue = await parse.reference(
-        //     field,
-        //     record,
-        //     parsedRecord,
-        //     selectedSync
-        //   );
-        //   break;
-        // }
-        //
-        // case "MultiReference":
-        //   parsedValue = await parse.multiReference(
-        //     field,
-        //     record,
-        //     parsedRecord,
-        //     selectedSync
-        //   );
-        //   break;
+        case 'Option':
+            return parseOption(fetchedValue, validations)
+
+        // TODO: Reference and MultiReference support
 
         default:
-            parsedValue = parseString(fetchedValue, validations)
-            break
+            return parseString(fetchedValue, validations)
     }
-
-    return parsedValue
 }

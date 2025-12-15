@@ -11,6 +11,12 @@ export function parseNumber(
     validations: NumberValidations
 ): number {
     if (typeof value !== 'number') value = parseFloat(value)
-    if (validations) value = checkValidations(value, validations)
+
+    if (isNaN(value)) {
+        throw new Error(`Cannot parse "${value}" as a number`)
+    }
+
+    if (validations) checkValidations(value, validations)
+
     return value
 }

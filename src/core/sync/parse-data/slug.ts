@@ -6,17 +6,16 @@
  * - Removes unwanted characters.
  * - Converts to lowercase.
  *
- * Returns the modified string.
+ * Falls back to the record's name field if no value is provided.
  */
-export function parseSlug(value: string, parsedRecord): string {
-    if (!value) value = parsedRecord.name
+export function parseSlug(
+    value: string | null | undefined,
+    parsedRecord: { name?: string }
+): string {
+    const input = value || parsedRecord.name || ''
 
-    // Regular expression to identify unwanted characters
-    const invalidCharsRegex = /[^a-zA-Z0-9-_]/g
-    const updatedValue = value
+    return input
         .replace(/\s+/g, '-')
-        .replace(invalidCharsRegex, '')
+        .replace(/[^a-zA-Z0-9-_]/g, '')
         .toLowerCase()
-    // Replace spaces with hyphens, remove unwanted characters, and convert to lowercase
-    return updatedValue
 }

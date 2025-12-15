@@ -10,9 +10,14 @@ export interface OptionValidation {
 export function parseOption(
     value: any,
     validations: OptionValidations
-): number {
+): string {
     const valid = validateOption(value, validations)
-    if (!valid) throw new Error(`The value for ${value} is not a valid option.`)
+    if (!valid) {
+        const allowedOptions = validations.options.map((o) => o.name).join(', ')
+        throw new Error(
+            `Invalid option "${value}". Allowed values: ${allowedOptions}`
+        )
+    }
 
     return value
 }

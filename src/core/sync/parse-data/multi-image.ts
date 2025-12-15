@@ -1,15 +1,24 @@
-import { checkValidations } from './validations'
+interface AirtableAttachment {
+    url: string
+    filename: string
+}
 
-export function parseMultiImage(value, validations) {
-    if (validations) {
-        const valid = checkValidations(value, validations)
-        if (valid != true) throw new Error('Invalid multi-image field')
+interface WebflowImage {
+    url: string
+    alt: string
+}
+
+/**
+ * Parses multiple images from Airtable attachments.
+ * Passes filename as alt for each image.
+ */
+export function parseMultiImage(value: AirtableAttachment[]): WebflowImage[] {
+    if (!value || !Array.isArray(value)) {
+        throw new Error('Multi-image field is empty or invalid')
     }
 
-    return value.map((image) => {
-        return {
-            url: image.url,
-            alt: image.filename,
-        }
-    })
+    return value.map((image) => ({
+        url: image.url,
+        alt: image.filename,
+    }))
 }
