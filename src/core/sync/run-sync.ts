@@ -1,10 +1,11 @@
 import { WebflowClient } from 'webflow-api'
 import { airtable } from '../airtable'
-import type { Sync } from '../types'
+import type { RecordWithErrors, Sync } from '../types'
 import { parseActions } from './parse-actions'
 import { createItems } from './create-items'
 import { writeToJSONFile } from '../utils/write-to-json-file'
 import { updateRecords } from './update-records'
+import { updateItems } from './update-items'
 
 export async function runSync(
     sync: Sync,
@@ -67,16 +68,20 @@ export async function runSync(
             failedCreateRecords
         )
 
-        await updateRecords(
-            sync,
-            createdItems,
-            failedCreateRecords,
-            airtableToken
-        )
-
-        return
         // Update existing items in Webflow
-        // // await sync.updateItems(records, syncConfig, state);
+        const { updatedItems, failedUpdateRecords } = await updateItems(
+            sync,
+            actions.updateWebflowItem,
+            webflowClient
+        )
+        await writeToJSONFile(
+            './src/dev/run-sync/updated-items.json',
+            updatedItems
+        )
+        await writeToJSONFile(
+            './src/dev/run-sync/failed-update-items.json',
+            failedUpdateRecords
+        )
 
         // Publish new and updated items in Webflow
         // // await sync.publishItems(records, syncConfig, state);
@@ -84,12 +89,22 @@ export async function runSync(
         // Delete items in that no longer exist in Airtable if enabled
         // await sync.deleteItems(records, syncConfig)
 
-        // TODO: add airtable update record fx
+        const failedRecords: RecordWithErrors[] = [
+            ...failedCreateRecords,
+            ...failedUpdateRecords,
+        ]
+
+        await updateRecords(
+            sync,
+            createdItems,
+            updatedItems,
+            failedRecords,
+            airtableToken
+        )
 
         const timeElapsed = (new Date().getTime() - startTime) / 1000
-        console.log('Sync completed in ' + timeElapsed + ' seconds.')
 
-        // if (syncConfig.errors.length === 0) await viewSync()
+        console.log('Sync completed in ' + timeElapsed + ' seconds.')
     } catch (error) {
         throw error
     }
