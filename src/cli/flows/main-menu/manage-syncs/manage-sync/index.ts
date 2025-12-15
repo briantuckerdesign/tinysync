@@ -62,6 +62,7 @@ export async function manageSync(sync: Sync) {
                 return await manageSyncs()
         }
     } catch (error) {
+        console.error(error)
         ui.prompt.log.error('Error managing sync.')
         return await manageSyncs()
     }

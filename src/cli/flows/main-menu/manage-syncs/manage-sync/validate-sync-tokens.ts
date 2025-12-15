@@ -18,6 +18,8 @@ export async function validateSyncTokens(
     sync: Sync
 ): Promise<TokenPair | false> {
     try {
+        let webflowToken = ''
+        let airtableToken = ''
         if (!sync.tokens) {
             ui.prompt.log.warn('This sync has no tokens configured.')
             return false
@@ -39,6 +41,9 @@ export async function validateSyncTokens(
                     tokenId: sync.tokens.webflow,
                 })
             }
+            webflowToken = state.tokens.find(
+                (token) => token.id === sync.tokens?.webflow
+            )?.token as string
         }
 
         // Check Airtable token
@@ -52,13 +57,17 @@ export async function validateSyncTokens(
                     tokenId: sync.tokens.airtable,
                 })
             }
+
+            airtableToken = state.tokens.find(
+                (token) => token.id === sync.tokens?.airtable
+            )?.token as string
         }
 
         // If no missing tokens, return the token pair
         if (missingTokens.length === 0) {
             return {
-                airtable: sync.tokens.airtable,
-                webflow: sync.tokens.webflow,
+                airtable: airtableToken,
+                webflow: webflowToken,
             }
         }
 
@@ -86,10 +95,18 @@ export async function validateSyncTokens(
 
         ui.prompt.log.success('✓ Sync tokens updated successfully')
 
+        webflowToken = state.tokens.find(
+            (token) => token.id === sync.tokens?.webflow
+        )?.token as string
+
+        airtableToken = state.tokens.find(
+            (token) => token.id === sync.tokens?.airtable
+        )?.token as string
+
         // Return the updated token pair
         return {
-            airtable: sync.tokens.airtable,
-            webflow: sync.tokens.webflow,
+            airtable: airtableToken,
+            webflow: webflowToken,
         }
     } catch (error) {
         ui.prompt.log.error('Error validating sync tokens.')
