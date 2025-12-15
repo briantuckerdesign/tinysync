@@ -96,11 +96,16 @@ export interface TokenPair {
     webflow: string
 }
 
+export interface RecordWithErrors {
+    record: AirtableRecord
+    errors: string[]
+}
+
 export interface SyncActions {
     createWebflowItem: AirtableRecord[]
     updateWebflowItem: AirtableRecord[]
     deleteWebflowItem: AirtableRecord[]
-    recordsWithErrors: AirtableRecord[]
+    recordsWithErrors: RecordWithErrors[]
     recordsToUpdate: AirtableRecord[]
     itemsToPublish: string[]
     itemsToDelete: CollectionItem[]
