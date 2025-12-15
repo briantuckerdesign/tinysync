@@ -93,3 +93,64 @@ async function updateAirtableRecord(record, response, syncConfig) {
         throw error
     }
 }
+
+// async function updateAirtableRecord(
+//     airtableToken: string,
+//     record: AirtableRecord,
+//     response: CollectionItem,
+//     sync: Sync
+// ) {
+//     // Get value of slug field from Webflow response
+//     const webflowSlug = response.fieldData.slug
+
+//     // Get value of slug field from Airtable record
+//     const recordSlug = record.fields[slugFieldId]
+
+//     // Get value of itemId field from Webflow response
+//     const webflowItemId = response.id
+
+//     const recordState = record.fields[stateFieldId]
+
+//     let updateId, updateSlug, updateState, removeId, updatePublishDate
+
+//     switch (recordState) {
+//         case 'Always sync':
+//         case 'Staging':
+//             updateId = true
+//             updateSlug = true
+//             break
+//         case 'Not synced':
+//             removeId = true
+//             break
+//         case 'Queued for sync':
+//             updateId = true
+//             updateSlug = true
+//             updateState = true
+//             break
+//     }
+
+//     let recordUpdates = {}
+
+//     if (updateId) {
+//         const idUpdate = { itemIdFieldId: webflowItemId }
+//         recordUpdates = { ...recordUpdates, ...idUpdate }
+//     }
+//     if (updateSlug && webflowSlug !== recordSlug) {
+//         const slugUpdate = { slugFieldId: webflowSlug }
+//         recordUpdates = { ...recordUpdates, ...slugUpdate }
+//     }
+//     if (updateState) {
+//         const stateUpdate = { stateFieldId: 'Staging' }
+//         recordUpdates = { ...recordUpdates, ...stateUpdate }
+//     }
+
+//     recordUpdates = { fields: recordUpdates }
+
+//     await airtable.update.record(
+//         airtableToken,
+//         sync.config.airtable.base.id,
+//         sync.config.airtable.table.id,
+//         record.id,
+//         recordUpdates
+//     )
+// }
