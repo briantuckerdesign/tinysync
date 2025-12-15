@@ -53,16 +53,16 @@ export async function updateRecords(
             [specialFields.errorsField.airtable.id]: errorsAsString,
         }
 
-        const response = await airtable.update.record(
-            airtableToken,
-            sync.config.airtable.base.id,
-            sync.config.airtable.table.id,
-            failedRecord.record.id,
-            payload
-        )
-        if (response.error)
-            console.error('Error updating record:', response.error)
-
-        console.log(response)
+        try {
+            await airtable.update.record(
+                airtableToken,
+                sync.config.airtable.base.id,
+                sync.config.airtable.table.id,
+                failedRecord.record.id,
+                payload
+            )
+        } catch (error) {
+            console.error('Error updating record:', error)
+        }
     }
 }
