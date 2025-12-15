@@ -12,7 +12,7 @@ export async function matchField(
 
     ui.prompt.log.message(
         ui.format.italic(
-            `Webflow field: ${webflowField.displayName} matches to:`
+            `${ui.format.bold(ui.format.blue(webflowField.displayName))} (Webflow) matches to:`
         )
     )
 
