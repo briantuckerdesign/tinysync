@@ -89,7 +89,7 @@ export async function handleRequiredFields(
             compatibleTypes: ['singleLineText'],
             fieldOptions: {
                 name: `Errors [${syncName}]`,
-                type: 'singleLineText',
+                type: 'multilineText',
                 description: 'Stores the sync-related errors.',
             },
         },
