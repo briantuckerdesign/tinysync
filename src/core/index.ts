@@ -1,4 +1,4 @@
-import { runSync } from './sync/run-sync'
+import { runSync } from './sync'
 import { webflow } from './webflow'
 
 export const tinySync = {
