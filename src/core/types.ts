@@ -134,6 +134,7 @@ export type SpecialField =
     | 'state'
     | 'slug'
     | 'name'
+    | 'errors'
 
 export interface SyncSettings {
     syncName: string

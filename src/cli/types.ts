@@ -36,6 +36,7 @@ export interface AirtableConfig {
     slugField: AirtableField
     webflowItemIdField: AirtableField
     lastPublishedField: AirtableField
+    errorsField: AirtableField
 }
 
 export interface WebflowConfig {

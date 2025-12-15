@@ -82,6 +82,17 @@ export async function handleRequiredFields(
                 },
             },
         },
+        {
+            key: 'errorsField',
+            name: 'Errors',
+            description: 'Airtable field to store sync error information.',
+            compatibleTypes: ['singleLineText'],
+            fieldOptions: {
+                name: `Errors [${syncName}]`,
+                type: 'singleLineText',
+                description: 'Stores the sync-related errors.',
+            },
+        },
     ]
 
     const results: Record<string, AirtableField> = {}
@@ -113,6 +124,7 @@ export async function handleRequiredFields(
         slugField: results.slugField as AirtableField,
         webflowItemIdField: results.webflowItemIdField as AirtableField,
         lastPublishedField: results.lastPublishedField as AirtableField,
+        errorsField: results.errorsField as AirtableField,
     }
 }
 

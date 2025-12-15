@@ -24,6 +24,7 @@ export async function createAirtableConfig(
             slugField,
             webflowItemIdField,
             lastPublishedField,
+            errorsField,
         } = await handleRequiredFields(token.token, base, table, syncName)
 
         return {
@@ -35,6 +36,7 @@ export async function createAirtableConfig(
             slugField,
             webflowItemIdField,
             lastPublishedField,
+            errorsField,
         }
     } catch (error) {
         ui.prompt.log.error('Error configuring Airtable.')

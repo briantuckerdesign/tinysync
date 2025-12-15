@@ -25,6 +25,7 @@ export async function matchFields(
             airtableConfig.slugField.id as string,
             airtableConfig.webflowItemIdField.id as string,
             airtableConfig.lastPublishedField.id as string,
+            airtableConfig.errorsField.id as string,
         ]) as AirtableField[]
 
         // Webflow fields to match

@@ -1,12 +1,20 @@
-import type { SyncField } from '../../../../../../core/types'
+import type { SyncField, SpecialField } from '../../../../../../core/types'
 import type { AirtableConfig, WebflowConfig } from '../../../../../types'
 import { buildFieldMapping } from './build-field-mapping'
+
+function createSpecialField(
+    specialFieldName: SpecialField,
+    ...args: Parameters<typeof buildFieldMapping>
+): SyncField {
+    const field = buildFieldMapping(...args)
+    field.specialField = specialFieldName
+    return field
+}
 
 export function storeExcludedFields(
     airtableConfig: AirtableConfig,
     webflowConfig: WebflowConfig
 ): SyncField[] {
-    /* --------------------------- Name field --------------------------- */
     const webflowNameField = webflowConfig.collection.fields.find(
         (field) => field.slug === 'name'
     )
@@ -18,36 +26,16 @@ export function storeExcludedFields(
     if (!airtablePrimaryField)
         throw new Error('Airtable primary field not found')
 
-    const nameField = buildFieldMapping(airtablePrimaryField, webflowNameField)
-    // This flag is used throughout the application
-    nameField.specialField = 'name'
-
-    /* ---------------------------------- Slug ---------------------------------- */
     const webflowSlugField = webflowConfig.collection.fields.find(
         (field) => field.slug === 'slug'
     )
-    const slugField = buildFieldMapping(
-        airtableConfig.slugField,
-        webflowSlugField
-    )
-    // This flag is used throughout the application
-    slugField.specialField = 'slug'
 
-    /* ----------------------------- Last published ----------------------------- */
-    const lastPublishedField = buildFieldMapping(
-        airtableConfig.lastPublishedField
-    )
-    // This flag is used throughout the application
-    lastPublishedField.specialField = 'lastPublished'
-
-    /* ---------------------------------- State --------------------------------- */
-    const stateField = buildFieldMapping(airtableConfig.stateField)
-    // This flag is used throughout the application
-    stateField.specialField = 'state'
-
-    /* ---------------------------------- Item ID ------------------------------- */
-    const itemIdField = buildFieldMapping(airtableConfig.webflowItemIdField)
-    itemIdField.specialField = 'itemId'
-
-    return [nameField, slugField, lastPublishedField, stateField, itemIdField]
+    return [
+        createSpecialField('name', airtablePrimaryField, webflowNameField),
+        createSpecialField('slug', airtableConfig.slugField, webflowSlugField),
+        createSpecialField('lastPublished', airtableConfig.lastPublishedField),
+        createSpecialField('state', airtableConfig.stateField),
+        createSpecialField('itemId', airtableConfig.webflowItemIdField),
+        createSpecialField('errors', airtableConfig.errorsField),
+    ]
 }
