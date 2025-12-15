@@ -6,6 +6,7 @@ import { createItems } from './create-items'
 import { writeToJSONFile } from '../utils/write-to-json-file'
 import { updateRecords } from './update-records'
 import { updateItems } from './update-items'
+import { deleteItems } from './delete-items'
 
 export async function runSync(
     sync: Sync,
@@ -83,21 +84,25 @@ export async function runSync(
             failedUpdateRecords
         )
 
-        // Publish new and updated items in Webflow
-        // // await sync.publishItems(records, syncConfig, state);
-
-        // Delete items in that no longer exist in Airtable if enabled
-        // await sync.deleteItems(records, syncConfig)
+        // Delete relevant Webflow items
+        const { deletedItems, failedDeleteRecords } = await deleteItems(
+            sync,
+            actions.deleteWebflowItem,
+            actions.orphanedItems,
+            webflowClient
+        )
 
         const failedRecords: RecordWithErrors[] = [
             ...failedCreateRecords,
             ...failedUpdateRecords,
+            ...failedDeleteRecords,
         ]
 
         await updateRecords(
             sync,
             createdItems,
             updatedItems,
+            deletedItems,
             failedRecords,
             airtableToken
         )
