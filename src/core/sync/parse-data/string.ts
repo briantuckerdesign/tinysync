@@ -10,8 +10,8 @@ export function parseString(value: any, validations: TextValidations): string {
     if (typeof value !== 'string') value = value.toString()
 
     if (validations) {
-        if (validations.singleLine) value.replace(/\n/g, ' ')
-        value = checkValidations(value, validations)
+        if (validations.singleLine) value = value.replace(/\n/g, ' ')
+        checkValidations(value, validations)
     }
 
     return value

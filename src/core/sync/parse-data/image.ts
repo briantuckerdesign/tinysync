@@ -1,14 +1,20 @@
-import { checkValidations } from './validations'
+interface AirtableAttachment {
+    url: string
+    filename: string
+}
+
+interface WebflowImage {
+    url: string
+    alt: string
+}
 
 /**
- * Parses the image field of a record and updates the recordData object.
- *
+ * Parses the image field of a record.
  * Passes filename as alt.
  */
-export function parseImage(value: any[], validations: any) {
-    if (validations) {
-        const valid = checkValidations(value, validations)
-        if (valid != true) throw new Error('Invalid image field')
+export function parseImage(value: AirtableAttachment[]): WebflowImage {
+    if (!value || !value[0]) {
+        throw new Error('Image field is empty or invalid')
     }
 
     return {

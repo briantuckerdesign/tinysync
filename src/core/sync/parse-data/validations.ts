@@ -9,47 +9,47 @@ export type Validations =
     | OptionValidations
     | NumberValidations
 
-export function checkValidations(
-    parsedValue: any,
-    validations: any
-    // fetchedValue?: any
-): true | string[] {
-    try {
-        const failedValidations: string[] = []
-        if (validations.maxLength) {
-            const valid = maxLength(parsedValue, validations.maxLength)
-            if (!valid) failedValidations.push('maxLength')
-        }
-        if (validations.minLength) {
-            const valid = minLength(parsedValue, validations.minLength)
-            if (!valid) failedValidations.push('minLength')
-        }
-        if (validations.singleLine) {
-            const valid = singleLine(parsedValue)
-            if (!valid) failedValidations.push('single line')
-        }
-        if (validations.precision) {
-            const valid = precision(parsedValue, validations.precision)
-            if (!valid) failedValidations.push('precision')
-        }
-        if (validations.allowNegative) {
-            const valid = allowNegative(parsedValue)
-            if (!valid) failedValidations.push('allow negative')
-        }
+/**
+ * Validates a parsed value against the provided validation rules.
+ * Throws an error with details if any validation fails.
+ */
+export function checkValidations(parsedValue: any, validations: any): void {
+    const failedValidations: string[] = []
 
-        // TODO: minImageSize
-        // TODO: maxImageSize
-        // TODO: minImageWidth
-        // TODO: maxImageWidth
-        // TODO: minImageHeight
-        // TODO: maxImageHeight
-        // TODO: format (integer, decimal, date-time, options[{name}])
+    if (validations.maxLength != null) {
+        if (!maxLength(parsedValue, validations.maxLength)) {
+            failedValidations.push(
+                `exceeds max length of ${validations.maxLength}`
+            )
+        }
+    }
+    if (validations.minLength != null) {
+        if (!minLength(parsedValue, validations.minLength)) {
+            failedValidations.push(
+                `below min length of ${validations.minLength}`
+            )
+        }
+    }
+    if (validations.singleLine) {
+        if (!singleLine(parsedValue)) {
+            failedValidations.push('must be single line (contains newlines)')
+        }
+    }
+    if (validations.precision != null) {
+        if (!precision(parsedValue, validations.precision)) {
+            failedValidations.push(
+                `exceeds precision of ${validations.precision} decimal places`
+            )
+        }
+    }
+    if (validations.allowNegative === false) {
+        if (!allowNegative(parsedValue)) {
+            failedValidations.push('negative values not allowed')
+        }
+    }
 
-        if (failedValidations.length) return failedValidations
-
-        return true
-    } catch (error) {
-        throw error
+    if (failedValidations.length > 0) {
+        throw new Error(`Validation failed: ${failedValidations.join(', ')}`)
     }
 }
 
@@ -66,30 +66,16 @@ function minLength(value: any, minLength: number): boolean {
 }
 
 function singleLine(value: any): boolean {
-    if (value.includes('\n')) {
-        value = value.replace(/\n/g, ' ')
-        return false
-    }
-    return true
+    return !value.includes('\n')
 }
 
 function precision(value: any, precision: number): boolean {
-    if (value.toString().split('.')[1].length > precision) return false
+    const parts = value.toString().split('.')
+    if (parts.length < 2) return true // No decimal part
+    if (parts[1].length > precision) return false
     return true
 }
 
 function allowNegative(value: any): boolean {
-    if (value < 0) return false
-    return true
+    return value >= 0
 }
-
-// function minImageSize(value: any, fetchedValue: any, minImageSize: number) {
-//     if (fetchedValue[0] && fetchedValue[0].size) {
-//         if (fetchedValue[0].size < minImageSize) {
-//             throw new Error(
-//                 `The image for ${value} is too small. It must be at least ${minImageSize} pixels.`
-//             )
-//         }
-//     }
-//     return value
-// }

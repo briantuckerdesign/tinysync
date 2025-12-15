@@ -1,60 +1,107 @@
-import type { PayloadFieldData } from 'webflow-api/api'
+import type { CollectionItem, PayloadFieldData } from 'webflow-api/api'
 import type { AirtableRecord } from '../../airtable/types'
-import type { Sync } from '../../types'
+import type { RecordWithErrors, Sync } from '../../types'
 import { parseSlug } from './slug'
 import { parseString } from './string'
 import { parseByFieldType } from './parse-by-field-type'
 
-export async function parseAirtableRecord(
+export type ParsedRecord = {
+    record: AirtableRecord
+    collectionItem: CollectionItem
+}
+
+export type RarseAirtableRecordsResult = {
+    parsedRecords: ParsedRecord[]
+    recordsWithParsingErrors: RecordWithErrors[]
+}
+
+export function parseAirtableRecords(
+    records: AirtableRecord[],
+    sync: Sync
+): RarseAirtableRecordsResult {
+    const parsedRecords: ParsedRecord[] = [] // TODO: does this work with other pub types
+    const recordsWithParsingErrors: RecordWithErrors[] = []
+    for (const record of records) {
+        const parsedRecord = parseAirtableRecord(record, sync)
+        // If failed, push to recordsWithErrors
+        if (!parsedRecord.success) {
+            recordsWithParsingErrors.push(parsedRecord.error)
+            continue
+        }
+        // If success, push for creation
+        parsedRecords.push({
+            record,
+            collectionItem: {
+                isArchived: false,
+                isDraft: false,
+                fieldData: parsedRecord.data,
+            },
+        })
+    }
+
+    return {
+        parsedRecords,
+        recordsWithParsingErrors,
+    }
+}
+
+export type ParseResult =
+    | { success: true; data: PayloadFieldData }
+    | { success: false; error: RecordWithErrors }
+
+export function parseAirtableRecord(
     fetchedRecord: AirtableRecord,
     sync: Sync
-): Promise<PayloadFieldData | null> {
-    try {
-        let parsedRecord: any = {}
-        let parsedValue
+): ParseResult {
+    const parsedRecord: Record<string, any> = {}
+    const errors: string[] = []
 
-        /** Only fields that are present in Webflow and in the config */
-        const syncedFields = sync.fields.filter((field) => field.webflow)
+    const syncedFields = sync.fields.filter((field) => field.webflow)
 
-        // Loop through each synced field and parse the value to ensure it works with Webflow
-        for (const field of syncedFields) {
-            /**
-             * Important: we give all fields a starting null value.
-             *
-             * If no value is passed to Webflow, the field will retain its initial value.
-             * This creates a case where one can clear field in Airtable but not clear the field in Webflow.
-             */
-            parsedValue = null
+    for (const field of syncedFields) {
+        const fieldName = field.airtable.name
+        const webflowSlug = field.webflow?.slug
 
-            const fetchedValue = fetchedRecord.fields[field.airtable.id]
+        if (!webflowSlug) continue
 
+        /**
+         * Important: we give all fields a starting null value.
+         * If no value is passed to Webflow, the field will retain its initial value.
+         * This creates a case where one can clear a field in Airtable but not in Webflow.
+         */
+        let parsedValue: any = null
+
+        const fetchedValue = fetchedRecord.fields[field.airtable.id]
+
+        try {
             if (field.specialField === 'name') {
-                if (!fetchedValue)
-                    throw new Error(
-                        `Name field is empty on record: ${fetchedRecord.id} for field ${field.airtable.name}`
-                    )
-
-                const validations = field.webflow?.validations || {}
-
+                if (!fetchedValue) {
+                    throw new Error('Name field cannot be empty')
+                }
+                const validations = field.webflow?.validations ?? {}
                 parsedValue = parseString(fetchedValue, validations)
             } else if (field.specialField === 'slug') {
                 parsedValue = parseSlug(fetchedValue, parsedRecord)
-            } else if (!fetchedValue) {
-                // It will return null, no action taken.
-            } else {
-                parsedValue = await parseByFieldType(field, fetchedValue)
+            } else if (fetchedValue != null) {
+                parsedValue = parseByFieldType(field, fetchedValue)
             }
-
-            // e.g. "webflow field slug here": "My parsed value here"
-            parsedRecord[field.webflow?.slug as string] = parsedValue
+        } catch (err) {
+            const message = err instanceof Error ? err.message : String(err)
+            errors.push(`[${fieldName}]: ${message}`)
         }
-        return parsedRecord as PayloadFieldData
-    } catch (error) {
-        console.error(
-            'Skipping record ',
-            fetchedRecord.id,
-            (error as any).message ? (error as any).message : error
-        )
-        return null
+
+        parsedRecord[webflowSlug] = parsedValue
+    }
+
+    if (errors.length > 0) {
+        return {
+            success: false,
+            error: { record: fetchedRecord, errors },
+        }
+    }
+
+    return {
+        success: true,
+        data: parsedRecord as PayloadFieldData,
     }
 }

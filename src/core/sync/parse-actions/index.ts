@@ -1,8 +1,8 @@
 import { determineRecordAction } from './handle-state-values'
-import type { Sync, SyncActions } from '../../types'
+import type { RecordWithErrors, Sync, SyncActions } from '../../types'
 import type { AirtableRecord } from '../../airtable/types'
 import type { CollectionItem, CollectionItemList } from 'webflow-api/api'
-import { findSpecial } from '../../utils/find-special-field'
+import { findSpecialField } from '../../utils/find-special-field'
 
 export async function parseActions(
     sync: Sync,
@@ -19,7 +19,7 @@ export async function parseActions(
     const updateWebflowItem: AirtableRecord[] = []
     const deleteWebflowItem: AirtableRecord[] = []
 
-    const recordsWithErrors: AirtableRecord[] = []
+    const recordsWithErrors: RecordWithErrors[] = []
 
     const itemsToDelete: CollectionItem[] = []
 
@@ -48,8 +48,10 @@ export async function parseActions(
                 deleteWebflowItem.push(record)
                 break
             case 'error':
-                record.error = action.message
-                recordsWithErrors.push(record)
+                recordsWithErrors.push({
+                    record,
+                    errors: [action.message],
+                })
                 break
             case 'skip':
                 break
@@ -76,11 +78,11 @@ export async function parseActions(
 }
 
 function getSpecialFieldIds(sync: Sync) {
-    const itemIdField = findSpecial('itemId', sync)
+    const itemIdField = findSpecialField('itemId', sync)
     if (!itemIdField) throw new Error('itemIdField not found')
     const itemIdFieldId = itemIdField.airtable.id
 
-    const stateField = findSpecial('state', sync)
+    const stateField = findSpecialField('state', sync)
     if (!stateField) throw new Error('stateField not found')
     const stateFieldId = stateField.airtable.id
 

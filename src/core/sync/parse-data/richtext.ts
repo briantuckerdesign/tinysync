@@ -32,8 +32,7 @@ export function parseRichText(
     // Strip tags and decode entities for validation
     const innerText = htmlText.replace(/<[^>]*>/g, '').trim()
 
-    const valid = checkValidations(innerText, validations)
-    if (valid != true) throw new Error(`Validation failed: ${valid}`)
+    checkValidations(innerText, validations)
 
     return htmlText
 }
