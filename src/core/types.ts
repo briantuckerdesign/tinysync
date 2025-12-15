@@ -107,8 +107,7 @@ export interface SyncActions {
     deleteWebflowItem: AirtableRecord[]
     recordsWithErrors: RecordWithErrors[]
     recordsToUpdate: AirtableRecord[]
-    itemsToPublish: string[]
-    itemsToDelete: CollectionItem[]
+    orphanedItems: CollectionItem[]
 }
 
 export interface SyncField {

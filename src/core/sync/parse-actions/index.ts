@@ -20,8 +20,7 @@ export async function parseActions(
     const deleteWebflowItem: AirtableRecord[] = []
 
     const recordsWithErrors: RecordWithErrors[] = []
-
-    const itemsToDelete: CollectionItem[] = []
+    const orphanedItems: CollectionItem[] = []
 
     const preservedItemIds = new Set<string>()
 
@@ -60,10 +59,10 @@ export async function parseActions(
 
     // Delete orphaned Webflow items if enabled (has no corresponding Airtable record)
     if (sync.config.deleteOrphanedItems) {
-        const orphanedItems = webflowItems.items.filter(
+        const filteredItems = webflowItems.items.filter(
             (item) => !preservedItemIds.has(item.id as string)
         )
-        itemsToDelete.push(...orphanedItems)
+        orphanedItems.push(...filteredItems)
     }
 
     return {
@@ -71,9 +70,8 @@ export async function parseActions(
         updateWebflowItem,
         deleteWebflowItem,
         recordsWithErrors,
+        orphanedItems,
         recordsToUpdate: [],
-        itemsToPublish: [],
-        itemsToDelete,
     }
 }
 

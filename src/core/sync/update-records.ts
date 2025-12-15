@@ -2,12 +2,14 @@ import { airtable } from '../airtable'
 import type { RecordWithErrors, Sync } from '../types'
 import { findAllSpecialFields } from '../utils/find-special-field'
 import type { CreatedItem } from './create-items'
+import type { DeletedItem } from './delete-items'
 import type { UpdatedItem } from './update-items'
 
 export async function updateRecords(
     sync: Sync,
     createdItems: CreatedItem[],
     updatedItems: UpdatedItem[],
+    deletedItems: DeletedItem[],
     failedRecords: RecordWithErrors[],
     airtableToken: string
 ) {
@@ -32,6 +34,7 @@ export async function updateRecords(
             [specialFields.slugField.airtable.id]:
                 createdItem.collectionItem.fieldData.slug,
             [specialFields.stateField.airtable.id]: stateValue,
+            [specialFields.errorsField.airtable.id]: '',
         }
 
         const response = await airtable.update.record(
@@ -44,8 +47,6 @@ export async function updateRecords(
 
         if (response.error)
             console.error('Error updating record:', response.error)
-
-        console.log('Updated record:', createdItem.record.id)
     }
 
     /* ----------------------------- update records ----------------------------- */
@@ -67,6 +68,7 @@ export async function updateRecords(
             [specialFields.slugField.airtable.id]:
                 createdItem.collectionItem.fieldData.slug,
             [specialFields.stateField.airtable.id]: stateValue,
+            [specialFields.errorsField.airtable.id]: '',
         }
 
         const response = await airtable.update.record(
@@ -79,11 +81,30 @@ export async function updateRecords(
 
         if (response.error)
             console.error('Error updating record:', response.error)
-
-        console.log('Updated record:', createdItem.record.id)
     }
 
-    /* ----------------------------- Failed records ----------------------------- */
+    /* ----------------------------- delete records ----------------------------- */
+    for (const deletedItem of deletedItems) {
+        const payload = {
+            [specialFields.lastPublishedField.airtable.id]: '',
+            [specialFields.slugField.airtable.id]: '',
+            [specialFields.itemIdField.airtable.id]: '',
+            [specialFields.errorsField.airtable.id]: '',
+        }
+
+        const response = await airtable.update.record(
+            airtableToken,
+            sync.config.airtable.base.id,
+            sync.config.airtable.table.id,
+            deletedItem.record.id,
+            payload
+        )
+
+        if (response.error)
+            console.error('Error updating record:', response.error)
+    }
+
+    /* ----------------------------- failed records ----------------------------- */
     for (const failedRecord of failedRecords) {
         //convert error array to CSV string
         const errorsAsString = failedRecord.errors.join(', ')
