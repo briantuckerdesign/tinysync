@@ -19,7 +19,7 @@ export function parseAirtableRecords(
     records: AirtableRecord[],
     sync: Sync
 ): RarseAirtableRecordsResult {
-    const parsedRecords: ParsedRecord[] = [] // TODO: does this work with other pub types
+    const parsedRecords: ParsedRecord[] = []
     const recordsWithParsingErrors: RecordWithErrors[] = []
     for (const record of records) {
         const parsedRecord = parseAirtableRecord(record, sync)
