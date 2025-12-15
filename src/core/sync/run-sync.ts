@@ -4,6 +4,7 @@ import type { Sync } from '../types'
 import { parseActions } from './parse-actions'
 import { createItems } from './create-items'
 import { writeToJSONFile } from '../utils/write-to-json-file'
+import { updateRecords } from './update-records'
 
 export async function runSync(
     sync: Sync,
@@ -36,7 +37,10 @@ export async function runSync(
             './src/dev/airtable-records.json',
             airtableRecords
         )
-        await writeToJSONFile('./src/dev/webflow-items.json', webflowItemList)
+        await writeToJSONFile(
+            './src/dev/run-sync/webflow-items.json',
+            webflowItemList
+        )
 
         // Sort records into create, update, and delete arrays
         const actions = await parseActions(
@@ -45,7 +49,7 @@ export async function runSync(
             webflowItemList
         )
 
-        await writeToJSONFile('./src/dev/actions.json', actions)
+        await writeToJSONFile('./src/dev/run-sync/actions.json', actions)
 
         // Create new items in Webflow
         const { createdItems, failedCreateRecords } = await createItems(
@@ -53,10 +57,24 @@ export async function runSync(
             actions.createWebflowItem,
             webflowClient
         )
-        console.log('🚀 ~ runSync ~ failedCreateRecords:', failedCreateRecords)
-        console.log('🚀 ~ runSync ~ createdItems:', createdItems)
-        return
 
+        await writeToJSONFile(
+            './src/dev/run-sync/created-items.json',
+            createdItems
+        )
+        await writeToJSONFile(
+            './src/dev/run-sync/failed-create-items.json',
+            failedCreateRecords
+        )
+
+        await updateRecords(
+            sync,
+            createdItems,
+            failedCreateRecords,
+            airtableToken
+        )
+
+        return
         // Update existing items in Webflow
         // // await sync.updateItems(records, syncConfig, state);
 
