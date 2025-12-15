@@ -4,7 +4,7 @@ import type { AirtableRecord } from '../airtable/types'
 import type { RecordWithErrors, Sync } from '../types'
 import { parseAirtableRecords, type ParsedRecord } from './parse-data'
 
-interface CreatedItem extends ParsedRecord {
+export interface CreatedItem extends ParsedRecord {
     itemId: string
 }
 
