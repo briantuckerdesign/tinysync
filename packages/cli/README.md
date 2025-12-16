@@ -25,8 +25,12 @@ The CLI will guide you through:
 
 ## Features
 
-- **Encrypted token storage** - API tokens never stored in plain text
-- **Granular sync control** - Sync specific records via Airtable State field
+- **One-directional sync** - Push Airtable records to Webflow collections
+- **Granular control** - Choose exactly which records to sync via State field
+- **All field types** - Support for all Airtable field types including linked records
+- **Orphan cleanup** - Optionally delete Webflow items with no corresponding Airtable records
+- **No record limits**\* - Sync as many records as you need
+    - <sub>\*Subject to Airtable/Webflow API rate limits 🧘</sub>
 
 ## Airtable Requirements
 
@@ -56,6 +60,13 @@ bun start
 # Or from this directory
 bun src/index.ts
 ```
+
+### Local certificate issues
+
+If you work at a company that uses a system-level VPN, you may run into a certificate error when attempting sync functions.
+This can be mitigated using the `NODE_TLS_REJECT_UNAUTHORIZED=0` environment variable, or running the premade script before running tinysync:
+
+`bun run start:local`
 
 ## License
 
