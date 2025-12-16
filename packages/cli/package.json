@@ -14,7 +14,7 @@
     ],
     "scripts": {
         "start": "bun src/index.ts",
-        "start:localdev": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && bun src/index.ts",
+        "start:local": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && bun src/index.ts",
         "test": "bun test"
     },
     "keywords": [
