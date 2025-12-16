@@ -25,8 +25,7 @@ A monorepo containing tools for one-way synchronization from Airtable to Webflow
 ### Using the CLI
 
 ```bash
-# Install globally
-bun add -g @tinysync/cli
+bun add @tinysync/cli
 
 # Run
 tinysync
@@ -103,13 +102,6 @@ bun run typecheck
 # Run tests
 bun test
 ```
-
-### Local certificate issues
-
-If you work at a company that uses a system-level VPN, you may run into a certificate error when attempting sync functions.
-This can be mitigated using the `NODE_TLS_REJECT_UNAUTHORIZED=0` environment variable, or running the premade script before running tinysync:
-
-`bun run localdev`
 
 ## License
 
