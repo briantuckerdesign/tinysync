@@ -1,0 +1,54 @@
+// Main sync functionality
+import { runSync } from './sync'
+export { runSync }
+
+// Airtable API
+export { airtable } from './airtable'
+
+// Types
+export type {
+    Sync,
+    Token,
+    Platform,
+    State,
+    TokenPair,
+    RecordWithErrors,
+    SyncField,
+    SyncActions,
+    SpecialField,
+    SyncSettings,
+} from './types'
+
+// Airtable types
+export type {
+    AirtableRecord,
+    AirtableFieldType,
+    AirtableBase,
+    AirtableTable,
+    AirtableView,
+    AirtableField,
+    AirtableBasesListItem,
+    AirtableBasesResponse,
+    AirtablePermissionLevel,
+} from './airtable/types'
+
+// Sync emitter
+export {
+    createSyncEmitter,
+    type SyncEmitter,
+    type SyncEventType,
+    type SyncProgressEvent,
+    type SyncProgressEventData,
+    type SyncErrorEvent,
+    type SyncCompleteEvent,
+    type SyncEmit,
+} from './sync/emitter'
+
+// Convenience export
+export const tinysync = {
+    sync: runSync,
+}
+
+// Re-export utilities if needed
+export { checkVersionCompatibility } from './utils/check-version-compatibility'
+export { writeToJSONFile } from './utils/write-to-json-file'

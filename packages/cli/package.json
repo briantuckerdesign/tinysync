@@ -1,0 +1,47 @@
+{
+    "name": "@tinysync/cli",
+    "version": "0.7.0",
+    "description": "CLI tool for tinysync - sync data between Airtable and Webflow",
+    "main": "./src/index.ts",
+    "bin": {
+        "tinysync": "./src/index.ts"
+    },
+    "files": [
+        "src",
+        "data",
+        "README.md",
+        "LICENSE.txt"
+    ],
+    "scripts": {
+        "start": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && bun src/index.ts",
+        "test": "bun test"
+    },
+    "keywords": [
+        "cli",
+        "airtable",
+        "webflow",
+        "sync",
+        "automation"
+    ],
+    "author": "",
+    "license": "ISC",
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/briantuckerdesign/tinysync.git",
+        "directory": "packages/cli"
+    },
+    "dependencies": {
+        "@tinysync/core": "workspace:*",
+        "@clack/prompts": "^1.0.0-alpha.8",
+        "@ts-stack/markdown": "^1.5.0",
+        "ascii-table3": "^1.0.1",
+        "figlet": "^1.9.4",
+        "picocolors": "^1.1.1"
+    },
+    "devDependencies": {
+        "@types/bun": "^1.3.4",
+        "@types/figlet": "^1.7.0",
+        "typescript": "^5.9.3"
+    }
+}

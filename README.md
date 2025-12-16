@@ -1,4 +1,4 @@
-# tinySync
+# tinysync
 
 **Airtable → Webflow sync via CLI**
 **_Alpha release: use at your own risk_**
@@ -13,7 +13,7 @@
 
 ## Quick start
 
-- Download the latest [release](https://github.com/briantuckerdesign/tinySync/releases)
+- Download the latest [release](https://github.com/briantuckerdesign/tinysync/releases)
 - Make sure you have NPM installed
 - Unzip the folder and open it in a terminal window
 - Run `npm i`
@@ -60,17 +60,17 @@ First things first, you need Node.js on your computer. If you don't have it, you
 If you're not sure if you have it already, open a terminal window and type:
 `node -v`
 
-**Install tinySync**
+**Install tinysync**
 Download or clone this repo to your computer.
 
 ### Setup
 
 **Install dependencies.**
-Navigate to the tinySync folder in your terminal window using `cd` and run:
+Navigate to the tinysync folder in your terminal window using `cd` and run:
 `npm install`
 
-**Start tinySync**
-Run `npm start` to start tinySync.
+**Start tinysync**
+Run `npm start` to start tinysync.
 
 It will ask you to make a password. Don't forget it, as there is no way to recover it nor your data.
 

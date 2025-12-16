@@ -1,0 +1,22 @@
+# Dependencies
+node_modules
+
+# Tests
+coverage
+*.test.ts
+*.spec.ts
+__tests__
+__mocks__
+
+# Config files
+tsconfig.json
+tsconfig.build.json
+bun.lockb
+
+# Documentation (keep README)
+*.md
+!README.md
+!LICENSE.txt
+
+# macOS
+.DS_Store

@@ -1,16 +1,32 @@
 {
-    "name": "tiny-sync",
+    "name": "tinysync",
     "version": "0.7.0",
-    "description": "",
-    "main": "src/index.ts",
+    "private": true,
+    "description": "tinysync monorepo - Sync data between Airtable and Webflow",
+    "workspaces": [
+        "packages/*"
+    ],
     "scripts": {
-        "start": "bun src/cli/index.ts",
-        "build": "bun build ./src/index.ts --compile --compile-autoload-tsconfig --compile-autoload-package-json --minify --sourcemap --bytecode --outfile tinySync",
-        "watch": "bun run ./src/dev/runSync.ts",
+        "start": "bun --filter @tinysync/cli start",
+        "typecheck": "bun tsc --noEmit",
         "test": "bun test",
+        "test:core": "bun --filter @tinysync/core test",
+        "test:cli": "bun --filter @tinysync/cli test",
+        "clean": "rm -rf packages/*/node_modules node_modules",
+        "version:patch": "bun run version-bump patch",
+        "version:minor": "bun run version-bump minor",
+        "version:major": "bun run version-bump major",
+        "publish:all": "bun run build && bun run publish:core && bun run publish:cli",
+        "publish:core": "cd packages/core && npm publish --access public",
+        "publish:cli": "cd packages/cli && npm publish --access public",
         "localdev": "export NODE_TLS_REJECT_UNAUTHORIZED=0"
     },
-    "keywords": [],
+    "keywords": [
+        "airtable",
+        "webflow",
+        "sync",
+        "automation"
+    ],
     "author": "",
     "type": "module",
     "license": "ISC",
