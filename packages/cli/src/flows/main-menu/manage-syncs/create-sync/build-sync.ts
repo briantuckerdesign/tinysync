@@ -18,7 +18,6 @@ export function buildSync(
             webflow: webflowConfig.token.id,
         },
         config: {
-            autoPublishOnValidationError: settings.autoPublish,
             deleteOrphanedItems: settings.deleteRecords,
             publishToStagingSubdomain: settings.publishToSubdomain,
             airtable: {

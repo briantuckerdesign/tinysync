@@ -12,10 +12,6 @@ export async function viewSyncDetails(sync: Sync) {
         const settingsTable = new AsciiTable3('Settings')
             .setHeading('Setting', 'Value')
             .addRow(
-                'Auto publish site on item publishing error',
-                sync.config.autoPublishOnValidationError ? '✓' : '✗'
-            )
-            .addRow(
                 'Delete records at destination if deleted at source',
                 sync.config.deleteOrphanedItems ? '✓' : '✗'
             )

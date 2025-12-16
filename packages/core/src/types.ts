@@ -24,8 +24,6 @@ export interface Sync {
         airtable: string
     }
     config: {
-        /** Automatically publish Webflow site if validation occurs */
-        autoPublishOnValidationError: boolean
         /** Delete items in Webflow if no corresponding records found in Airtable */
         deleteOrphanedItems: boolean
         /** Publish to the webflow.io staging subdomain */
@@ -137,7 +135,6 @@ export type SpecialField =
 
 export interface SyncSettings {
     syncName: string
-    autoPublish: boolean
     deleteRecords: boolean
     publishToSubdomain: boolean
 }

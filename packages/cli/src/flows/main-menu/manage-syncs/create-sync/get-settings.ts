@@ -24,15 +24,10 @@ export async function getSettings(
 
         const userConfirms = await ui.prompt.group(
             {
-                autoPublish: () =>
-                    ui.prompt.confirm({
-                        message:
-                            'Automatically publish site if validation error occurs?',
-                    }),
                 deleteRecords: () =>
                     ui.prompt.confirm({
                         message:
-                            'Delete records from Webflow if they are deleted in Airtable?',
+                            'Delete records from Webflow if they are deleted in Airtable? (orphaned items)',
                     }),
             },
             {
@@ -44,7 +39,6 @@ export async function getSettings(
 
         const settings: SyncSettings = {
             syncName,
-            autoPublish: userConfirms.autoPublish,
             deleteRecords: userConfirms.deleteRecords,
             publishToSubdomain: publishToSubdomainEnabled,
         }
