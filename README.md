@@ -1,108 +1,116 @@
 # tinysync
 
-**Airtable → Webflow sync via CLI**
-**_Alpha release: use at your own risk_**
+**Airtable → Webflow sync via Bun**
 
-- One-directional manual sync
-- Command-line interface
-- Free & open source
-- Granular sync control
-- All field types supported
-- No record limits\*
-    - <sub>\*We are all beholden to the limits of Airtable/Webflow/APIs 🧘</sub>
+A monorepo containing tools for one-way synchronization from Airtable to Webflow CMS.
 
-## Quick start
+## Features
 
-- Download the latest [release](https://github.com/briantuckerdesign/tinysync/releases)
-- Make sure you have NPM installed
-- Unzip the folder and open it in a terminal window
-- Run `npm i`
-- Run `npm start`
+- **One-directional sync** - Push Airtable records to Webflow collections
+- **Granular control** - Choose exactly which records to sync via State field
+- **All field types** - Support for all Airtable field types including linked records
+- **Orphan cleanup** - Optionally delete Webflow items with no corresponding Airtable records
+- **No record limits**\* - Sync as many records as you need
+    - <sub>\*Subject to Airtable/Webflow API rate limits 🧘</sub>
 
----
+## Packages
+
+| Package                           | Description                                                  |
+| --------------------------------- | ------------------------------------------------------------ |
+| [@tinysync/cli](./packages/cli)   | Interactive command-line interface for managing syncs        |
+| [@tinysync/core](./packages/core) | Core sync engine and API wrappers (use in your own projects) |
+
+## Quick Start
+
+### Using the CLI
+
+```bash
+# Install globally
+bun add -g @tinysync/cli
+
+# Run
+tinysync
+```
+
+The CLI will guide you through setting up your API tokens and configuring syncs.
+
+### Using the Core Library
+
+```bash
+bun add @tinysync/core
+```
+
+```typescript
+import { runSync, createSyncEmitter } from '@tinysync/core'
+
+const emitter = createSyncEmitter()
+emitter.on('complete', ({ summary }) => console.log('Done!', summary))
+
+await runSync({
+    sync: yourSyncConfig,
+    airtableToken: 'your-token',
+    webflowToken: 'your-token',
+    emitter,
+})
+```
 
 ## Requirements
 
-There are a few things you'll need to get started:
+- [Bun](https://bun.sh) runtime
 
-- A computer with Node.js installed
-- OR the ability to install Node.js on your computer
-- An Airtable account
-- A Webflow account
+### Airtable Setup
 
-### Airtable
+Your Airtable base needs special fields (can be auto-created by the CLI):
 
-- Airtable account
-- Base with a table that matches a Webflow collection
-- API token with access to your base with read/write permissions
-- Four required fields These can be created for you, or select an existing field.
-    - `State` (single select): `Not synced`,`Queued for sync`,`Always sync`, `Staging`
-      _Note that the options for "State" must be exact._
-    - `Last Published` (date/time)
-    - `Webflow Item ID` (single line text)
-    - `Slug` (single line text)
+| Field             | Type             | Purpose                            |
+| ----------------- | ---------------- | ---------------------------------- |
+| `State`           | Single select    | Controls sync behavior             |
+| `Slug`            | Single line text | URL slug for Webflow               |
+| `Webflow Item ID` | Single line text | Links records to Webflow items     |
+| `Last Published`  | Date/time        | Tracks when record was last synced |
+| `Errors`          | multilineText    | Tracks errors while syncing        |
 
-### Webflow
+### State Options
 
-- Webflow account
-- Site with a collection that matches an Airtable table
-- Access token with access to your site with read/write permissions in CMS and Sites
+| State             | Behavior                                               |
+| ----------------- | ------------------------------------------------------ |
+| blank             | If delete orphans enabled, removes from Webflow        |
+| `Not synced`      | Won't sync, deletes from Webflow if previously synced. |
+| `Queued for sync` | Syncs on next run, then changes to `Staging`           |
+| `Always sync`     | Syncs on every run                                     |
+| `Staging`         | Already synced, but won't update on next run           |
 
----
+### Webflow Setup
 
-## Installation and Setup
+- Access token with **CMS** and **Sites** read/write permissions
 
-### Install
+## Development
 
-**Node.js**
-First things first, you need Node.js on your computer. If you don't have it, you can download it [here](https://nodejs.org/en/download/). I recommend the latest LTS version.
+```bash
+# Clone
+git clone https://github.com/briantuckerdesign/tinysync.git
+cd tinysync
 
-If you're not sure if you have it already, open a terminal window and type:
-`node -v`
+# Install dependencies
+bun install
 
-**Install tinysync**
-Download or clone this repo to your computer.
+# Run CLI in dev mode
+bun start
 
-### Setup
+# Type check
+bun run typecheck
 
-**Install dependencies.**
-Navigate to the tinysync folder in your terminal window using `cd` and run:
-`npm install`
+# Run tests
+bun test
+```
 
-**Start tinysync**
-Run `npm start` to start tinysync.
+### Local certificate issues
 
-It will ask you to make a password. Don't forget it, as there is no way to recover it nor your data.
+If you work at a company that uses a system-level VPN, you may run into a certificate error when attempting sync functions.
+This can be mitigated using the `NODE_TLS_REJECT_UNAUTHORIZED=0` environment variable, or running the premade script before running tinysync:
 
-Your passwords and access tokens are stored, encrypted, on your computer and can only be decrypted with this password. _There is no way to recover your config or password if you lose it._
+`bun run localdev`
 
----
+## License
 
-## Usage
-
-Follow the prompts to set up your sync. If your sync utilizes linked records, you must have another sync set up for the linked table so that the linked records have Webflow IDs to utilize.
-
-### Airtable State Options
-
-- `Not synced` or blank: Will not be sent to Webflow. If `Delete records` is enabled, will also delete previously created items in Webflow
-- `Queued for sync`: On next sync, this record will be sent to Webflow and then State will change to `Staging`.
-- `Always sync`: This record will be synced on every run.
-- `Staging`: For records that are already published, but you don't want changes made to the record going live on next sync.
-
----
-
-## Disclaimers
-
-I am a hobbyist developer. I have made best-effort attempts to make this software as secure and stable as possible, but I make no guarantees. Use at your own risk. For corporate users, I highly recommend amazing paid tools out there like [WhaleSync](https://whalesync.com/), [Flowmonk](https://flowmonk.com/), or [PowerImporter](https://https://www.powerimporter.com/).
-
-This is an early release, there may be errors. Please report any issues you find. I have a lot of ideas for features and improvements, but I'm a one-person team and I have a day job. If you'd like to contribute, please reach out!
-
----
-
-## Built with
-
-- [clack](https://github.com/natemoo-re/clack)
-- [axios](https://github.com/axios/axios)
-- [figlet.js](https://github.com/patorjk/figlet.js)
-- [showdown](https://github.com/showdownjs/showdown)
-- [uuid](https://github.com/uuidjs/uuid)
+ISC
