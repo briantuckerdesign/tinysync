@@ -1,8 +1,8 @@
 # @tinysync/core
 
-Core sync functionality for tinysync - synchronize data between Airtable and Webflow.
+Core sync engine for tinysync - synchronize Airtable data to Webflow CMS.
 
-**Note:** This package ships raw TypeScript source and requires Bun to run.
+> **Note:** This package requires [Bun](https://bun.sh) runtime.
 
 ## Installation
 
@@ -10,12 +10,7 @@ Core sync functionality for tinysync - synchronize data between Airtable and Web
 bun add @tinysync/core
 ```
 
-## Requirements
-
-- [Bun](https://bun.sh) runtime (native TypeScript support)
-- TypeScript 5.0+
-
-## Usage
+## Quick Start
 
 ```typescript
 import { runSync, createSyncEmitter, type Sync } from '@tinysync/core'
@@ -23,7 +18,6 @@ import { runSync, createSyncEmitter, type Sync } from '@tinysync/core'
 // Create an emitter to track sync progress
 const emitter = createSyncEmitter()
 
-// Listen to sync events
 emitter.on('progress', ({ message, data }) => {
     console.log(message, data)
 })
@@ -47,65 +41,54 @@ await runSync({
 
 ## API
 
-### Main Functions
+### Sync
 
-- `runSync(options)` - Execute a sync between Airtable and Webflow
-- `createSyncEmitter()` - Create a typed event emitter for sync progress tracking
+```typescript
+import { runSync, createSyncEmitter } from '@tinysync/core'
 
-### Airtable API
+// Run a configured sync
+await runSync({ sync, airtableToken, webflowToken, emitter })
+
+// Create typed event emitter for progress tracking
+const emitter = createSyncEmitter()
+```
+
+### Airtable
 
 ```typescript
 import { airtable } from '@tinysync/core'
 
-// Get bases
+// Fetch data
 const bases = await airtable.get.bases(token)
-
-// Get tables from a base
 const tables = await airtable.get.tables(token, baseId)
-
-// Get records from a table
 const records = await airtable.get.records(token, baseId, tableId)
-
-// Get schema
 const schema = await airtable.get.schema(token, baseId)
 
-// Update a record
+// Mutations
 await airtable.update.record(token, baseId, tableId, recordId, fields)
-
-// Create a field
 await airtable.create.field(token, baseId, tableId, fieldConfig)
 ```
 
-### Webflow API
+### Webflow
 
 ```typescript
 import { webflow } from '@tinysync/core'
 
-// Get sites
+// Fetch data
 const sites = await webflow.get.sites(token)
-
-// Get collections
 const collections = await webflow.get.collections(token, siteId)
-
-// Get items
 const items = await webflow.get.items(token, collectionId)
 
-// Create items
+// Mutations
 await webflow.create.items(token, collectionId, itemsData)
-
-// Update items
 await webflow.update.items(token, collectionId, itemsData)
-
-// Delete items
 await webflow.delete.items(token, collectionId, itemIds)
-
-// Publish site
 await webflow.publish.site(token, siteId, domains)
 ```
 
 ## Types
 
-All TypeScript types are exported for use in your projects:
+All TypeScript types are exported:
 
 ```typescript
 import type {
@@ -114,16 +97,15 @@ import type {
     Platform,
     SyncField,
     SyncEmitter,
+    SyncSettings,
     AirtableRecord,
     AirtableField,
-    // ... and many more
+    AirtableBase,
+    AirtableTable,
+    // ... and more
 } from '@tinysync/core'
 ```
 
 ## License
 
 ISC
-
-## Repository
-
-https://github.com/briantuckerdesign/tinysync/tree/main/packages/core
