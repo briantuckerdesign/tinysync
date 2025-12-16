@@ -16,8 +16,6 @@ export async function updateRecords(
     emit: SyncEmit
 ) {
     try {
-        emit.progress('Updating Airtable records')
-
         const specialFields = findAllSpecialFields(sync)
         /* ------------------------------ create items ------------------------------ */
         for (const createdItem of createdItems) {

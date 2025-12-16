@@ -33,8 +33,6 @@ export async function runSync(
     // Start timer
     const startTime = new Date().getTime()
     try {
-        emit.progress('Initializing sync...')
-
         // Initialize Webflow client
         const webflowClient = new WebflowClient({
             accessToken: webflowToken,
@@ -55,6 +53,7 @@ export async function runSync(
             ),
         ])
 
+        emit.progress('Parsing data...')
         // Sort records into create, update, and delete arrays
         const actions = await parseActions(
             sync,
@@ -63,6 +62,7 @@ export async function runSync(
             emit
         )
 
+        if (actions.createWebflowItem.length) emit.progress('Creating items...')
         // Create new items in Webflow
         const { createdItems, failedCreateRecords } = await createItems(
             sync,
@@ -71,6 +71,7 @@ export async function runSync(
             emit
         )
 
+        if (actions.updateWebflowItem.length) emit.progress('Updating items...')
         // Update existing items in Webflow
         const { updatedItems, failedUpdateRecords } = await updateItems(
             sync,
@@ -79,6 +80,8 @@ export async function runSync(
             emit
         )
 
+        if (actions.deleteWebflowItem.length || actions.orphanedItems.length)
+            emit.progress('Deleting items...')
         // Delete relevant Webflow items
         const { deletedItems, failedDeleteRecords } = await deleteItems(
             sync,
@@ -94,6 +97,7 @@ export async function runSync(
             ...failedDeleteRecords,
         ]
 
+        emit.progress('Updating records...')
         await updateRecords(
             sync,
             createdItems,

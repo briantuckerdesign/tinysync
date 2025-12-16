@@ -26,8 +26,6 @@ export async function updateItems(
     const numberOfItems = updateWebflowItems.length
     if (numberOfItems === 0) return { updatedItems, failedUpdateRecords }
 
-    emit.progress(`Updating ${updateWebflowItems.length} Webflow items`)
-
     // Get the itemId field to extract existing Webflow item IDs
     const itemIdField = findSpecialField('itemId', sync)
     if (!itemIdField)
@@ -119,15 +117,6 @@ export async function updateItems(
             })
         }
     }
-
-    emit.progress(
-        `Updated ${updatedItems.length} items, ${failedUpdateRecords.length} failed`,
-        {
-            noProgress: true,
-            updated: updatedItems.length,
-            failed: failedUpdateRecords.length,
-        }
-    )
 
     if (failedUpdateRecords.length > 0) {
         emit.error(

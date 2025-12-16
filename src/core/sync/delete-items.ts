@@ -34,10 +34,6 @@ export async function deleteItems(
     if (numberOfItems === 0 && numberOfOrphanedItems === 0)
         return { deletedItems, deletedOrphanedItems, failedDeleteRecords }
 
-    emit.progress(
-        `Deleting ${numberOfOrphanedItems + numberOfItems} Weblofw items`
-    )
-
     // Get the itemId field to extract existing Webflow item IDs
     const itemIdField = findSpecialField('itemId', sync)
     if (!itemIdField)
@@ -192,15 +188,6 @@ export async function deleteItems(
             }
         }
     }
-
-    emit.progress(
-        `Deleted ${deletedItems.length} items, ${failedDeleteRecords.length} failed`,
-        {
-            noProgress: true,
-            deleted: deletedItems.length,
-            failed: failedDeleteRecords.length,
-        }
-    )
 
     if (failedDeleteRecords.length > 0) {
         emit.error(

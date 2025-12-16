@@ -25,8 +25,6 @@ export async function createItems(
     const numberOfItems = createWebflowItems.length
     if (numberOfItems === 0) return { createdItems, failedCreateRecords }
 
-    emit.progress(`Creating ${createWebflowItems.length} Webflow items`)
-
     const { recordsWithParsingErrors, parsedRecords } = parseAirtableRecords(
         createWebflowItems,
         sync
@@ -87,15 +85,6 @@ export async function createItems(
             })
         }
     }
-
-    emit.progress(
-        `Created ${createdItems.length} items, ${failedCreateRecords.length} failed`,
-        {
-            noProgress: true,
-            created: createdItems.length,
-            failed: failedCreateRecords.length,
-        }
-    )
 
     if (failedCreateRecords.length > 0) {
         emit.error(
