@@ -7,14 +7,18 @@ export function createSyncEmitter(): SyncEmitter {
 
 export type SyncEventType = 'progress' | 'error' | 'complete'
 
+export type SyncProgressEventData = {
+    advance?: number
+    noProgress?: boolean
+    [key: string]: any
+}
+
 export interface SyncProgressEvent {
-    step: string
     message: string
-    data?: any
+    data?: SyncProgressEventData
 }
 
 export interface SyncErrorEvent {
-    step: string
     error: Error
     fatal: boolean
 }
@@ -39,8 +43,8 @@ export interface SyncEmitter extends EventEmitter {
 }
 
 export interface SyncEmit {
-    progress: (step: string, message: string, data?: any) => void
-    error: (step: string, error: Error, fatal: boolean) => void
+    progress: (message: string, data?: SyncProgressEventData) => void
+    error: (error: Error, fatal: boolean) => void
     complete: (
         timeElapsed: number,
         summary: SyncCompleteEvent['summary']

@@ -11,7 +11,7 @@ export async function parseActions(
     webflowItems: CollectionItemList,
     emit: SyncEmit
 ): Promise<SyncActions> {
-    emit.progress('Parse', 'Parsing actions...')
+    emit.progress('Parsing actions...')
     if (!webflowItems.items) throw new Error('Webflow items not found')
 
     const { itemIdFieldId, stateFieldId } = getSpecialFieldIds(sync)
@@ -52,7 +52,7 @@ export async function parseActions(
             case 'error':
                 recordsWithErrors.push({
                     record,
-                    errors: [action.message],
+                    errors: ['parse-action:', action.message],
                 })
                 break
             case 'skip':
@@ -68,16 +68,13 @@ export async function parseActions(
         orphanedItems.push(...filteredItems)
     }
 
-    emit.progress(
-        'Parse',
-        `Parsed actions: ${createWebflowItem.length} to create, ${updateWebflowItem.length} to update, ${deleteWebflowItem.length} to delete`,
-        {
-            create: createWebflowItem.length,
-            update: updateWebflowItem.length,
-            delete: deleteWebflowItem.length,
-            orphaned: orphanedItems.length,
-        }
-    )
+    emit.progress(`Parsed actions`, {
+        noProgress: true,
+        create: createWebflowItem.length,
+        update: updateWebflowItem.length,
+        delete: deleteWebflowItem.length,
+        orphaned: orphanedItems.length,
+    })
 
     return {
         createWebflowItem,
