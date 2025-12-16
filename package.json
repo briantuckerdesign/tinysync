@@ -7,12 +7,7 @@
         "packages/*"
     ],
     "scripts": {
-        "start": "bun --filter @tinysync/cli start",
-        "start:local": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && bun --filter @tinysync/cli start",
         "typecheck": "bun tsc --noEmit",
-        "test": "bun test",
-        "test:core": "bun --filter @tinysync/core test",
-        "test:cli": "bun --filter @tinysync/cli test",
         "clean": "rm -rf packages/*/node_modules node_modules",
         "publish:all": "bun run build && bun run publish:core && bun run publish:cli",
         "publish:core": "cd packages/core && npm publish --access public",
