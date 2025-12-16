@@ -16,11 +16,11 @@ export async function runSync(
     emitter?: SyncEmitter
 ) {
     const emit: SyncEmit = {
-        progress: (step: string, message: string, data?: any) => {
-            emitter?.emit('progress', { step, message, data })
+        progress: (message: string, data?: any) => {
+            emitter?.emit('progress', { message, data })
         },
-        error: (step: string, error: Error, fatal = false) => {
-            emitter?.emit('error', { step, error, fatal })
+        error: (error: Error, fatal = false) => {
+            emitter?.emit('error', { error, fatal })
         },
         complete: (
             timeElapsed: number,
@@ -33,14 +33,14 @@ export async function runSync(
     // Start timer
     const startTime = new Date().getTime()
     try {
-        emit.progress('tinySync', 'Initializing sync...')
+        emit.progress('Initializing sync...')
 
         // Initialize Webflow client
         const webflowClient = new WebflowClient({
             accessToken: webflowToken,
         })
 
-        emit.progress('Fetch', 'Fetching Airtable records and Webflow items...')
+        emit.progress('Fetching Airtable/Webflow data...')
         // Fetch Airtable records and Webflow items
         const [airtableRecords, webflowItemList] = await Promise.all([
             airtable.get.records(
@@ -54,22 +54,6 @@ export async function runSync(
                 sync.config.webflow.collection.id
             ),
         ])
-        emit.progress(
-            'Fetch',
-            `Fetched ${airtableRecords.length} Airtable records and ${webflowItemList.items?.length ?? 0} Webflow items`,
-            {
-                airtableCount: airtableRecords.length,
-                webflowCount: webflowItemList.items?.length ?? 0,
-            }
-        )
-        await writeToJSONFile(
-            './src/dev/airtable-records.json',
-            airtableRecords
-        )
-        await writeToJSONFile(
-            './src/dev/run-sync/webflow-items.json',
-            webflowItemList
-        )
 
         // Sort records into create, update, and delete arrays
         const actions = await parseActions(
@@ -78,7 +62,6 @@ export async function runSync(
             webflowItemList,
             emit
         )
-        await writeToJSONFile('./src/dev/run-sync/actions.json', actions)
 
         // Create new items in Webflow
         const { createdItems, failedCreateRecords } = await createItems(
@@ -88,30 +71,12 @@ export async function runSync(
             emit
         )
 
-        await writeToJSONFile(
-            './src/dev/run-sync/created-items.json',
-            createdItems
-        )
-        await writeToJSONFile(
-            './src/dev/run-sync/failed-create-items.json',
-            failedCreateRecords
-        )
-
         // Update existing items in Webflow
         const { updatedItems, failedUpdateRecords } = await updateItems(
             sync,
             actions.updateWebflowItem,
             webflowClient,
             emit
-        )
-
-        await writeToJSONFile(
-            './src/dev/run-sync/updated-items.json',
-            updatedItems
-        )
-        await writeToJSONFile(
-            './src/dev/run-sync/failed-update-items.json',
-            failedUpdateRecords
         )
 
         // Delete relevant Webflow items
@@ -147,9 +112,41 @@ export async function runSync(
             deleted: deletedItems.length,
             failed: failedRecords.length,
         })
+
+        await devLogs()
+
+        async function devLogs() {
+            await writeToJSONFile(
+                './src/dev/airtable-records.json',
+                airtableRecords
+            )
+            await writeToJSONFile(
+                './src/dev/run-sync/webflow-items.json',
+                webflowItemList
+            )
+
+            await writeToJSONFile('./src/dev/run-sync/actions.json', actions)
+
+            await writeToJSONFile(
+                './src/dev/run-sync/created-items.json',
+                createdItems
+            )
+            await writeToJSONFile(
+                './src/dev/run-sync/failed-create-items.json',
+                failedCreateRecords
+            )
+
+            await writeToJSONFile(
+                './src/dev/run-sync/updated-items.json',
+                updatedItems
+            )
+            await writeToJSONFile(
+                './src/dev/run-sync/failed-update-items.json',
+                failedUpdateRecords
+            )
+        }
     } catch (error) {
         emit.error(
-            'fatal',
             error instanceof Error ? error : new Error(String(error)),
             true
         )

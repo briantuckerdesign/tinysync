@@ -8,6 +8,7 @@ import type { SyncEmit } from './emitter'
 
 export interface UpdatedItem extends ParsedRecord {
     itemId: string
+    slug: string
 }
 
 const batchSize = 100
@@ -25,10 +26,7 @@ export async function updateItems(
     const numberOfItems = updateWebflowItems.length
     if (numberOfItems === 0) return { updatedItems, failedUpdateRecords }
 
-    emit.progress(
-        'update',
-        `Updating ${updateWebflowItems.length} items in Webflow...`
-    )
+    emit.progress(`Updating ${updateWebflowItems.length} Webflow items`)
 
     // Get the itemId field to extract existing Webflow item IDs
     const itemIdField = findSpecialField('itemId', sync)
@@ -123,9 +121,9 @@ export async function updateItems(
     }
 
     emit.progress(
-        'update',
         `Updated ${updatedItems.length} items, ${failedUpdateRecords.length} failed`,
         {
+            noProgress: true,
             updated: updatedItems.length,
             failed: failedUpdateRecords.length,
         }
@@ -133,7 +131,6 @@ export async function updateItems(
 
     if (failedUpdateRecords.length > 0) {
         emit.error(
-            'update',
             new Error(`Failed to update ${failedUpdateRecords.length} items`),
             false
         )
@@ -210,6 +207,7 @@ function matchResponseToRecord(
             return {
                 ...record,
                 itemId: item.id,
+                slug: item.fieldData.slug,
             }
         })
         .filter((item): item is UpdatedItem => item !== null)

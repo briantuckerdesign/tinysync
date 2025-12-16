@@ -35,8 +35,7 @@ export async function deleteItems(
         return { deletedItems, deletedOrphanedItems, failedDeleteRecords }
 
     emit.progress(
-        'delete',
-        `Deleting ${numberOfOrphanedItems + numberOfItems} items from Webflow...`
+        `Deleting ${numberOfOrphanedItems + numberOfItems} Weblofw items`
     )
 
     // Get the itemId field to extract existing Webflow item IDs
@@ -195,9 +194,9 @@ export async function deleteItems(
     }
 
     emit.progress(
-        'delete',
         `Deleted ${deletedItems.length} items, ${failedDeleteRecords.length} failed`,
         {
+            noProgress: true,
             deleted: deletedItems.length,
             failed: failedDeleteRecords.length,
         }
@@ -205,7 +204,6 @@ export async function deleteItems(
 
     if (failedDeleteRecords.length > 0) {
         emit.error(
-            'delete',
             new Error(`Failed to delete ${failedDeleteRecords.length} items`),
             false
         )
@@ -221,7 +219,19 @@ async function deleteItemBatch(
 ) {
     await webflowClient.collections.items.deleteItemsLive(
         sync.config.webflow.collection.id,
-        { items: itemIds as unknown as ItemsDeleteItemsLiveRequestItemsItem[] }
+        {
+            items: itemIds.map((id) => ({
+                id,
+            })) as unknown as ItemsDeleteItemsLiveRequestItemsItem[],
+        }
+    )
+    await webflowClient.collections.items.deleteItems(
+        sync.config.webflow.collection.id,
+        {
+            items: itemIds.map((id) => ({
+                id,
+            })) as unknown as ItemsDeleteItemsLiveRequestItemsItem[],
+        }
     )
 }
 

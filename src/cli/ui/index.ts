@@ -1,7 +1,10 @@
 import * as p from '@clack/prompts'
+
 import f from 'picocolors'
 import { welcomeMessage } from './welcome-message'
 import { handleCancel } from './handle-cancel'
+
+export { createClackProgressEmitter } from './create-clack-progress-emitter'
 
 // Update the UI interface to include the additional spinner methods
 interface UI {

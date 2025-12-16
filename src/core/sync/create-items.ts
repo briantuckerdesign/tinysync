@@ -7,6 +7,7 @@ import type { SyncEmit } from './emitter'
 
 export interface CreatedItem extends ParsedRecord {
     itemId: string
+    slug: string
 }
 
 const batchSize = 100
@@ -24,10 +25,7 @@ export async function createItems(
     const numberOfItems = createWebflowItems.length
     if (numberOfItems === 0) return { createdItems, failedCreateRecords }
 
-    emit.progress(
-        'create',
-        `Creating ${createWebflowItems.length} items in Webflow...`
-    )
+    emit.progress(`Creating ${createWebflowItems.length} Webflow items`)
 
     const { recordsWithParsingErrors, parsedRecords } = parseAirtableRecords(
         createWebflowItems,
@@ -91,9 +89,9 @@ export async function createItems(
     }
 
     emit.progress(
-        'create',
         `Created ${createdItems.length} items, ${failedCreateRecords.length} failed`,
         {
+            noProgress: true,
             created: createdItems.length,
             failed: failedCreateRecords.length,
         }
@@ -101,7 +99,6 @@ export async function createItems(
 
     if (failedCreateRecords.length > 0) {
         emit.error(
-            'create',
             new Error(`Failed to create ${failedCreateRecords.length} items`),
             false
         )
@@ -178,6 +175,7 @@ function matchResponseToRecord(
             return {
                 ...record,
                 itemId: item.id,
+                slug: item.fieldData.slug,
             }
         })
         .filter((item): item is CreatedItem => item !== null)
