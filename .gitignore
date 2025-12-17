@@ -4,7 +4,6 @@
 .env
 .vscode
 .cursor
-packages/cli/data/*.json
-packages/cli/data/syncs/*.json
+**/data
 **/logs
 **/dev
