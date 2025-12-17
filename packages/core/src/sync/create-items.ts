@@ -8,11 +8,12 @@ import {
     type ReferenceContext,
 } from './parse-data'
 import type { SyncEmit } from './emitter'
+import {
+    matchResponseToRecord,
+    type MatchedItem,
+} from './match-response-to-record'
 
-export interface CreatedItem extends ParsedRecord {
-    itemId: string
-    slug: string
-}
+export interface CreatedItem extends MatchedItem {}
 
 const batchSize = 100
 const smallBatchSize = 10
@@ -168,24 +169,4 @@ function extractWebflowErrorDescription(error: unknown): string {
     } catch {
         return error.message
     }
-}
-
-function matchResponseToRecord(
-    batch: ParsedRecord[],
-    itemList: CollectionItemList
-): CreatedItem[] {
-    if (!itemList.items) return []
-
-    // Webflow returns items in the same order they were submitted
-    return itemList.items
-        .map((item, index) => {
-            const record = batch[index]
-            if (!item.id || !record) return null
-            return {
-                ...record,
-                itemId: item.id,
-                slug: item.fieldData.slug,
-            }
-        })
-        .filter((item): item is CreatedItem => item !== null)
 }
