@@ -3,6 +3,7 @@ import { manageSyncs } from '..'
 import { tinysync, type Sync } from '@tinysync/core'
 import { createClackProgressEmitter, ui } from '../../../../ui'
 import { deleteSync } from './delete-sync'
+import { exportSync } from './export-sync'
 import { validateSyncTokens } from './validate-sync-tokens'
 import { viewSyncDetails } from './view-sync-details'
 
@@ -22,6 +23,10 @@ export async function manageSync(sync: Sync) {
             {
                 label: 'View details',
                 value: 'viewDetails',
+            },
+            {
+                label: 'Export sync',
+                value: 'exportSync',
             },
             { label: 'Delete sync', value: 'deleteSync' },
             { label: 'Back', value: 'back' },
@@ -49,6 +54,9 @@ export async function manageSync(sync: Sync) {
                 return await manageSync(sync)
             case 'viewDetails':
                 await viewSyncDetails(sync)
+                break
+            case 'exportSync':
+                await exportSync(sync)
                 break
             case 'deleteSync':
                 await deleteSync(sync)
