@@ -10,7 +10,7 @@
     "scripts": {
         "typecheck": "bun tsc --noEmit",
         "clean": "rm -rf packages/*/node_modules node_modules",
-        "publish:all": "bun run build && bun run publish:core && bun run publish:cli",
+        "publish:all": "bun run publish:core && bun run publish:cli",
         "publish:core": "cd packages/core && npm publish --access public",
         "publish:cli": "cd packages/cli && npm publish --access public"
     },
