@@ -1,3 +1,21 @@
+/**
+ * Sync event emitter for tracking progress, errors, and completion.
+ *
+ * The emitter provides three event types:
+ * - `progress` - Emitted during sync with status messages
+ * - `error` - Emitted when errors occur (fatal or non-fatal)
+ * - `complete` - Emitted when sync finishes with summary stats
+ *
+ * @example
+ * ```typescript
+ * const emitter = createSyncEmitter()
+ * emitter.on('progress', ({ message }) => console.log(message))
+ * emitter.on('error', ({ error, fatal }) => console.error(error))
+ * emitter.on('complete', ({ summary }) => console.log(summary))
+ * ```
+ *
+ * @module
+ */
 import { EventEmitter } from 'events'
 import type { AirtableRecord } from '../airtable/types'
 import type { RecordWithErrors, SyncActions } from '../types'

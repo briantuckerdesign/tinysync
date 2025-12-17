@@ -31,12 +31,12 @@ emitter.on('complete', ({ timeElapsed, summary }) => {
 })
 
 // Run the sync
-await runSync({
-    sync: yourSyncConfig,
-    airtableToken: 'your-airtable-token',
-    webflowToken: 'your-webflow-token',
-    emitter,
-})
+await runSync(
+    yourSyncConfig,
+    'your-airtable-token',
+    'your-webflow-token',
+    emitter
+)
 ```
 
 ## API
@@ -47,7 +47,7 @@ await runSync({
 import { runSync, createSyncEmitter } from '@tinysync/core'
 
 // Run a configured sync
-await runSync({ sync, airtableToken, webflowToken, emitter })
+await runSync(sync, airtableToken, webflowToken, emitter)
 
 // Create typed event emitter for progress tracking
 const emitter = createSyncEmitter()

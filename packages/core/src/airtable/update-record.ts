@@ -1,5 +1,19 @@
 import type { AirtableRecordPayload, AirtableRecordResponse } from './types'
 
+/**
+ * Updates a single record in Airtable.
+ *
+ * Uses PATCH to update only the specified fields, leaving others unchanged.
+ * Enables typecast to automatically convert values to the correct field type.
+ *
+ * @param token - Airtable API token
+ * @param baseId - The Airtable base ID
+ * @param tableId - The table ID
+ * @param recordId - The record ID to update (e.g., 'recXXXXXXXXXXXXXX')
+ * @param record - Object with field IDs as keys and new values
+ * @returns The updated record response
+ * @throws Error if the API request fails or record validation fails
+ */
 export async function updateRecord(
     token: string,
     baseId: string,

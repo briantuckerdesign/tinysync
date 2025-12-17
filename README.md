@@ -45,12 +45,12 @@ import { runSync, createSyncEmitter } from '@tinysync/core'
 const emitter = createSyncEmitter()
 emitter.on('complete', ({ summary }) => console.log('Done!', summary))
 
-await runSync({
-    sync: yourSyncConfig,
-    airtableToken: 'your-token',
-    webflowToken: 'your-token',
-    emitter,
-})
+await runSync(
+    yourSyncConfig,
+    'your-airtable-token',
+    'your-webflow-token',
+    emitter
+)
 ```
 
 ## Requirements

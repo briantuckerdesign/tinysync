@@ -1,7 +1,25 @@
+/**
+ * Token decryption with password verification.
+ *
+ * Verifies the password against the stored Argon2id hash before attempting
+ * decryption. This prevents unnecessary decryption attempts with wrong passwords.
+ *
+ * @module
+ */
 import type { Token } from '@tinysync/core'
 import type { EncryptedData } from '../types'
 import crypto from 'crypto'
 
+/**
+ * Decrypts encrypted token data using the user's password.
+ *
+ * @param encrypted - The encrypted data object from storage
+ * @param password - The user's password
+ * @returns Array of decrypted Token objects
+ * @throws Error with 'Invalid password' message if password verification fails
+ * @throws Error with 'Decryption failed' for other decryption errors
+ * @throws Error with 'Encrypted data is corrupted' if required fields are missing
+ */
 export async function decryptTokens(
     encrypted: EncryptedData,
     password: string

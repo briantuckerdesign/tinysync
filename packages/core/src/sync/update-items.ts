@@ -18,6 +18,19 @@ export interface UpdatedItem extends ParsedRecord {
 const batchSize = 100
 const smallBatchSize = 10
 
+/**
+ * Updates existing Webflow items from Airtable records.
+ *
+ * Uses the same batch-retry strategy as createItems.
+ * Requires records to have a valid Webflow item ID in the itemId field.
+ *
+ * @param sync - The sync configuration
+ * @param updateWebflowItems - Airtable records with existing Webflow item IDs
+ * @param webflowClient - Initialized Webflow API client
+ * @param emit - Event emitter for progress/errors
+ * @param referenceContext - Context for resolving Reference fields
+ * @returns Updated items and failed records with error details
+ */
 export async function updateItems(
     sync: Sync,
     updateWebflowItems: AirtableRecord[],

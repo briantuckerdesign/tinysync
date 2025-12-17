@@ -1,3 +1,17 @@
+/**
+ * Airtable API wrapper module.
+ *
+ * Provides typed functions for interacting with the Airtable REST API:
+ * - `airtable.get.bases()` - List accessible bases
+ * - `airtable.get.tables()` - Get tables in a base
+ * - `airtable.get.records()` - Fetch records with pagination
+ * - `airtable.get.schema()` - Get base schema
+ * - `airtable.get.record()` - Get single record
+ * - `airtable.update.record()` - Update a record
+ * - `airtable.create.field()` - Create a field in a table
+ *
+ * @module
+ */
 import { getBases } from './get-bases'
 import { getTables } from './get-tables'
 import { getRecords } from './get-records'

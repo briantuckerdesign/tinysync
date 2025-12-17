@@ -1,7 +1,25 @@
+/**
+ * Token encryption using AES-256-GCM with Argon2id password hashing.
+ *
+ * Security features:
+ * - PBKDF2 key derivation with 100,000 iterations
+ * - Random 16-byte IV and salt per encryption
+ * - Argon2id password hash stored for verification
+ * - GCM authentication tag for integrity
+ *
+ * @module
+ */
 import crypto from 'crypto'
 import type { EncryptedData } from '../types'
 import pack from '../../package.json'
 
+/**
+ * Encrypts a JSON string of tokens using AES-256-GCM.
+ *
+ * @param text - The plaintext JSON string to encrypt (typically JSON.stringify'd Token[])
+ * @param password - The user's password for encryption
+ * @returns The encrypted data object, or false if encryption fails
+ */
 export async function encryptTokens(
     text: string,
     password: string

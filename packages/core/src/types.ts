@@ -1,3 +1,14 @@
+/**
+ * Core type definitions for tinysync.
+ *
+ * This module defines the main interfaces used throughout the sync engine:
+ * - `Sync` - Complete sync configuration including field mappings
+ * - `Token` - API token with platform and metadata
+ * - `SyncField` - Individual field mapping between Airtable and Webflow
+ * - `SyncActions` - Categorized records for create/update/delete operations
+ *
+ * @module
+ */
 import type {
     CollectionItem,
     FieldType,

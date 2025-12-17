@@ -5,6 +5,22 @@ import type { CollectionItem, CollectionItemList } from 'webflow-api/api'
 import { findSpecialField } from '../../utils/find-special-field'
 import type { SyncEmit } from '../emitter'
 
+/**
+ * Determines the sync action for each Airtable record.
+ *
+ * Compares Airtable records against Webflow items and categorizes each into:
+ * - `createWebflowItem` - New records without Webflow item IDs
+ * - `updateWebflowItem` - Records with valid Webflow item IDs
+ * - `deleteWebflowItem` - Records marked as 'Not synced' with item IDs
+ * - `orphanedItems` - Webflow items with no corresponding Airtable record
+ * - `recordsWithErrors` - Records with invalid state or missing data
+ *
+ * @param sync - The sync configuration
+ * @param airtableRecords - All records from the Airtable view
+ * @param webflowItems - All items from the Webflow collection
+ * @param emit - Event emitter for progress updates
+ * @returns Categorized actions for the sync operation
+ */
 export async function parseActions(
     sync: Sync,
     airtableRecords: AirtableRecord[],

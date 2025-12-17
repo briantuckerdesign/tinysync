@@ -17,6 +17,23 @@ export interface CreatedItem extends ParsedRecord {
 const batchSize = 100
 const smallBatchSize = 10
 
+/**
+ * Creates new items in Webflow from Airtable records.
+ *
+ * Uses a batch-retry strategy:
+ * 1. First attempts batches of 100 items
+ * 2. Failed batches are retried in batches of 10
+ * 3. Still-failing items are attempted individually
+ *
+ * This approach maximizes throughput while identifying problem records.
+ *
+ * @param sync - The sync configuration
+ * @param createWebflowItems - Airtable records to create as Webflow items
+ * @param webflowClient - Initialized Webflow API client
+ * @param emit - Event emitter for progress/errors
+ * @param referenceContext - Context for resolving Reference fields
+ * @returns Created items and failed records with error details
+ */
 export async function createItems(
     sync: Sync,
     createWebflowItems: AirtableRecord[],

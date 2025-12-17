@@ -1,3 +1,23 @@
+/**
+ * @tinysync/core
+ *
+ * Core sync engine for one-way synchronization from Airtable to Webflow CMS.
+ * This package provides the sync functionality, Airtable API wrappers, and
+ * type definitions for building Airtable → Webflow integrations.
+ *
+ * @example
+ * ```typescript
+ * import { runSync, createSyncEmitter } from '@tinysync/core'
+ *
+ * const emitter = createSyncEmitter()
+ * emitter.on('complete', ({ summary }) => console.log('Done!', summary))
+ *
+ * await runSync(syncConfig, airtableToken, webflowToken, emitter)
+ * ```
+ *
+ * @packageDocumentation
+ */
+
 // Main sync functionality
 import { runSync } from './sync'
 export { runSync }

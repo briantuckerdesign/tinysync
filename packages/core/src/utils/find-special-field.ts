@@ -1,5 +1,20 @@
 import type { SpecialField, Sync } from '../types'
 
+/**
+ * Finds a special field in the sync configuration by its type.
+ *
+ * Special fields are system fields required for sync operation:
+ * - `itemId` - Stores the Webflow item ID
+ * - `state` - Controls sync behavior (Staging, Always sync, etc.)
+ * - `slug` - URL slug for the Webflow item
+ * - `lastPublished` - Timestamp of last successful sync
+ * - `name` - The item name (maps to Webflow's name field)
+ * - `errors` - Stores sync error messages
+ *
+ * @param fieldName - The special field type to find
+ * @param sync - The sync configuration
+ * @returns The matching SyncField, or undefined if not found
+ */
 export function findSpecialField(fieldName: SpecialField, sync: Sync) {
     return sync.fields.find((field) => field.specialField === fieldName)
 }

@@ -1,3 +1,13 @@
+/**
+ * CLI-specific type definitions.
+ *
+ * Extends core types with CLI-specific interfaces:
+ * - `State` - Runtime application state
+ * - `EncryptedData` - Structure of encrypted token storage
+ * - `AirtableConfig` / `WebflowConfig` - Sync creation wizard state
+ *
+ * @module
+ */
 import type { WebflowClient } from 'webflow-api'
 import type { Collection, Site } from 'webflow-api/api'
 import type {
