@@ -14,17 +14,19 @@
     ],
     "scripts": {
         "start": "bun src/index.ts",
+        "__start:local_warning": "SECURITY: Disables TLS verification. Only use for corporate VPN cert issues during local dev.",
         "start:local": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && bun src/index.ts",
         "test": "bun test"
     },
     "keywords": [
+        "bun",
         "cli",
         "airtable",
         "webflow",
         "sync",
         "automation"
     ],
-    "author": "",
+    "author": "Brian Tucker",
     "license": "ISC",
     "type": "module",
     "repository": {
