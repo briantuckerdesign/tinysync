@@ -23,3 +23,4 @@ bun.lockb
 # Environment files
 data/*.json
 data/syncs/*.json
+logs/
