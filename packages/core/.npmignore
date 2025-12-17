@@ -20,3 +20,5 @@ bun.lockb
 
 # macOS
 .DS_Store
+
+logs/
