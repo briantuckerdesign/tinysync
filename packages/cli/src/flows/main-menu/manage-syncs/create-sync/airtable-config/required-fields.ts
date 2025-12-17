@@ -86,7 +86,7 @@ export async function handleRequiredFields(
             key: 'errorsField',
             name: 'Errors',
             description: 'Airtable field to store sync error information.',
-            compatibleTypes: ['singleLineText'],
+            compatibleTypes: ['singleLineText', 'multilineText'],
             fieldOptions: {
                 name: `Errors [${syncName}]`,
                 type: 'multilineText',
