@@ -15,6 +15,7 @@
         "publish:cli": "cd packages/cli && npm publish --access public"
     },
     "keywords": [
+        "bun",
         "airtable",
         "webflow",
         "sync",
