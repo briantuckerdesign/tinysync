@@ -1,7 +1,8 @@
 {
     "name": "tinysync",
     "version": "0.7.0",
-    "private": true,
+    "author": "Brian Tucker",
+    "private": false,
     "description": "tinysync monorepo - Sync data between Airtable and Webflow",
     "workspaces": [
         "packages/*"
@@ -19,7 +20,6 @@
         "sync",
         "automation"
     ],
-    "author": "",
     "type": "module",
     "license": "ISC",
     "dependencies": {
