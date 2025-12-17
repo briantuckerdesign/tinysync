@@ -1,5 +1,4 @@
 import { manageSyncs } from '..'
-import { writeToJSONFile } from '@tinysync/core'
 import { state } from '../../../../state'
 import { syncs } from '../../../../syncs'
 import { ui } from '../../../../ui'
@@ -10,7 +9,6 @@ import { getSyncName } from './get-name'
 import { getSettings } from './get-settings'
 import { matchFields } from './match-fields/index'
 import { createWebflowConfig } from './webflow-config'
-import { join } from 'path'
 
 export async function createSync() {
     try {
@@ -48,14 +46,6 @@ export async function createSync() {
         // Get general sync settings
         const settings = await getSettings(syncName, webflowConfig)
 
-        await writeToJSONFile(
-            join(
-                import.meta.dir,
-                '../../../../../../../dev/create-sync/settings.json'
-            ),
-            settings
-        ) // TODO: remove
-
         // Compile into sync
         const sync = await buildSync(
             airtableConfig,
@@ -63,14 +53,6 @@ export async function createSync() {
             fields,
             settings
         )
-
-        await writeToJSONFile(
-            join(
-                import.meta.dir,
-                '../../../../../../../dev/create-sync/sync.json'
-            ),
-            sync
-        ) // TODO: remove
 
         // Save to file
         state.syncs.push(sync)
