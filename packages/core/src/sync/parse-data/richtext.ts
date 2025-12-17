@@ -17,7 +17,6 @@ export interface RichTextValidations {
     minLength?: number
 }
 
-// TODO: Check if the HTML counts towards character limit
 /**
  * Parses rich text field and assigns the corresponding value to the recordData object.
  * If the field is undefined in the record, the value will be set to an empty string.
