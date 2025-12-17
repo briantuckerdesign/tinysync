@@ -42,6 +42,7 @@ export {
     type SyncErrorEvent,
     type SyncCompleteEvent,
     type SyncEmit,
+    type SyncVerboseLogs,
 } from './sync/emitter'
 
 // Convenience export
@@ -51,4 +52,3 @@ export const tinysync = {
 
 // Re-export utilities if needed
 export { checkVersionCompatibility } from './utils/check-version-compatibility'
-export { writeToJSONFile } from './utils/write-to-json-file'

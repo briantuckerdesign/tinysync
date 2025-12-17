@@ -1,4 +1,10 @@
 import { EventEmitter } from 'events'
+import type { AirtableRecord } from '../airtable/types'
+import type { RecordWithErrors, SyncActions } from '../types'
+import type { CollectionItemList } from 'webflow-api/api'
+import type { CreatedItem } from './create-items'
+import type { UpdatedItem } from './update-items'
+import type { DeletedItem } from './delete-items'
 
 /** Creates a typed SyncEmitter for use with runSync */
 export function createSyncEmitter(): SyncEmitter {
@@ -23,6 +29,19 @@ export interface SyncErrorEvent {
     fatal: boolean
 }
 
+/** Verbose log data emitted on sync complete for optional CLI-side saving */
+export interface SyncVerboseLogs {
+    airtableRecords: AirtableRecord[]
+    webflowItemList: CollectionItemList
+    actions: SyncActions
+    createdItems: CreatedItem[]
+    failedCreateRecords: RecordWithErrors[]
+    updatedItems: UpdatedItem[]
+    failedUpdateRecords: RecordWithErrors[]
+    deletedItems: DeletedItem[]
+    failedDeleteRecords: RecordWithErrors[]
+}
+
 export interface SyncCompleteEvent {
     timeElapsed: number
     summary: {
@@ -31,6 +50,8 @@ export interface SyncCompleteEvent {
         deleted: number
         failed: number
     }
+    /** Verbose log data - only included when sync.config.verboseLogs is enabled */
+    verboseLogs?: SyncVerboseLogs
 }
 
 export interface SyncEmitter extends EventEmitter {
@@ -47,6 +68,7 @@ export interface SyncEmit {
     error: (error: Error, fatal: boolean) => void
     complete: (
         timeElapsed: number,
-        summary: SyncCompleteEvent['summary']
+        summary: SyncCompleteEvent['summary'],
+        verboseLogs?: SyncVerboseLogs
     ) => void
 }

@@ -28,6 +28,8 @@ export interface Sync {
         deleteOrphanedItems: boolean
         /** Publish to the webflow.io staging subdomain */
         publishToStagingSubdomain: boolean
+        /** Enable verbose JSON logging to capture detailed sync data */
+        verboseLogs?: boolean
         /** Airtable config */
         airtable: {
             base: {

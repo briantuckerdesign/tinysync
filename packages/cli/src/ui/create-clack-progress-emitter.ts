@@ -1,5 +1,9 @@
 import * as p from '@clack/prompts'
-import { createSyncEmitter, type SyncEmitter } from '@tinysync/core'
+import {
+    createSyncEmitter,
+    type SyncEmitter,
+    type SyncVerboseLogs,
+} from '@tinysync/core'
 
 /** Clack progress bar type from @clack/prompts */
 type ClackProgress = ReturnType<typeof p.progress>
@@ -24,6 +28,7 @@ export interface ClackProgressEmitter {
  * @param options.max - Maximum value for the progress bar (total steps)
  * @param options.size - Width of the progress bar in characters
  * @param options.style - Style of the progress bar: 'light', 'heavy', 'block'
+ * @param options.onVerboseLogs - Callback to handle verbose logs when sync completes
  *
  * @example
  * ```ts
@@ -37,6 +42,7 @@ export function createClackProgressEmitter(options?: {
     max?: number
     size?: number
     style?: 'light' | 'heavy' | 'block'
+    onVerboseLogs?: (logs: SyncVerboseLogs) => Promise<void> | void
 }): ClackProgressEmitter {
     const emitter = createSyncEmitter()
     const progressBar = p.progress({
@@ -58,11 +64,16 @@ export function createClackProgressEmitter(options?: {
         }
     })
 
-    emitter.on('complete', ({ timeElapsed, summary }) => {
+    emitter.on('complete', ({ timeElapsed, summary, verboseLogs }) => {
         const { created, updated, deleted, failed } = summary
         progressBar.stop(
             `Sync completed in ${timeElapsed.toFixed(1)}s — Created: ${created}, Updated: ${updated}, Deleted: ${deleted}${failed > 0 ? `, Failed: ${failed}` : ''}`
         )
+
+        // Call verbose logs callback if provided and logs exist
+        if (verboseLogs && options?.onVerboseLogs) {
+            options.onVerboseLogs(verboseLogs)
+        }
     })
 
     return {

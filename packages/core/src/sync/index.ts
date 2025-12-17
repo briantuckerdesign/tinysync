@@ -3,13 +3,16 @@ import { airtable } from '../airtable'
 import type { RecordWithErrors, Sync } from '../types'
 import { parseActions } from './parse-actions'
 import { createItems } from './create-items'
-import { writeToJSONFile } from '../utils/write-to-json-file'
 import { updateRecords } from './update-records'
 import { updateItems } from './update-items'
 import { deleteItems } from './delete-items'
-import type { SyncCompleteEvent, SyncEmit, SyncEmitter } from './emitter'
+import type {
+    SyncCompleteEvent,
+    SyncEmit,
+    SyncEmitter,
+    SyncVerboseLogs,
+} from './emitter'
 import type { ReferenceContext } from './parse-data'
-import { join } from 'path'
 
 export async function runSync(
     sync: Sync,
@@ -26,9 +29,14 @@ export async function runSync(
         },
         complete: (
             timeElapsed: number,
-            summary: SyncCompleteEvent['summary']
+            summary: SyncCompleteEvent['summary'],
+            verboseLogs?: SyncVerboseLogs
         ) => {
-            emitter?.emit('complete', { timeElapsed, summary })
+            const payload: SyncCompleteEvent = { timeElapsed, summary }
+            if (verboseLogs) {
+                payload.verboseLogs = verboseLogs
+            }
+            emitter?.emit('complete', payload)
         },
     }
 
@@ -120,66 +128,31 @@ export async function runSync(
 
         const timeElapsed = (new Date().getTime() - startTime) / 1000
 
-        emit.complete(timeElapsed, {
-            created: createdItems.length,
-            updated: updatedItems.length,
-            deleted: deletedItems.length,
-            failed: failedRecords.length,
-        })
+        // Build verbose logs if enabled
+        const verboseLogs: SyncVerboseLogs | undefined = sync.config.verboseLogs
+            ? {
+                  airtableRecords,
+                  webflowItemList,
+                  actions,
+                  createdItems,
+                  failedCreateRecords,
+                  updatedItems,
+                  failedUpdateRecords,
+                  deletedItems,
+                  failedDeleteRecords,
+              }
+            : undefined
 
-        await devLogs()
-
-        async function devLogs() {
-            await writeToJSONFile(
-                join(
-                    import.meta.dir,
-                    '../../../../dev/run-sync/list-airtable-records.json'
-                ),
-                airtableRecords
-            )
-            await writeToJSONFile(
-                join(
-                    import.meta.dir,
-                    '../../../../dev/run-sync/list-webflow-items.json'
-                ),
-                webflowItemList
-            )
-
-            await writeToJSONFile(
-                join(import.meta.dir, '../../../../dev/run-sync/actions.json'),
-                actions
-            )
-
-            await writeToJSONFile(
-                join(
-                    import.meta.dir,
-                    '../../../../dev/run-sync/created-items.json'
-                ),
-                createdItems
-            )
-            await writeToJSONFile(
-                join(
-                    import.meta.dir,
-                    '../../../../dev/run-sync/failed-create-records.json'
-                ),
-                failedCreateRecords
-            )
-
-            await writeToJSONFile(
-                join(
-                    import.meta.dir,
-                    '../../../../dev/run-sync/updated-items.json'
-                ),
-                updatedItems
-            )
-            await writeToJSONFile(
-                join(
-                    import.meta.dir,
-                    '../../../../dev/run-sync/failed-updated-items.json'
-                ),
-                failedUpdateRecords
-            )
-        }
+        emit.complete(
+            timeElapsed,
+            {
+                created: createdItems.length,
+                updated: updatedItems.length,
+                deleted: deletedItems.length,
+                failed: failedRecords.length,
+            },
+            verboseLogs
+        )
     } catch (error) {
         emit.error(
             error instanceof Error ? error : new Error(String(error)),

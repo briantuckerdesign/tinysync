@@ -1,11 +1,13 @@
 // import { AsciiTable3 } from 'ascii-table3'
-import { manageSyncs } from '..'
 import { tinysync, type Sync } from '@tinysync/core'
+import { manageSyncs } from '..'
 import { createClackProgressEmitter, ui } from '../../../../ui'
 import { deleteSync } from './delete-sync'
 import { exportSync } from './export-sync'
+import { toggleVerboseLogs } from './toggle-verbose-logs'
 import { validateSyncTokens } from './validate-sync-tokens'
 import { viewSyncDetails } from './view-sync-details'
+import { saveVerboseLogs } from './save-verbose-logs'
 
 export async function manageSync(sync: Sync) {
     try {
@@ -15,6 +17,9 @@ export async function manageSync(sync: Sync) {
 
         ui.prompt.log.info(`💎 ${ui.format.bold(sync.name)}`)
         const syncMessage = 'What would you like to do?'
+        const verboseLabel = sync.config.verboseLogs
+            ? 'Verbose logs: ✓ enabled'
+            : 'Verbose logs: ✗ disabled'
         const syncChoices = [
             {
                 label: 'Sync',
@@ -23,6 +28,11 @@ export async function manageSync(sync: Sync) {
             {
                 label: 'View details',
                 value: 'viewDetails',
+            },
+            {
+                label: verboseLabel,
+                value: 'toggleVerboseLogs',
+                hint: 'Toggle JSON logging',
             },
             {
                 label: 'Export sync',
@@ -42,7 +52,9 @@ export async function manageSync(sync: Sync) {
 
         switch (userChoice) {
             case 'runSync':
-                const clack = createClackProgressEmitter()
+                const clack = createClackProgressEmitter({
+                    onVerboseLogs: (logs) => saveVerboseLogs(sync, logs),
+                })
                 clack.start()
 
                 await tinysync.sync(
@@ -54,6 +66,9 @@ export async function manageSync(sync: Sync) {
                 return await manageSync(sync)
             case 'viewDetails':
                 await viewSyncDetails(sync)
+                break
+            case 'toggleVerboseLogs':
+                await toggleVerboseLogs(sync)
                 break
             case 'exportSync':
                 await exportSync(sync)
