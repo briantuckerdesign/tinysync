@@ -3,7 +3,7 @@ import { checkValidations } from './validations'
 export interface NumberValidations {
     precision?: number
     allowNegative?: boolean
-    format: 'integer' | 'decimal' // TODO: check this
+    format: 'integer' | 'decimal'
 }
 
 export function parseNumber(
