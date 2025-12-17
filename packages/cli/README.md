@@ -7,13 +7,13 @@ Interactive command-line interface for syncing data between Airtable and Webflow
 ## Installation
 
 ```bash
-bun add -g @tinysync/cli
+bun add @tinysync/cli
 ```
 
 ## Usage
 
 ```bash
-tinysync
+bun run start
 ```
 
 The CLI will guide you through:
