@@ -1,5 +1,6 @@
 import { WebflowClient } from 'webflow-api'
 import { airtable } from '../airtable'
+import { listAllItems } from '../webflow'
 import type { RecordWithErrors, Sync } from '../types'
 import { parseActions } from './parse-actions'
 import { createItems } from './create-items'
@@ -63,10 +64,7 @@ export async function runSync(
                 sync.config.airtable.table.id,
                 sync.config.airtable.table.view.id
             ),
-            // TODO: Test pagination/calls over 100
-            webflowClient.collections.items.listItems(
-                sync.config.webflow.collection.id
-            ),
+            listAllItems(webflowClient, sync.config.webflow.collection.id),
         ])
 
         emit.progress('Parsing data...')
