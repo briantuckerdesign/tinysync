@@ -28,7 +28,7 @@ A monorepo containing tools for one-way synchronization from Airtable to Webflow
 bun add @tinysync/cli
 
 # Run
-tinysync
+bun run start
 ```
 
 The CLI will guide you through setting up your API tokens and configuring syncs.
