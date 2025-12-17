@@ -6,4 +6,5 @@
 .cursor
 packages/cli/data/*.json
 packages/cli/data/syncs/*.json
-/dev
+**/logs
+**/dev
