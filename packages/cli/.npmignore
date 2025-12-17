@@ -21,6 +21,5 @@ bun.lockb
 .DS_Store
 
 # Environment files
-data/*.json
-data/syncs/*.json
+data/
 logs/
