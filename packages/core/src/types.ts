@@ -123,6 +123,18 @@ export interface SyncField {
         options: any
     }
     specialField: SpecialField | undefined
+    /**
+     * Configuration for Reference and MultiReference fields.
+     * Stores the info needed to resolve Airtable record IDs to Webflow item IDs.
+     */
+    referenceConfig?: {
+        /** The linked Airtable table ID (from airtable field options.linkedTableId) */
+        linkedTableId: string
+        /** The field ID in the linked table that stores Webflow item IDs */
+        linkedItemIdFieldId: string
+        /** The field name (for display/debugging) */
+        linkedItemIdFieldName: string
+    }
 }
 
 export type SpecialField =

@@ -38,9 +38,14 @@ export async function matchFields(
         matchedFields.push(...specialFields)
 
         // Match the remaining fields
+        // Pass context for reference field configuration
         const userMatchedFields = await userMatchesFields(
             airtableFields,
-            webflowFields
+            webflowFields,
+            {
+                token: airtableConfig.token.token,
+                baseId: airtableConfig.base.id,
+            }
         )
         matchedFields.push(...userMatchedFields)
 

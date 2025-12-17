@@ -4,25 +4,44 @@ import type { RecordWithErrors, Sync } from '../../types'
 import { parseSlug } from './slug'
 import { parseString } from './string'
 import { parseByFieldType } from './parse-by-field-type'
+import type { ReferenceContext } from './reference'
+
+// Re-export for convenience
+export type { ReferenceContext } from './reference'
 
 export type ParsedRecord = {
     record: AirtableRecord
     collectionItem: CollectionItem
 }
 
-export type RarseAirtableRecordsResult = {
+export type ParseAirtableRecordsResult = {
     parsedRecords: ParsedRecord[]
     recordsWithParsingErrors: RecordWithErrors[]
 }
 
-export function parseAirtableRecords(
+/**
+ * Parses all Airtable records into Webflow collection items.
+ * For syncs with Reference/MultiReference fields, this makes API calls
+ * to resolve linked record IDs to Webflow item IDs.
+ *
+ * @param records - Airtable records to parse
+ * @param sync - Sync configuration
+ * @param referenceContext - Required if sync has Reference/MultiReference fields
+ */
+export async function parseAirtableRecords(
     records: AirtableRecord[],
-    sync: Sync
-): RarseAirtableRecordsResult {
+    sync: Sync,
+    referenceContext?: ReferenceContext
+): Promise<ParseAirtableRecordsResult> {
     const parsedRecords: ParsedRecord[] = []
     const recordsWithParsingErrors: RecordWithErrors[] = []
+
     for (const record of records) {
-        const parsedRecord = parseAirtableRecord(record, sync)
+        const parsedRecord = await parseAirtableRecord(
+            record,
+            sync,
+            referenceContext
+        )
         // If failed, push to recordsWithErrors
         if (!parsedRecord.success) {
             recordsWithParsingErrors.push(parsedRecord.error)
@@ -49,10 +68,18 @@ export type ParseResult =
     | { success: true; data: PayloadFieldData }
     | { success: false; error: RecordWithErrors }
 
-export function parseAirtableRecord(
+/**
+ * Parses a single Airtable record into Webflow field data.
+ *
+ * @param fetchedRecord - The Airtable record to parse
+ * @param sync - Sync configuration
+ * @param referenceContext - Required if sync has Reference/MultiReference fields
+ */
+export async function parseAirtableRecord(
     fetchedRecord: AirtableRecord,
-    sync: Sync
-): ParseResult {
+    sync: Sync,
+    referenceContext?: ReferenceContext
+): Promise<ParseResult> {
     const parsedRecord: Record<string, any> = {}
     const errors: string[] = []
 
@@ -83,7 +110,11 @@ export function parseAirtableRecord(
             } else if (field.specialField === 'slug') {
                 parsedValue = parseSlug(fetchedValue, parsedRecord)
             } else if (fetchedValue != null) {
-                parsedValue = parseByFieldType(field, fetchedValue)
+                parsedValue = await parseByFieldType(
+                    field,
+                    fetchedValue,
+                    referenceContext
+                )
             }
         } catch (err) {
             const message = err instanceof Error ? err.message : String(err)

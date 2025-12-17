@@ -2,7 +2,11 @@ import type { WebflowClient } from 'webflow-api'
 import type { CollectionItemList } from 'webflow-api/api'
 import type { AirtableRecord } from '../airtable/types'
 import type { RecordWithErrors, Sync } from '../types'
-import { parseAirtableRecords, type ParsedRecord } from './parse-data'
+import {
+    parseAirtableRecords,
+    type ParsedRecord,
+    type ReferenceContext,
+} from './parse-data'
 import type { SyncEmit } from './emitter'
 
 export interface CreatedItem extends ParsedRecord {
@@ -17,7 +21,8 @@ export async function createItems(
     sync: Sync,
     createWebflowItems: AirtableRecord[],
     webflowClient: WebflowClient,
-    emit: SyncEmit
+    emit: SyncEmit,
+    referenceContext?: ReferenceContext
 ) {
     const createdItems: CreatedItem[] = []
     const failedCreateRecords: RecordWithErrors[] = []
@@ -25,10 +30,8 @@ export async function createItems(
     const numberOfItems = createWebflowItems.length
     if (numberOfItems === 0) return { createdItems, failedCreateRecords }
 
-    const { recordsWithParsingErrors, parsedRecords } = parseAirtableRecords(
-        createWebflowItems,
-        sync
-    )
+    const { recordsWithParsingErrors, parsedRecords } =
+        await parseAirtableRecords(createWebflowItems, sync, referenceContext)
 
     // Immediately push to error array, we will not re-attempt
     failedCreateRecords.push(...recordsWithParsingErrors)

@@ -8,6 +8,8 @@ import { updateRecords } from './update-records'
 import { updateItems } from './update-items'
 import { deleteItems } from './delete-items'
 import type { SyncCompleteEvent, SyncEmit, SyncEmitter } from './emitter'
+import type { ReferenceContext } from './parse-data'
+import { join } from 'path'
 
 export async function runSync(
     sync: Sync,
@@ -28,6 +30,12 @@ export async function runSync(
         ) => {
             emitter?.emit('complete', { timeElapsed, summary })
         },
+    }
+
+    // Reference context for resolving Reference/MultiReference fields
+    const referenceContext: ReferenceContext = {
+        token: airtableToken,
+        baseId: sync.config.airtable.base.id,
     }
 
     // Start timer
@@ -68,7 +76,8 @@ export async function runSync(
             sync,
             actions.createWebflowItem,
             webflowClient,
-            emit
+            emit,
+            referenceContext
         )
 
         if (actions.updateWebflowItem.length) emit.progress('Updating items...')
@@ -77,7 +86,8 @@ export async function runSync(
             sync,
             actions.updateWebflowItem,
             webflowClient,
-            emit
+            emit,
+            referenceContext
         )
 
         if (actions.deleteWebflowItem.length || actions.orphanedItems.length)
@@ -121,31 +131,52 @@ export async function runSync(
 
         async function devLogs() {
             await writeToJSONFile(
-                './src/dev/airtable-records.json',
+                join(
+                    import.meta.dir,
+                    '../../../../dev/run-sync/list-airtable-records.json'
+                ),
                 airtableRecords
             )
             await writeToJSONFile(
-                './src/dev/run-sync/webflow-items.json',
+                join(
+                    import.meta.dir,
+                    '../../../../dev/run-sync/list-webflow-items.json'
+                ),
                 webflowItemList
             )
 
-            await writeToJSONFile('./src/dev/run-sync/actions.json', actions)
+            await writeToJSONFile(
+                join(import.meta.dir, '../../../../dev/run-sync/actions.json'),
+                actions
+            )
 
             await writeToJSONFile(
-                './src/dev/run-sync/created-items.json',
+                join(
+                    import.meta.dir,
+                    '../../../../dev/run-sync/created-items.json'
+                ),
                 createdItems
             )
             await writeToJSONFile(
-                './src/dev/run-sync/failed-create-items.json',
+                join(
+                    import.meta.dir,
+                    '../../../../dev/run-sync/failed-create-records.json'
+                ),
                 failedCreateRecords
             )
 
             await writeToJSONFile(
-                './src/dev/run-sync/updated-items.json',
+                join(
+                    import.meta.dir,
+                    '../../../../dev/run-sync/updated-items.json'
+                ),
                 updatedItems
             )
             await writeToJSONFile(
-                './src/dev/run-sync/failed-update-items.json',
+                join(
+                    import.meta.dir,
+                    '../../../../dev/run-sync/failed-updated-items.json'
+                ),
                 failedUpdateRecords
             )
         }

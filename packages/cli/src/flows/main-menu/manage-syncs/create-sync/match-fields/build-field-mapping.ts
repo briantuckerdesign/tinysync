@@ -1,12 +1,24 @@
 import type { Field } from 'webflow-api/api'
 import type { AirtableField, SyncField } from '@tinysync/core'
+import type { ReferenceConfig } from './select-reference-config'
 
 export function buildFieldMapping(
     airtableField: AirtableField,
-    webflowField?: Field
+    webflowField?: Field,
+    referenceConfig?: ReferenceConfig
 ): SyncField {
+    const baseMapping = {
+        airtable: {
+            name: airtableField.name,
+            id: airtableField.id as string,
+            type: airtableField.type,
+            options: airtableField.options || {},
+        },
+        specialField: undefined as undefined,
+    }
+
     if (webflowField) {
-        return {
+        const result: SyncField = {
             webflow: {
                 slug: webflowField.slug as string,
                 name: webflowField.displayName,
@@ -14,23 +26,17 @@ export function buildFieldMapping(
                 type: webflowField.type,
                 validations: webflowField.validations || {},
             },
-            airtable: {
-                name: airtableField.name,
-                id: airtableField.id as string,
-                type: airtableField.type,
-                options: airtableField.options || {},
-            },
-            specialField: undefined,
+            ...baseMapping,
         }
+        if (referenceConfig) {
+            result.referenceConfig = referenceConfig
+        }
+        return result
     } else {
-        return {
-            airtable: {
-                name: airtableField.name,
-                id: airtableField.id as string,
-                type: airtableField.type,
-                options: airtableField.options || {},
-            },
-            specialField: undefined,
+        const result: SyncField = { ...baseMapping }
+        if (referenceConfig) {
+            result.referenceConfig = referenceConfig
         }
+        return result
     }
 }

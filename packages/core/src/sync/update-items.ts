@@ -2,7 +2,11 @@ import type { WebflowClient } from 'webflow-api'
 import type { CollectionItemList } from 'webflow-api/api'
 import type { AirtableRecord } from '../airtable/types'
 import type { RecordWithErrors, Sync } from '../types'
-import { parseAirtableRecords, type ParsedRecord } from './parse-data'
+import {
+    parseAirtableRecords,
+    type ParsedRecord,
+    type ReferenceContext,
+} from './parse-data'
 import { findSpecialField } from '../utils/find-special-field'
 import type { SyncEmit } from './emitter'
 
@@ -18,7 +22,8 @@ export async function updateItems(
     sync: Sync,
     updateWebflowItems: AirtableRecord[],
     webflowClient: WebflowClient,
-    emit: SyncEmit
+    emit: SyncEmit,
+    referenceContext?: ReferenceContext
 ) {
     const updatedItems: UpdatedItem[] = []
     const failedUpdateRecords: RecordWithErrors[] = []
@@ -33,10 +38,8 @@ export async function updateItems(
 
     const itemIdFieldId = itemIdField.airtable.id
 
-    const { recordsWithParsingErrors, parsedRecords } = parseAirtableRecords(
-        updateWebflowItems,
-        sync
-    )
+    const { recordsWithParsingErrors, parsedRecords } =
+        await parseAirtableRecords(updateWebflowItems, sync, referenceContext)
 
     // Add item IDs to parsed records for updates
     const parsedRecordsWithIds: ParsedRecord[] = []
