@@ -17,13 +17,14 @@
         "test": "bun test"
     },
     "keywords": [
+        "bun",
         "airtable",
         "webflow",
         "sync",
         "automation",
         "cms"
     ],
-    "author": "",
+    "author": "Brian Tucker",
     "license": "ISC",
     "type": "module",
     "repository": {
