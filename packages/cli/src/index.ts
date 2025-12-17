@@ -1,3 +1,10 @@
+#!/usr/bin/env bun
+/**
+ * @tinysync/cli entry point
+ *
+ * Interactive CLI for managing Airtable → Webflow syncs.
+ * Run with `tinysync` after global installation or `bun src/index.ts` for development.
+ */
 import pack from '../package.json'
 import { ui } from './ui'
 import { login } from './flows/login'
