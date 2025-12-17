@@ -51,6 +51,3 @@ console.log(`\n✅ Build completed in ${(endTime - startTime).toFixed(0)}ms`)
 
 console.log('\n💡 To run the bundled CLI:')
 console.log('   bun dist/index.js')
-
-console.log('\n💡 To compile to a standalone binary:')
-console.log('   bun build --compile dist/index.js --outfile tinysync')
