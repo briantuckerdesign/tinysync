@@ -2,9 +2,7 @@ import { type Sync, type SyncVerboseLogs } from '@tinysync/core'
 import { join } from 'path'
 import { ui } from '../../../../ui'
 import { writeToJSONFile } from '../../../../utils/write-to-json-file'
-
-/** Directory for storing verbose sync logs */
-const logsDir = join(import.meta.dir, '../../../../../logs/')
+import { logsDir } from '../../../../utils/paths'
 
 /** Save verbose logs to JSON files */
 export async function saveVerboseLogs(
