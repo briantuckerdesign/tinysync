@@ -3,6 +3,8 @@ import type { Sync } from '@tinysync/core'
 import { state } from '../../../state'
 import { ui } from '../../../ui'
 import { createSync } from './create-sync'
+import { exportAllSyncs } from './export-all-syncs'
+import { importSyncs } from './import-syncs'
 import { manageSync } from './manage-sync'
 
 export async function manageSyncs() {
@@ -21,6 +23,16 @@ export async function manageSyncs() {
             {
                 label: 'Create new sync',
                 value: 'createSync',
+            },
+            {
+                label: 'Import syncs',
+                value: 'importSyncs',
+                hint: 'Import from JSON file',
+            },
+            {
+                label: 'Export all syncs',
+                value: 'exportAllSyncs',
+                hint: 'Export to JSON file',
             },
             {
                 label: 'Back',
@@ -44,6 +56,10 @@ export async function manageSyncs() {
                 return await mainMenu()
             case 'createSync':
                 return await createSync()
+            case 'importSyncs':
+                return await importSyncs()
+            case 'exportAllSyncs':
+                return await exportAllSyncs()
             case 'exit':
                 ui.prompt.outro('See ya later! 👋')
                 process.exit(0)

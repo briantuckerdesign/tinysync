@@ -1,4 +1,6 @@
 import type { Platform, Sync, Token, TokenPair } from '@tinysync/core'
+import { airtable } from '@tinysync/core'
+import { WebflowClient } from 'webflow-api'
 import { state } from '../../../../state'
 import { ui } from '../../../../ui'
 import { saveSyncs } from '../../../../syncs/save'
@@ -15,9 +17,51 @@ export async function validateSyncTokens(
     try {
         let webflowToken = ''
         let airtableToken = ''
+
+        // Handle syncs with no tokens configured (e.g., imported syncs)
         if (!sync.tokens) {
-            ui.prompt.log.warn('This sync has no tokens configured.')
-            return false
+            ui.prompt.log.warn(
+                'This sync has no tokens configured. Please assign tokens.'
+            )
+
+            // Initialize tokens object
+            sync.tokens = {
+                webflow: '',
+                airtable: '',
+            }
+
+            // Prompt for both tokens
+            const airtableReplaced = await handleMissingToken(sync, 'airtable')
+            if (!airtableReplaced) {
+                return false
+            }
+
+            const webflowReplaced = await handleMissingToken(sync, 'webflow')
+            if (!webflowReplaced) {
+                return false
+            }
+
+            // Save the updated sync
+            const saved = await saveSyncs()
+            if (!saved) {
+                ui.prompt.log.error('Failed to save sync with updated tokens.')
+                return false
+            }
+
+            ui.prompt.log.success('✓ Sync tokens configured successfully')
+
+            webflowToken = state.tokens.find(
+                (token) => token.id === sync.tokens?.webflow
+            )?.token as string
+
+            airtableToken = state.tokens.find(
+                (token) => token.id === sync.tokens?.airtable
+            )?.token as string
+
+            return {
+                airtable: airtableToken,
+                webflow: webflowToken,
+            }
         }
 
         const missingTokens: {
@@ -111,7 +155,8 @@ export async function validateSyncTokens(
 
 /**
  * Handles a missing token by prompting the user to select a replacement
- * or return to the main menu.
+ * or return to the main menu. Validates that the token can access the
+ * resource defined in the sync config before accepting it.
  */
 async function handleMissingToken(
     sync: Sync,
@@ -156,9 +201,7 @@ async function handleMissingToken(
             { label: 'Exit', value: 'exit' }
         )
 
-        ui.prompt.log.info(
-            `Please select a replacement ${platform} token for this sync:`
-        )
+        ui.prompt.log.info(`Please select a ${platform} token for this sync:`)
 
         const selectedOption = await ui.prompt.select({
             message: `Select ${platform} token:`,
@@ -177,6 +220,21 @@ async function handleMissingToken(
 
         const selectedToken = selectedOption as Token
 
+        // Validate that the token can access the resource
+        const isValid = await validateTokenAccess(sync, selectedToken, platform)
+        if (!isValid) {
+            // Ask if they want to try another token
+            const tryAgain = await ui.prompt.confirm({
+                message: 'Would you like to try a different token?',
+            })
+            await ui.handleCancel(tryAgain, manageSyncs)
+
+            if (tryAgain) {
+                return await handleMissingToken(sync, platform)
+            }
+            return false
+        }
+
         // Update the sync with the new token ID
         if (!sync.tokens) {
             sync.tokens = {
@@ -194,6 +252,83 @@ async function handleMissingToken(
         return true
     } catch (error) {
         ui.prompt.log.error(`Error handling missing ${platform} token.`)
+        return false
+    }
+}
+
+/**
+ * Validates that a token can access the resource defined in the sync config.
+ * For Airtable, checks if the token can access the base.
+ * For Webflow, checks if the token can access the site.
+ */
+async function validateTokenAccess(
+    sync: Sync,
+    token: Token,
+    platform: Platform
+): Promise<boolean> {
+    ui.spinner.start(`Validating ${platform} token access...`)
+
+    try {
+        if (platform === 'airtable') {
+            const baseId = sync.config.airtable.base.id
+            const baseName = sync.config.airtable.base.name
+
+            // Get all accessible bases
+            const bases = await airtable.get.bases(token.token)
+
+            // Check if the sync's base is accessible
+            const hasAccess = bases.some((base) => base.id === baseId)
+
+            if (!hasAccess) {
+                ui.spinner.stop()
+                ui.prompt.log.error(
+                    `Token "${token.name}" does not have access to base "${baseName}" (${baseId}).`
+                )
+                return false
+            }
+
+            ui.spinner.stop()
+            ui.prompt.log.success(`✓ Token has access to base "${baseName}"`)
+            return true
+        } else {
+            // Webflow
+            const siteId = sync.config.webflow.site.id
+            const siteName = sync.config.webflow.site.name
+
+            // Initialize Webflow client and get sites
+            const webflowClient = new WebflowClient({
+                accessToken: token.token,
+            })
+            const response = await webflowClient.sites.list()
+
+            if (!response.sites) {
+                ui.spinner.stop()
+                ui.prompt.log.error(
+                    `Token "${token.name}" cannot access any Webflow sites.`
+                )
+                return false
+            }
+
+            // Check if the sync's site is accessible
+            const hasAccess = response.sites.some((site) => site.id === siteId)
+
+            if (!hasAccess) {
+                ui.spinner.stop()
+                ui.prompt.log.error(
+                    `Token "${token.name}" does not have access to site "${siteName}" (${siteId}).`
+                )
+                return false
+            }
+
+            ui.spinner.stop()
+            ui.prompt.log.success(`✓ Token has access to site "${siteName}"`)
+            return true
+        }
+    } catch (error) {
+        ui.spinner.stop()
+        ui.prompt.log.error(
+            `Failed to validate ${platform} token. The token may be invalid or expired.`
+        )
         return false
     }
 }
