@@ -1,4 +1,3 @@
-// import { AsciiTable3 } from 'ascii-table3'
 import { tinysync, type Sync } from '@tinysync/core'
 import { manageSyncs } from '..'
 import { createClackProgressEmitter, ui } from '../../../../ui'
@@ -56,7 +55,7 @@ export async function manageSync(sync: Sync) {
                     onVerboseLogs: (logs) => saveVerboseLogs(sync, logs),
                 })
 
-                await tinysync.sync(
+                await tinysync.syncAll(
                     sync,
                     tokens.airtable,
                     tokens.webflow,
