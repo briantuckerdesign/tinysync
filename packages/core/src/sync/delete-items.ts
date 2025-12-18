@@ -31,8 +31,16 @@ export async function deleteItems(
 
     const numberOfOrphanedItems = orphanedItems.length
     const numberOfItems = deleteWebflowItems.length
-    if (numberOfItems === 0 && numberOfOrphanedItems === 0)
+    const totalItems = numberOfItems + numberOfOrphanedItems
+    if (totalItems === 0)
         return { deletedItems, deletedOrphanedItems, failedDeleteRecords }
+
+    // Emit progress start with total number of items (including orphaned)
+    emit.progressStart(
+        'deleting-items',
+        `Deleting ${totalItems} items...`,
+        totalItems
+    )
 
     // Get the itemId field to extract existing Webflow item IDs
     const itemIdField = findSpecialField('itemId', sync)
@@ -62,6 +70,11 @@ export async function deleteItems(
                 deletedOrphanedItems.push(
                     ...batch.map((id) => ({ itemId: id }))
                 )
+                emit.progressAdvance(
+                    'deleting-items',
+                    `Deleted ${deletedItems.length + deletedOrphanedItems.length}/${totalItems} items`,
+                    batch.length
+                )
             } catch {
                 failedBigBatchOrphans.push(...batch)
             }
@@ -82,6 +95,11 @@ export async function deleteItems(
                 deletedOrphanedItems.push(
                     ...batch.map((id) => ({ itemId: id }))
                 )
+                emit.progressAdvance(
+                    'deleting-items',
+                    `Deleted ${deletedItems.length + deletedOrphanedItems.length}/${totalItems} items`,
+                    batch.length
+                )
             } catch {
                 failedSmallBatchOrphans.push(...batch)
             }
@@ -92,9 +110,19 @@ export async function deleteItems(
             try {
                 await deleteItemBatch(sync, [itemId], webflowClient)
                 deletedOrphanedItems.push({ itemId })
+                emit.progressAdvance(
+                    'deleting-items',
+                    `Deleted ${deletedItems.length + deletedOrphanedItems.length}/${totalItems} items`,
+                    1
+                )
             } catch {
                 // Orphaned items have no Airtable record, so we can't add them to failedDeleteRecords
-                // They will simply not be deleted
+                // They will simply not be deleted, but still advance progress
+                emit.progressAdvance(
+                    'deleting-items',
+                    `Deleted ${deletedItems.length + deletedOrphanedItems.length}/${totalItems} items`,
+                    1
+                )
             }
         }
     }
@@ -143,6 +171,11 @@ export async function deleteItems(
                         itemId: r.itemId,
                     }))
                 )
+                emit.progressAdvance(
+                    'deleting-items',
+                    `Deleted ${deletedItems.length + deletedOrphanedItems.length}/${totalItems} items`,
+                    batch.length
+                )
             } catch {
                 failedBigBatchItems.push(...batch)
             }
@@ -170,6 +203,11 @@ export async function deleteItems(
                         itemId: r.itemId,
                     }))
                 )
+                emit.progressAdvance(
+                    'deleting-items',
+                    `Deleted ${deletedItems.length + deletedOrphanedItems.length}/${totalItems} items`,
+                    batch.length
+                )
             } catch {
                 failedSmallBatchItems.push(...batch)
             }
@@ -180,14 +218,30 @@ export async function deleteItems(
             try {
                 await deleteItemBatch(sync, [item.itemId], webflowClient)
                 deletedItems.push({ record: item.record, itemId: item.itemId })
+                emit.progressAdvance(
+                    'deleting-items',
+                    `Deleted ${deletedItems.length + deletedOrphanedItems.length}/${totalItems} items`,
+                    1
+                )
             } catch (error) {
                 failedDeleteRecords.push({
                     errors: [extractWebflowErrorDescription(error)],
                     record: item.record,
                 })
+                // Still advance for failed items so progress stays accurate
+                emit.progressAdvance(
+                    'deleting-items',
+                    `Deleted ${deletedItems.length + deletedOrphanedItems.length}/${totalItems} items (${failedDeleteRecords.length} failed)`,
+                    1
+                )
             }
         }
     }
+
+    emit.progressEnd(
+        'deleting-items',
+        `Deleted ${deletedItems.length + deletedOrphanedItems.length} items`
+    )
 
     if (failedDeleteRecords.length > 0) {
         emit.error(

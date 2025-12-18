@@ -45,6 +45,13 @@ export async function updateItems(
     const numberOfItems = updateWebflowItems.length
     if (numberOfItems === 0) return { updatedItems, failedUpdateRecords }
 
+    // Emit progress start with total number of items
+    emit.progressStart(
+        'updating-items',
+        `Updating ${numberOfItems} items...`,
+        numberOfItems
+    )
+
     // Get the itemId field to extract existing Webflow item IDs
     const itemIdField = findSpecialField('itemId', sync)
     if (!itemIdField)
@@ -94,8 +101,12 @@ export async function updateItems(
         const batch = parsedRecordsWithIds.slice(offset, offset + batchSize)
 
         try {
-            updatedItems.push(
-                ...(await processBatch(sync, batch, webflowClient))
+            const batchResults = await processBatch(sync, batch, webflowClient)
+            updatedItems.push(...batchResults)
+            emit.progressAdvance(
+                'updating-items',
+                `Updated ${updatedItems.length}/${numberOfItems} items`,
+                batch.length
             )
         } catch (error) {
             failedBigBatchItems.push(...batch)
@@ -103,7 +114,13 @@ export async function updateItems(
     }
 
     // Small batches
-    if (!failedBigBatchItems) return { updatedItems, failedUpdateRecords }
+    if (!failedBigBatchItems) {
+        emit.progressEnd(
+            'updating-items',
+            `Updated ${updatedItems.length} items`
+        )
+        return { updatedItems, failedUpdateRecords }
+    }
     for (
         let offset = 0;
         offset < failedBigBatchItems.length;
@@ -112,8 +129,12 @@ export async function updateItems(
         const batch = failedBigBatchItems.slice(offset, offset + smallBatchSize)
 
         try {
-            updatedItems.push(
-                ...(await processBatch(sync, batch, webflowClient))
+            const batchResults = await processBatch(sync, batch, webflowClient)
+            updatedItems.push(...batchResults)
+            emit.progressAdvance(
+                'updating-items',
+                `Updated ${updatedItems.length}/${numberOfItems} items`,
+                batch.length
             )
         } catch (error) {
             failedSmallBatchItems.push(...batch)
@@ -121,19 +142,41 @@ export async function updateItems(
     }
 
     // Individual failed items
-    if (!failedSmallBatchItems) return { updatedItems, failedUpdateRecords }
+    if (!failedSmallBatchItems) {
+        emit.progressEnd(
+            'updating-items',
+            `Updated ${updatedItems.length} items`
+        )
+        return { updatedItems, failedUpdateRecords }
+    }
     for (const parsedRecord of failedSmallBatchItems) {
         try {
-            updatedItems.push(
-                ...(await processBatch(sync, [parsedRecord], webflowClient))
+            const batchResults = await processBatch(
+                sync,
+                [parsedRecord],
+                webflowClient
+            )
+            updatedItems.push(...batchResults)
+            emit.progressAdvance(
+                'updating-items',
+                `Updated ${updatedItems.length}/${numberOfItems} items`,
+                1
             )
         } catch (error) {
             failedUpdateRecords.push({
                 errors: [extractWebflowErrorDescription(error)],
                 record: parsedRecord.record,
             })
+            // Still advance for failed items so progress stays accurate
+            emit.progressAdvance(
+                'updating-items',
+                `Updated ${updatedItems.length}/${numberOfItems} items (${failedUpdateRecords.length} failed)`,
+                1
+            )
         }
     }
+
+    emit.progressEnd('updating-items', `Updated ${updatedItems.length} items`)
 
     if (failedUpdateRecords.length > 0) {
         emit.error(

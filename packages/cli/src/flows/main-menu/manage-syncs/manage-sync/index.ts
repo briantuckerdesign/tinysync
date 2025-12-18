@@ -55,7 +55,6 @@ export async function manageSync(sync: Sync) {
                 const clack = createClackProgressEmitter({
                     onVerboseLogs: (logs) => saveVerboseLogs(sync, logs),
                 })
-                clack.start()
 
                 await tinysync.sync(
                     sync,

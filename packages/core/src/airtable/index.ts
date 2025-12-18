@@ -16,6 +16,7 @@ import { getBases } from './get-bases'
 import { getTables } from './get-tables'
 import { getRecords } from './get-records'
 import { updateRecord } from './update-record'
+import { updateRecords } from './update-records'
 import { createField } from './create-field'
 import { getRecord } from './get-record'
 import { getSchema } from './get-schema'
@@ -30,6 +31,7 @@ export const airtable = {
     },
     update: {
         record: updateRecord,
+        records: updateRecords,
     },
     create: {
         field: createField,

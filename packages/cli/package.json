@@ -1,6 +1,6 @@
 {
     "name": "@tinysync/cli",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "CLI tool for tinysync - sync data between Airtable and Webflow",
     "main": "./dist/index.js",
     "bin": {
@@ -35,7 +35,7 @@
         "directory": "packages/cli"
     },
     "dependencies": {
-        "@tinysync/core": "^1.0.1",
+        "@tinysync/core": "^1.0.2",
         "@clack/prompts": "^1.0.0-alpha.8",
         "@ts-stack/markdown": "^1.5.0",
         "ascii-table3": "^1.0.1",
