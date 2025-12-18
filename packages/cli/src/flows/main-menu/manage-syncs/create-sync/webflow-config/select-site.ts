@@ -8,7 +8,7 @@ export async function selectSite(webflowClient: WebflowClient): Promise<Site> {
         const sites = await webflowClient.sites.list()
         if (!sites.sites) throw new Error('No sites found.')
         const site = (await ui.prompt.select({
-            message: 'Airtable base:',
+            message: 'Webflow site:',
             options: sites.sites.map((site) => ({
                 label: site.displayName ? site.displayName : site.id,
                 value: site,
