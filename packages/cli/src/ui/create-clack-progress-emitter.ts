@@ -65,7 +65,7 @@ export function createClackProgressEmitter(options?: {
     }
 
     // Helper to get human-readable phase name
-    const getPhaseLabel = (phase: SyncProgressPhase): string => {
+    ;(phase: SyncProgressPhase): string => {
         switch (phase) {
             case 'fetching-data':
                 return 'Fetching data'
