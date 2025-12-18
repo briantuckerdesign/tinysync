@@ -52,11 +52,11 @@ Create a GitHub release to trigger the binary build workflow:
 
 ```bash
 # Create and push a tag
-git tag v1.0.8
-git push origin v1.0.8
+git tag v1.0.7
+git push origin v1.0.7
 
 # Create the release (this triggers the workflow)
-gh release create v1.0.8 --title "v1.0.8" --notes "Release notes here"
+gh release create v1.0.7 --title "v1.0.7" --notes "Release notes"
 ```
 
 Or create the release via the [GitHub web UI](https://github.com/briantuckerdesign/tinysync/releases/new).
