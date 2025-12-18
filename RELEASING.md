@@ -48,15 +48,18 @@ npm publish --access public
 
 ### 4. Create GitHub Release
 
-Create a GitHub release to trigger the binary build workflow:
+**Important:** Make sure all changes (including the workflow file) are pushed before creating a release.
 
 ```bash
+# Push all changes first!
+git push origin main
+
 # Create and push a tag
-git tag v1.0.7
-git push origin v1.0.7
+git tag v1.x.x
+git push origin v1.x.x
 
 # Create the release (this triggers the workflow)
-gh release create v1.0.7 --title "v1.0.7" --notes "Release notes"
+gh release create v1.x.x --title "v1.x.x" --notes "Release notes here"
 ```
 
 Or create the release via the [GitHub web UI](https://github.com/briantuckerdesign/tinysync/releases/new).
@@ -97,6 +100,20 @@ shasum -a 256 -c checksums.txt --ignore-missing
 # Verify on Linux
 sha256sum -c checksums.txt --ignore-missing
 ```
+
+## macOS Gatekeeper (for users)
+
+macOS will block downloaded binaries with "damaged and can't be opened" because they're unsigned. To fix:
+
+```bash
+# Remove the quarantine attribute after extracting
+xattr -d com.apple.quarantine tinysync
+
+# Make executable (if needed)
+chmod +x tinysync
+```
+
+Or: Right-click the binary → Open → click "Open" in the security dialog.
 
 ## Deprecating a Version
 
