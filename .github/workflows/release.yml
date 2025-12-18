@@ -1,0 +1,68 @@
+name: Release Binaries
+
+on:
+    release:
+        types: [published]
+    workflow_dispatch: # Allow manual trigger for testing
+
+jobs:
+    build-and-upload:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write # Required to upload release assets
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: latest
+
+            - name: Install dependencies
+              run: bun install
+
+            - name: Build binaries
+              working-directory: packages/cli
+              run: bun run build
+
+            - name: Create archives
+              working-directory: packages/cli/dist
+              run: |
+                  # Create zip/tar.gz archives for each platform
+                  # macOS ARM64
+                  tar -czvf tinysync-darwin-arm64.tar.gz -C mac/arm64 tinysync
+                  tar -czvf tinysync-local-darwin-arm64.tar.gz -C mac/arm64 tinysync-local
+
+                  # macOS x64
+                  tar -czvf tinysync-darwin-x64.tar.gz -C mac/x64 tinysync
+                  tar -czvf tinysync-local-darwin-x64.tar.gz -C mac/x64 tinysync-local
+
+                  # Linux ARM64
+                  tar -czvf tinysync-linux-arm64.tar.gz -C linux/arm64 tinysync
+                  tar -czvf tinysync-local-linux-arm64.tar.gz -C linux/arm64 tinysync-local
+
+                  # Linux x64
+                  tar -czvf tinysync-linux-x64.tar.gz -C linux/x64 tinysync
+                  tar -czvf tinysync-local-linux-x64.tar.gz -C linux/x64 tinysync-local
+
+                  # Windows x64 (use zip for Windows)
+                  zip -j tinysync-windows-x64.zip windows/x64/tinysync.exe
+                  zip -j tinysync-local-windows-x64.zip windows/x64/tinysync-local.exe
+
+            - name: Generate checksums
+              working-directory: packages/cli/dist
+              run: |
+                  # Generate SHA256 checksums for all archives
+                  sha256sum *.tar.gz *.zip > checksums.txt
+                  echo "Generated checksums:"
+                  cat checksums.txt
+
+            - name: Upload release assets
+              uses: softprops/action-gh-release@v2
+              with:
+                  files: |
+                      packages/cli/dist/*.tar.gz
+                      packages/cli/dist/*.zip
+                      packages/cli/dist/checksums.txt

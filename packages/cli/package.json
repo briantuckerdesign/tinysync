@@ -1,6 +1,6 @@
 {
     "name": "@tinysync/cli",
-    "version": "1.0.5",
+    "version": "1.0.7",
     "description": "CLI tool for tinysync - sync data between Airtable and Webflow",
     "main": "./dist/index.js",
     "bin": {
@@ -13,10 +13,9 @@
     ],
     "scripts": {
         "start": "bun src/index.ts",
-        "__start:local_warning": "SECURITY: Disables TLS verification. Only use for corporate VPN cert issues during local dev.",
         "start:local": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && bun src/index.ts",
         "build": "bun build.ts",
-        "test": "bun test"
+        "typecheck": "bun tsc --noEmit"
     },
     "keywords": [
         "bun",
