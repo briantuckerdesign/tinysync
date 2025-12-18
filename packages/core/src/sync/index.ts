@@ -122,7 +122,6 @@ export async function runSync(
             listAllItems(webflowClient, sync.config.webflow.collection.id),
         ])
 
-        emit.spinner('parsing-data', 'Parsing data...')
         // Sort records into create, update, and delete arrays
         const actions = await parseActions(
             sync,
