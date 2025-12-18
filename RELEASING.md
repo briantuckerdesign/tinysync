@@ -42,6 +42,7 @@ The npm package only includes the JS bundle (not binaries):
 
 ```bash
 cd packages/cli
+npm pack --dry-run
 npm publish --access public
 ```
 
