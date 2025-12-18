@@ -15,6 +15,23 @@ export async function updateRecords(
     airtableToken: string,
     emit: SyncEmit
 ) {
+    const totalRecords =
+        createdItems.length +
+        updatedItems.length +
+        deletedItems.length +
+        failedRecords.length
+
+    if (totalRecords === 0) return
+
+    // Emit progress start with total number of records to update
+    emit.progressStart(
+        'updating-records',
+        `Updating ${totalRecords} Airtable records...`,
+        totalRecords
+    )
+
+    let processedCount = 0
+
     try {
         const specialFields = findAllSpecialFields(sync)
         /* ------------------------------ create items ------------------------------ */
@@ -48,6 +65,13 @@ export async function updateRecords(
             )
 
             if (response.error) throw new Error(response.error)
+
+            processedCount++
+            emit.progressAdvance(
+                'updating-records',
+                `Updated ${processedCount}/${totalRecords} records`,
+                1
+            )
         }
 
         /* ----------------------------- update records ----------------------------- */
@@ -80,6 +104,13 @@ export async function updateRecords(
             )
 
             if (response.error) throw new Error(response.error)
+
+            processedCount++
+            emit.progressAdvance(
+                'updating-records',
+                `Updated ${processedCount}/${totalRecords} records`,
+                1
+            )
         }
 
         /* ----------------------------- delete records ----------------------------- */
@@ -100,6 +131,13 @@ export async function updateRecords(
             )
 
             if (response.error) throw new Error(response.error)
+
+            processedCount++
+            emit.progressAdvance(
+                'updating-records',
+                `Updated ${processedCount}/${totalRecords} records`,
+                1
+            )
         }
 
         /* ----------------------------- failed records ----------------------------- */
@@ -118,11 +156,27 @@ export async function updateRecords(
                     failedRecord.record.id,
                     payload
                 )
+
+                processedCount++
+                emit.progressAdvance(
+                    'updating-records',
+                    `Updated ${processedCount}/${totalRecords} records`,
+                    1
+                )
             } catch (error) {
                 throw error
             }
         }
+
+        emit.progressEnd(
+            'updating-records',
+            `Updated ${processedCount} Airtable records`
+        )
     } catch (error) {
+        emit.progressEnd(
+            'updating-records',
+            `Updated ${processedCount}/${totalRecords} records (failed)`
+        )
         emit.error(new Error(`Failed to update Airtable records`), false)
     }
 }

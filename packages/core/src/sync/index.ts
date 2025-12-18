@@ -11,6 +11,7 @@ import type {
     SyncCompleteEvent,
     SyncEmit,
     SyncEmitter,
+    SyncProgressPhase,
     SyncVerboseLogs,
 } from './emitter'
 import type { ReferenceContext } from './parse-data'
@@ -47,8 +48,37 @@ export async function runSync(
     emitter?: SyncEmitter
 ) {
     const emit: SyncEmit = {
-        progress: (message: string, data?: any) => {
-            emitter?.emit('progress', { message, data })
+        spinner: (phase: SyncProgressPhase, message: string) => {
+            emitter?.emit('progress', {
+                message,
+                data: { type: 'spinner', phase },
+            })
+        },
+        progressStart: (
+            phase: SyncProgressPhase,
+            message: string,
+            total: number
+        ) => {
+            emitter?.emit('progress', {
+                message,
+                data: { type: 'progress-start', phase, total },
+            })
+        },
+        progressAdvance: (
+            phase: SyncProgressPhase,
+            message: string,
+            increment?: number
+        ) => {
+            emitter?.emit('progress', {
+                message,
+                data: { type: 'progress-advance', phase, increment },
+            })
+        },
+        progressEnd: (phase: SyncProgressPhase, message: string) => {
+            emitter?.emit('progress', {
+                message,
+                data: { type: 'progress-end', phase },
+            })
         },
         error: (error: Error, fatal = false) => {
             emitter?.emit('error', { error, fatal })
@@ -80,7 +110,7 @@ export async function runSync(
             accessToken: webflowToken,
         })
 
-        emit.progress('Fetching Airtable/Webflow data...')
+        emit.spinner('fetching-data', 'Fetching Airtable/Webflow data...')
         // Fetch Airtable records and Webflow items
         const [airtableRecords, webflowItemList] = await Promise.all([
             airtable.get.records(
@@ -92,16 +122,14 @@ export async function runSync(
             listAllItems(webflowClient, sync.config.webflow.collection.id),
         ])
 
-        emit.progress('Parsing data...')
+        emit.spinner('parsing-data', 'Parsing data...')
         // Sort records into create, update, and delete arrays
         const actions = await parseActions(
             sync,
             airtableRecords,
-            webflowItemList,
-            emit
+            webflowItemList
         )
 
-        if (actions.createWebflowItem.length) emit.progress('Creating items...')
         // Create new items in Webflow
         const { createdItems, failedCreateRecords } = await createItems(
             sync,
@@ -111,7 +139,6 @@ export async function runSync(
             referenceContext
         )
 
-        if (actions.updateWebflowItem.length) emit.progress('Updating items...')
         // Update existing items in Webflow
         const { updatedItems, failedUpdateRecords } = await updateItems(
             sync,
@@ -121,8 +148,6 @@ export async function runSync(
             referenceContext
         )
 
-        if (actions.deleteWebflowItem.length || actions.orphanedItems.length)
-            emit.progress('Deleting items...')
         // Delete relevant Webflow items
         const { deletedItems, failedDeleteRecords } = await deleteItems(
             sync,
@@ -138,7 +163,6 @@ export async function runSync(
             ...failedDeleteRecords,
         ]
 
-        emit.progress('Updating records...')
         await updateRecords(
             sync,
             createdItems,

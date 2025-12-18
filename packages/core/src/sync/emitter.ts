@@ -31,11 +31,65 @@ export function createSyncEmitter(): SyncEmitter {
 
 export type SyncEventType = 'progress' | 'error' | 'complete'
 
-export type SyncProgressEventData = {
-    advance?: number
-    noProgress?: boolean
-    [key: string]: any
+/**
+ * Progress phases represent distinct stages of the sync operation.
+ * Each phase can be displayed with appropriate UI (spinner or progress bar).
+ */
+export type SyncProgressPhase =
+    | 'fetching-data'
+    | 'parsing-data'
+    | 'creating-items'
+    | 'updating-items'
+    | 'deleting-items'
+    | 'updating-records'
+
+/**
+ * Event data for spinner-style progress (indeterminate, no total known).
+ * Used for phases like fetching data where we don't know total steps.
+ */
+export interface SpinnerEventData {
+    type: 'spinner'
+    phase: SyncProgressPhase
 }
+
+/**
+ * Event data for starting a progress bar with a known total.
+ * Emitted at the beginning of create/update/delete/updateRecords phases.
+ */
+export interface ProgressStartEventData {
+    type: 'progress-start'
+    phase: SyncProgressPhase
+    total: number
+}
+
+/**
+ * Event data for advancing a progress bar.
+ * Emitted after each batch or item is processed.
+ */
+export interface ProgressAdvanceEventData {
+    type: 'progress-advance'
+    phase: SyncProgressPhase
+    increment?: number | undefined
+}
+
+/**
+ * Event data for ending a progress bar.
+ * Emitted when a phase completes.
+ */
+export interface ProgressEndEventData {
+    type: 'progress-end'
+    phase: SyncProgressPhase
+}
+
+/**
+ * Union type of all progress event data types.
+ * The CLI can use the `type` discriminator to handle each appropriately.
+ */
+export type SyncProgressEventData =
+    | SpinnerEventData
+    | ProgressStartEventData
+    | ProgressAdvanceEventData
+    | ProgressEndEventData
 
 export interface SyncProgressEvent {
     message: string
@@ -82,8 +136,25 @@ export interface SyncEmitter extends EventEmitter {
 }
 
 export interface SyncEmit {
-    progress: (message: string, data?: SyncProgressEventData) => void
+    /** Emit a spinner event (indeterminate progress) */
+    spinner: (phase: SyncProgressPhase, message: string) => void
+    /** Start a progress bar for a phase with a known total */
+    progressStart: (
+        phase: SyncProgressPhase,
+        message: string,
+        total: number
+    ) => void
+    /** Advance the progress bar for a phase */
+    progressAdvance: (
+        phase: SyncProgressPhase,
+        message: string,
+        increment?: number
+    ) => void
+    /** End the progress bar for a phase */
+    progressEnd: (phase: SyncProgressPhase, message: string) => void
+    /** Emit an error event */
     error: (error: Error, fatal: boolean) => void
+    /** Emit the complete event with summary stats */
     complete: (
         timeElapsed: number,
         summary: SyncCompleteEvent['summary'],

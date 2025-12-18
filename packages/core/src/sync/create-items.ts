@@ -48,6 +48,13 @@ export async function createItems(
     const numberOfItems = createWebflowItems.length
     if (numberOfItems === 0) return { createdItems, failedCreateRecords }
 
+    // Emit progress start with total number of items
+    emit.progressStart(
+        'creating-items',
+        `Creating ${numberOfItems} items...`,
+        numberOfItems
+    )
+
     const { recordsWithParsingErrors, parsedRecords } =
         await parseAirtableRecords(createWebflowItems, sync, referenceContext)
 
@@ -66,8 +73,12 @@ export async function createItems(
         const batch = parsedRecords.slice(offset, offset + batchSize)
 
         try {
-            createdItems.push(
-                ...(await processBatch(sync, batch, webflowClient))
+            const batchResults = await processBatch(sync, batch, webflowClient)
+            createdItems.push(...batchResults)
+            emit.progressAdvance(
+                'creating-items',
+                `Created ${createdItems.length}/${numberOfItems} items`,
+                batch.length
             )
         } catch (error) {
             failedBigBatchItems.push(...batch)
@@ -75,7 +86,13 @@ export async function createItems(
     }
 
     // Small batches
-    if (!failedBigBatchItems) return { createdItems, failedCreateRecords }
+    if (!failedBigBatchItems) {
+        emit.progressEnd(
+            'creating-items',
+            `Created ${createdItems.length} items`
+        )
+        return { createdItems, failedCreateRecords }
+    }
     for (
         let offset = 0;
         offset < failedBigBatchItems.length;
@@ -84,8 +101,12 @@ export async function createItems(
         const batch = failedBigBatchItems.slice(offset, offset + smallBatchSize)
 
         try {
-            createdItems.push(
-                ...(await processBatch(sync, batch, webflowClient))
+            const batchResults = await processBatch(sync, batch, webflowClient)
+            createdItems.push(...batchResults)
+            emit.progressAdvance(
+                'creating-items',
+                `Created ${createdItems.length}/${numberOfItems} items`,
+                batch.length
             )
         } catch (error) {
             failedSmallBatchItems.push(...batch)
@@ -93,19 +114,41 @@ export async function createItems(
     }
 
     // Individual failed items
-    if (!failedSmallBatchItems) return { createdItems, failedCreateRecords }
+    if (!failedSmallBatchItems) {
+        emit.progressEnd(
+            'creating-items',
+            `Created ${createdItems.length} items`
+        )
+        return { createdItems, failedCreateRecords }
+    }
     for (const parsedRecord of failedSmallBatchItems) {
         try {
-            createdItems.push(
-                ...(await processBatch(sync, [parsedRecord], webflowClient))
+            const batchResults = await processBatch(
+                sync,
+                [parsedRecord],
+                webflowClient
+            )
+            createdItems.push(...batchResults)
+            emit.progressAdvance(
+                'creating-items',
+                `Created ${createdItems.length}/${numberOfItems} items`,
+                1
             )
         } catch (error) {
             failedCreateRecords.push({
                 errors: [extractWebflowErrorDescription(error)],
                 record: parsedRecord.record,
             })
+            // Still advance for failed items so progress stays accurate
+            emit.progressAdvance(
+                'creating-items',
+                `Created ${createdItems.length}/${numberOfItems} items (${failedCreateRecords.length} failed)`,
+                1
+            )
         }
     }
+
+    emit.progressEnd('creating-items', `Created ${createdItems.length} items`)
 
     if (failedCreateRecords.length > 0) {
         emit.error(

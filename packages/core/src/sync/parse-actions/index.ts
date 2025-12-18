@@ -3,7 +3,6 @@ import type { RecordWithErrors, Sync, SyncActions } from '../../types'
 import type { AirtableRecord } from '../../airtable/types'
 import type { CollectionItem, CollectionItemList } from 'webflow-api/api'
 import { findSpecialField } from '../../utils/find-special-field'
-import type { SyncEmit } from '../emitter'
 
 /**
  * Determines the sync action for each Airtable record.
@@ -18,16 +17,13 @@ import type { SyncEmit } from '../emitter'
  * @param sync - The sync configuration
  * @param airtableRecords - All records from the Airtable view
  * @param webflowItems - All items from the Webflow collection
- * @param emit - Event emitter for progress updates
  * @returns Categorized actions for the sync operation
  */
 export async function parseActions(
     sync: Sync,
     airtableRecords: AirtableRecord[],
-    webflowItems: CollectionItemList,
-    emit: SyncEmit
+    webflowItems: CollectionItemList
 ): Promise<SyncActions> {
-    emit.progress('Parsing actions...')
     if (!webflowItems.items) throw new Error('Webflow items not found')
 
     const { itemIdFieldId, stateFieldId } = getSpecialFieldIds(sync)
@@ -83,14 +79,6 @@ export async function parseActions(
         )
         orphanedItems.push(...filteredItems)
     }
-
-    emit.progress(`Parsed actions`, {
-        noProgress: true,
-        create: createWebflowItem.length,
-        update: updateWebflowItem.length,
-        delete: deleteWebflowItem.length,
-        orphaned: orphanedItems.length,
-    })
 
     return {
         createWebflowItem,
