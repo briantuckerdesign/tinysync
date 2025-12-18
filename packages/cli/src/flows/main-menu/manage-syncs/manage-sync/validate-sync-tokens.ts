@@ -4,6 +4,7 @@ import { WebflowClient } from 'webflow-api'
 import { state } from '../../../../state'
 import { ui } from '../../../../ui'
 import { saveSyncs } from '../../../../syncs/save'
+import { syncsDir } from '../../../../syncs'
 import { manageSyncs } from '..'
 
 /**
@@ -176,11 +177,17 @@ async function handleMissingToken(
             const choice = await ui.prompt.select({
                 message: 'What would you like to do?',
                 options: [
+                    { label: 'Delete this sync', value: 'delete' },
                     { label: 'Return to syncs menu', value: 'back' },
                     { label: 'Exit', value: 'exit' },
                 ],
             })
             await ui.handleCancel(choice, manageSyncs)
+
+            if (choice === 'delete') {
+                await performSyncDeletion(sync)
+                return false
+            }
 
             if (choice === 'exit') {
                 ui.prompt.outro('See ya later! 👋')
@@ -197,6 +204,7 @@ async function handleMissingToken(
         })) as any[]
 
         tokenOptions.push(
+            { label: 'Delete this sync', value: 'delete' },
             { label: 'Return to syncs menu', value: 'back' },
             { label: 'Exit', value: 'exit' }
         )
@@ -208,6 +216,11 @@ async function handleMissingToken(
             options: tokenOptions,
         })
         await ui.handleCancel(selectedOption, manageSyncs)
+
+        if (selectedOption === 'delete') {
+            await performSyncDeletion(sync)
+            return false
+        }
 
         if (selectedOption === 'back') {
             return false
@@ -330,5 +343,46 @@ async function validateTokenAccess(
             `Failed to validate ${platform} token. The token may be invalid or expired.`
         )
         return false
+    }
+}
+
+/**
+ * Deletes a sync from state and filesystem.
+ * Used when user chooses to delete a sync during token validation.
+ */
+async function performSyncDeletion(sync: Sync): Promise<void> {
+    try {
+        // Confirm deletion
+        const confirmDelete = await ui.prompt.confirm({
+            message: `Are you sure you want to delete "${ui.format.bold(sync.name)}"?`,
+        })
+
+        if (ui.prompt.isCancel(confirmDelete) || !confirmDelete) {
+            return
+        }
+
+        // Remove sync from state
+        state.syncs = state.syncs.filter((s) => s.id !== sync.id)
+
+        // Delete the sync JSON file
+        const filePath = syncsDir + sync.id + '.json'
+        const file = Bun.file(filePath)
+        const exists = await file.exists()
+
+        if (exists) {
+            await Bun.write(filePath, '')
+            // Delete the empty file
+            await (async () => {
+                const proc = Bun.spawn(['rm', filePath])
+                await proc.exited
+            })()
+        }
+
+        // Save the updated state
+        await saveSyncs()
+
+        ui.prompt.log.success('✅ Sync deleted!')
+    } catch (error) {
+        ui.prompt.log.error('Error deleting sync.')
     }
 }
