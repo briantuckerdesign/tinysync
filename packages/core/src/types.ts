@@ -163,3 +163,9 @@ export interface SyncSettings {
     deleteRecords: boolean
     publishToSubdomain: boolean
 }
+
+export type StateValue =
+    | 'Not synced'
+    | 'Staging'
+    | 'Queued for sync'
+    | 'Always sync'

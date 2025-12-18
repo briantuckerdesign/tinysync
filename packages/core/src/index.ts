@@ -7,20 +7,26 @@
  *
  * @example
  * ```typescript
- * import { runSync, createSyncEmitter } from '@tinysync/core'
+ * import { syncAll, syncSelective, createSyncEmitter } from '@tinysync/core'
  *
  * const emitter = createSyncEmitter()
  * emitter.on('complete', ({ summary }) => console.log('Done!', summary))
  *
- * await runSync(syncConfig, airtableToken, webflowToken, emitter)
+ * // Sync all records
+ * await syncAll(syncConfig, airtableToken, webflowToken, emitter)
+ *
+ * // Or sync specific records by ID
+ * await syncSelective(syncConfig, ['rec123', 'rec456'], airtableToken, webflowToken, emitter)
  * ```
  *
  * @packageDocumentation
  */
 
 // Main sync functionality
-import { runSync } from './sync'
-export { runSync }
+import { syncAll, syncSelective } from './sync'
+export { syncAll, syncSelective }
+// Legacy alias for backward compatibility
+export { syncAll as runSync }
 
 // Airtable API
 export { airtable } from './airtable'
@@ -37,6 +43,7 @@ export type {
     SyncActions,
     SpecialField,
     SyncSettings,
+    StateValue,
 } from './types'
 
 // Airtable types
@@ -72,7 +79,10 @@ export {
 
 // Convenience export
 export const tinysync = {
-    sync: runSync,
+    syncAll,
+    syncSelective,
+    /** @deprecated Use syncAll instead */
+    sync: syncAll,
 }
 
 // Re-export utilities if needed

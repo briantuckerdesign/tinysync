@@ -1,6 +1,6 @@
 {
     "name": "@tinysync/core",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Core sync functionality for tinysync - sync data between Airtable and Webflow",
     "main": "./src/index.ts",
     "module": "./src/index.ts",
