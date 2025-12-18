@@ -11,8 +11,13 @@ export async function manageSyncs() {
     try {
         const syncs = (state.syncs || []) as Sync[]
 
+        // Sort syncs alphabetically by name
+        const sortedSyncs = [...syncs].sort((a, b) =>
+            a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        )
+
         // Formats syncs for select prompt
-        const choices = syncs.map((sync) => {
+        const choices = sortedSyncs.map((sync) => {
             return {
                 label: `💎 ${ui.format.bold(sync.name)}`,
                 value: sync,
