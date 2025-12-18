@@ -19,15 +19,34 @@ import { runSync, createSyncEmitter, type Sync } from '@tinysync/core'
 const emitter = createSyncEmitter()
 
 emitter.on('progress', ({ message, data }) => {
-    console.log(message, data)
+    if (!data) return
+
+    switch (data.type) {
+        case 'spinner':
+            // Indeterminate progress (fetching data, parsing)
+            console.log(`⏳ ${message}`)
+            break
+        case 'progress-start':
+            // Starting a phase with known total
+            console.log(`▶ ${message} (${data.total} items)`)
+            break
+        case 'progress-advance':
+            // Progress update
+            console.log(`  ${message}`)
+            break
+        case 'progress-end':
+            // Phase complete
+            console.log(`✓ ${message}`)
+            break
+    }
 })
 
 emitter.on('error', ({ error, fatal }) => {
-    console.error('Sync error:', error)
+    console.error('Sync error:', error, fatal ? '(fatal)' : '')
 })
 
 emitter.on('complete', ({ timeElapsed, summary }) => {
-    console.log('Sync complete!', summary)
+    console.log(`Sync complete in ${timeElapsed}s!`, summary)
 })
 
 // Run the sync
@@ -38,6 +57,26 @@ await runSync(
     emitter
 )
 ```
+
+## Progress Events
+
+The emitter provides granular progress tracking through different event types:
+
+| Event Type         | Description                                | Data                    |
+| ------------------ | ------------------------------------------ | ----------------------- |
+| `spinner`          | Indeterminate progress (fetching, parsing) | `{ phase }`             |
+| `progress-start`   | Start of a measurable phase                | `{ phase, total }`      |
+| `progress-advance` | Progress within a phase                    | `{ phase, increment? }` |
+| `progress-end`     | Phase completed                            | `{ phase }`             |
+
+### Progress Phases
+
+- `fetching-data` - Fetching records from Airtable and items from Webflow
+- `parsing-data` - Parsing and categorizing records into actions
+- `creating-items` - Creating new items in Webflow
+- `updating-items` - Updating existing items in Webflow
+- `deleting-items` - Deleting items from Webflow
+- `updating-records` - Updating Airtable records with sync results
 
 ## API
 
@@ -92,12 +131,27 @@ All TypeScript types are exported:
 
 ```typescript
 import type {
+    // Sync types
     Sync,
     Token,
     Platform,
     SyncField,
-    SyncEmitter,
     SyncSettings,
+
+    // Emitter types
+    SyncEmitter,
+    SyncEmit,
+    SyncProgressPhase,
+    SyncProgressEvent,
+    SyncProgressEventData,
+    SpinnerEventData,
+    ProgressStartEventData,
+    ProgressAdvanceEventData,
+    ProgressEndEventData,
+    SyncErrorEvent,
+    SyncCompleteEvent,
+
+    // Airtable types
     AirtableRecord,
     AirtableField,
     AirtableBase,
