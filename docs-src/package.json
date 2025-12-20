@@ -1,9 +1,9 @@
 {
     "name": "tinysync-website",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "type": "module",
     "scripts": {
-        "dev": "bun run dev.ts",
+        "watch": "bun run watch.ts",
         "build": "bun run build.ts"
     },
     "dependencies": {
