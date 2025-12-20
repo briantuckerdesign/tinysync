@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="tinysync - open source one-way sync from Airtable to Webflow CMS"
+        />
+        <meta
+            property="og:title"
+            content="tinysync - Airtable to Webflow Sync"
+        />
+        <meta
+            property="og:description"
+            content="tinysync - open source one-way sync from Airtable to Webflow CMS"
+        />
+        <meta property="og:type" content="website" />
+        <link rel="icon" href="favicon.ico" />
+        <title>tinysync - Airtable to Webflow Sync</title>
+        <link
+            href="
+https://cdn.jsdelivr.net/npm/jetbrains-mono@1.0.6/css/jetbrains-mono.min.css
+"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <main class="container">
+            <!-- Hero Section with Terminal -->
+            <div class="hero-container">
+                <section class="hero">
+                    <div class="terminal-prompt">$ tinysync</div>
+                    <h1 class="hero-title">tinysync</h1>
+                    <p class="hero-tagline">Airtable → Webflow sync</p>
+                    <a
+                        href="https://github.com/briantuckerdesign/tinysync"
+                        class="btn btn-primary github-btn"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        <span>View on GitHub</span>
+                        <svg
+                            class="github-icon"
+                            alt="GitHub"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            aria-hidden="true"
+                            role="img"
+                            class="iconify iconify--bx"
+                            width="100%"
+                            height="100%"
+                            preserveAspectRatio="xMidYMid meet"
+                            viewBox="0 0 24 24"
+                        >
+                            <title>GitHub Link</title>
+                            <path
+                                fill-rule="evenodd"
+                                clip-rule="evenodd"
+                                d="M12.026 2c-5.509 0-9.974 4.465-9.974 9.974c0 4.406 2.857 8.145 6.821 9.465c.499.09.679-.217.679-.481c0-.237-.008-.865-.011-1.696c-2.775.602-3.361-1.338-3.361-1.338c-.452-1.152-1.107-1.459-1.107-1.459c-.905-.619.069-.605.069-.605c1.002.07 1.527 1.028 1.527 1.028c.89 1.524 2.336 1.084 2.902.829c.091-.645.351-1.085.635-1.334c-2.214-.251-4.542-1.107-4.542-4.93c0-1.087.389-1.979 1.024-2.675c-.101-.253-.446-1.268.099-2.64c0 0 .837-.269 2.742 1.021a9.582 9.582 0 0 1 2.496-.336a9.554 9.554 0 0 1 2.496.336c1.906-1.291 2.742-1.021 2.742-1.021c.545 1.372.203 2.387.099 2.64c.64.696 1.024 1.587 1.024 2.675c0 3.833-2.33 4.675-4.552 4.922c.355.308.675.916.675 1.846c0 1.334-.012 2.41-.012 2.737c0 .267.178.577.687.479C19.146 20.115 22 16.379 22 11.974C22 6.465 17.535 2 12.026 2z"
+                                fill="currentColor"
+                            ></path>
+                        </svg>
+                    </a>
+                </section>
+
+                <div id="terminal">
+                    <div class="action-bar">
+                        <div class="action"></div>
+                        <div class="action"></div>
+                        <div class="action"></div>
+                    </div>
+                    <pre class="content"></pre>
+                </div>
+            </div>
+
+            <!-- What Is It Section -->
+            <section class="section">
+                <h2>What is it?</h2>
+                <p class="lead">
+                    tinysync is a free and open source utility for one-way sync
+                    from Airtable to Webflow CMS. It handles all Airtable field
+                    types, gives granular control over what records sync, and
+                    works as either a command-line tool or as an Typescript
+                    library.
+                </p>
+            </section>
+
+            <!-- Installation Section -->
+            <section class="section" id="quick-start">
+                <h2>Get Started</h2>
+                <div class="install-options">
+                    <div class="install-card">
+                        <h3>CLI Tool</h3>
+                        <p>Interactive and easy to use terminal CLI.</p>
+                        <p>
+                            Create and export sync configs, manage tokens, and
+                            run syncs using your arrow keys.
+                        </p>
+                        <a
+                            href="https://github.com/briantuckerdesign/tinysync/tree/main/packages/cli"
+                            class="install-link"
+                            target="_blank"
+                            rel="noopener"
+                            >View CLI docs →</a
+                        >
+                    </div>
+                    <div class="install-card">
+                        <h3>Core Library</h3>
+                        <p>Fully typed and easy to use.</p>
+                        <p>
+                            Easily sync an entire table or just one record using
+                            a standardized format and a single function.
+                        </p>
+                        <a
+                            href="https://github.com/briantuckerdesign/tinysync/tree/main/packages/core"
+                            class="install-link"
+                            target="_blank"
+                            rel="noopener"
+                            >View library docs →</a
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-links">
+                    <a
+                        href="https://github.com/briantuckerdesign/tinysync"
+                        target="_blank"
+                        rel="noopener"
+                        >GitHub</a
+                    >
+                    <a
+                        href="https://www.npmjs.com/package/@tinysync/cli"
+                        target="_blank"
+                        rel="noopener"
+                        >@tinysync/cli</a
+                    >
+                    <a
+                        href="https://www.npmjs.com/package/@tinysync/core"
+                        target="_blank"
+                        rel="noopener"
+                        >@tinysync/core</a
+                    >
+                    <a
+                        href="https://github.com/briantuckerdesign/tinysync/blob/main/LICENSE.txt"
+                        target="_blank"
+                        rel="noopener"
+                        >ISC License</a
+                    >
+                </div>
+                <p class="footer-credit">
+                    Made by
+                    <a
+                        href="https://github.com/briantuckerdesign"
+                        target="_blank"
+                        rel="noopener"
+                        >Brian</a
+                    >
+                    with ❤️
+                </p>
+            </footer>
+        </main>
+
+        <script type="module" src="./main.js"></script>
+    </body>
+</html>

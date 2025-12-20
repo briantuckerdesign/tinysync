@@ -1,0 +1,16 @@
+{
+    "name": "tinysync-website",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "bun run dev.ts",
+        "build": "bun run build.ts"
+    },
+    "dependencies": {
+        "animejs": "^3.2.2"
+    },
+    "devDependencies": {
+        "@types/animejs": "^3.1.12",
+        "typescript": "^5.9.3"
+    }
+}
