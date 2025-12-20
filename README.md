@@ -4,7 +4,7 @@
 
 A monorepo containing tools for one-way synchronization from Airtable to Webflow CMS.
 
-![creating a sync example](./docs-src/assets/create-sync.mp4?raw=true)
+![creating a sync example](./docs-src/assets/create-sync.gif?raw=true)
 
 ## Features
 
