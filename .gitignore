@@ -1,8 +1,5 @@
-/node_modules
-docs/node_modules
 **/.DS_Store
 *.lock
-!docs/bun.lockb
 .env
 .vscode
 .cursor
@@ -10,4 +7,5 @@ docs/node_modules
 **/logs
 **/dev
 **/dist
-!docs/dist
+**/node_modules
+**/bun.lock
