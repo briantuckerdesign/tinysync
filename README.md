@@ -4,6 +4,8 @@
 
 A monorepo containing tools for one-way synchronization from Airtable to Webflow CMS.
 
+![creating a sync example](./docs-src/assets/create-sync.mp4?raw=true)
+
 ## Features
 
 - **One-directional sync** - Push Airtable records to Webflow collections
