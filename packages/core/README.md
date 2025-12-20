@@ -2,7 +2,7 @@
 
 Core sync engine for tinysync - synchronize Airtable data to Webflow CMS.
 
-> **Note:** This package requires [Bun](https://bun.sh) runtime.
+> **Note:** This package exports Typescript only, you'll need to transpile it if using in a non-Typescript environment.
 
 ## Installation
 
