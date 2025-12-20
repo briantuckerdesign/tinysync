@@ -367,6 +367,10 @@ p {
         text-align: center;
     }
 
+    .footer {
+        margin-top: 0;
+    }
+
     .footer-links {
         flex-direction: column;
         gap: 1rem;

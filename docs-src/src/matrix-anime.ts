@@ -26,8 +26,6 @@ interface AnimationConfig {
     color: string // Base color (RGB format)
 
     // Wave stagger delays (higher = slower)
-    staggerHorizontal: number // Delay for horizontal wave in ms
-    staggerVertical: number // Delay for vertical wave in ms
     staggerRadial: number // Delay for radial wave in ms
 }
 
@@ -57,8 +55,6 @@ const config: AnimationConfig = {
     color: '58, 241, 21', // Lime green in RGB
 
     // Wave stagger delays
-    staggerHorizontal: 100,
-    staggerVertical: 100,
     staggerRadial: 100,
 }
 
