@@ -27,7 +27,7 @@ await copyFile('favicon.ico', 'dist/favicon.ico')
 const html = await readFile('index.html', 'utf-8')
 const updatedHtml = html.replace(
     '<script type="module" src="./src/main.ts"></script>',
-    '<script type="module" src="./main.js"></script>'
+    '<script src="./main.js"></script>'
 )
 await writeFile('dist/index.html', updatedHtml)
 
