@@ -2,7 +2,7 @@
 
 Interactive command-line interface for syncing data between Airtable and Webflow.
 
-> **Note:** This package requires [Bun](https://bun.sh) runtime.
+> **Note:** If you're not running via binaries, this package requires [Bun](https://bun.sh) runtime.
 
 ## Installation
 
