@@ -21,6 +21,9 @@ export async function runBuild() {
     })
 
     // Copy CSS
+    await copyFile('CNAME', `${outDir}/CNAME`)
+
+    // Copy CSS
     await copyFile('styles.css', `${outDir}/styles.css`)
 
     // Copy favicon
