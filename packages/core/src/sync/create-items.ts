@@ -15,8 +15,21 @@ import {
 
 export interface CreatedItem extends MatchedItem {}
 
-const batchSize = 100
-const smallBatchSize = 10
+const attachmentTypes = ['Image', 'MultiImage', 'File']
+
+function hasAttachmentFields(sync: Sync): boolean {
+    return sync.fields.some((field) =>
+        attachmentTypes.includes(field.webflow?.type ?? '')
+    )
+}
+
+function getBatchSize(sync: Sync) {
+    const hasAttachments = hasAttachmentFields(sync)
+    return {
+        batchSize: hasAttachments ? 10 : 100,
+        smallBatchSize: hasAttachments ? 1 : 10,
+    }
+}
 
 /**
  * Creates new items in Webflow from Airtable records.
@@ -44,6 +57,7 @@ export async function createItems(
 ) {
     const createdItems: CreatedItem[] = []
     const failedCreateRecords: RecordWithErrors[] = []
+    const { batchSize, smallBatchSize } = getBatchSize(sync)
 
     const numberOfItems = createWebflowItems.length
     if (numberOfItems === 0) return { createdItems, failedCreateRecords }
@@ -86,7 +100,7 @@ export async function createItems(
     }
 
     // Small batches
-    if (!failedBigBatchItems) {
+    if (failedBigBatchItems.length === 0) {
         emit.progressEnd(
             'creating-items',
             `Created ${createdItems.length} items`
@@ -114,7 +128,7 @@ export async function createItems(
     }
 
     // Individual failed items
-    if (!failedSmallBatchItems) {
+    if (failedSmallBatchItems.length === 0) {
         emit.progressEnd(
             'creating-items',
             `Created ${createdItems.length} items`
@@ -178,7 +192,7 @@ async function processBatch(
             sync.config.webflow.collection.id,
             {
                 items: [...collectionItems],
-                skipInvalidFiles: true,
+                skipInvalidFiles: false,
             }
         )) as CollectionItemList
 

@@ -16,8 +16,21 @@ import {
 
 export interface UpdatedItem extends MatchedItem {}
 
-const batchSize = 100
-const smallBatchSize = 10
+const attachmentTypes = ['Image', 'MultiImage', 'File']
+
+function hasAttachmentFields(sync: Sync): boolean {
+    return sync.fields.some((field) =>
+        attachmentTypes.includes(field.webflow?.type ?? '')
+    )
+}
+
+function getBatchSize(sync: Sync) {
+    const hasAttachments = hasAttachmentFields(sync)
+    return {
+        batchSize: hasAttachments ? 10 : 100,
+        smallBatchSize: hasAttachments ? 1 : 10,
+    }
+}
 
 /**
  * Updates existing Webflow items from Airtable records.
@@ -41,6 +54,7 @@ export async function updateItems(
 ) {
     const updatedItems: UpdatedItem[] = []
     const failedUpdateRecords: RecordWithErrors[] = []
+    const { batchSize, smallBatchSize } = getBatchSize(sync)
 
     const numberOfItems = updateWebflowItems.length
     if (numberOfItems === 0) return { updatedItems, failedUpdateRecords }
@@ -114,7 +128,7 @@ export async function updateItems(
     }
 
     // Small batches
-    if (!failedBigBatchItems) {
+    if (failedBigBatchItems.length === 0) {
         emit.progressEnd(
             'updating-items',
             `Updated ${updatedItems.length} items`
@@ -142,7 +156,7 @@ export async function updateItems(
     }
 
     // Individual failed items
-    if (!failedSmallBatchItems) {
+    if (failedSmallBatchItems.length === 0) {
         emit.progressEnd(
             'updating-items',
             `Updated ${updatedItems.length} items`
@@ -206,7 +220,7 @@ async function processBatch(
             sync.config.webflow.collection.id,
             {
                 items: collectionItems,
-                skipInvalidFiles: true,
+                skipInvalidFiles: false,
             }
         )) as CollectionItemList
 

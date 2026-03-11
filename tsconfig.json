@@ -31,5 +31,6 @@
         "verbatimModuleSyntax": true,
         "isolatedModules": true,
         "noUncheckedSideEffectImports": true
-    }
+    },
+    "exclude": ["docs-src"]
 }
